@@ -46,9 +46,8 @@ enum result_type
         STOPLOSS
     };
 
-
 enum where 
     {
        DOWN,
         UP
-    };
+    };    
