@@ -10,19 +10,19 @@ MqlTradeResult result_trade = {};
 
 input group "Trade"
 
-input ENUM_ORDER_TYPE select_type = ORDER_TYPE_BUY;//Select Order
+input type_order_trade select_type = Buy;//Select Type
 
-input double lot = 4;//Lot Size
+input double lot_size = 4;//Lot Size
 
-input double stoplose = 105;//Stop Lose
+input double stop_loss = 105;//Stop Loss
 
-input double takeprofit = 105;//Take Profit
+input double take_profit = 105;//Take Profit
 
 input uint magic_number = 666;//Magic Number
 
 input ulong deviation_trade = 10; //Deviation in Point
 
-input turn send_order_show_string = OFF;//Show String
+input turn send_order_show_string = ON;//Show String
 
 int count_operation;
 
@@ -48,15 +48,15 @@ void sell_function()
    
         request_trade.symbol                   = _Symbol;
    
-        request_trade.volume                   = lot;
+        request_trade.volume                   = lot_size;
    
         request_trade.type                     = ORDER_TYPE_SELL;
    
         request_trade.price                    = price_bid;
    
-        request_trade.sl                       = request_trade.price + stoplose;
+        request_trade.sl                       = request_trade.price + stop_loss;
       
-        request_trade.tp                       = request_trade.price - takeprofit;
+        request_trade.tp                       = request_trade.price - take_profit;
    
         request_trade.deviation                = deviation_trade;
    
@@ -75,7 +75,7 @@ void sell_function()
                     
                     count_operation++;
                     
-                    last_operation_day = Day;
+                    last_operation_day = date_time.day;
                 }
     }
   
@@ -87,15 +87,15 @@ void buy_function()
    
         request_trade.symbol                   = _Symbol;
    
-        request_trade.volume                   = lot;
+        request_trade.volume                   = lot_size;
    
         request_trade.type                     = ORDER_TYPE_BUY;
    
         request_trade.price                    = price_ask;
    
-        request_trade.sl                       = request_trade.price - stoplose;
+        request_trade.sl                       = request_trade.price - stop_loss;
         
-        request_trade.tp                       = request_trade.price + takeprofit;
+        request_trade.tp                       = request_trade.price + take_profit;
 
         request_trade.deviation                = deviation_trade;
    
@@ -114,7 +114,7 @@ void buy_function()
                                    
                     count_operation++;
                     
-                    last_operation_day = Day;
+                    last_operation_day = date_time.day;
                 }
     }
 
@@ -136,11 +136,11 @@ void send_order_ontick()
             {
                 send_order_string =
                     "\n" +
-                    "      Lot Size                      "  + DoubleToString(lot, _Digits) +
+                    "      Lot Size                      "  + DoubleToString(lot_size, _Digits) +
                     "\n"
-                    "      Stop Lose                   "    + DoubleToString(stoplose, 0) +
+                    "      Stop Loss                   "    + DoubleToString(stop_loss, 0) +
                     "\n"
-                    "      Take Profit                  "   + DoubleToString(takeprofit, 0) +
+                    "      Take Profit                  "   + DoubleToString(take_profit, 0) +
                     "\n";           
           }
     }
