@@ -4,51 +4,15 @@ enum turn
         OFF
     };
 
-enum type_color
+enum type_mode_section
     {
-        WHITE,
-        GRAY,
-        BLACK,
-        GREEN,
-        YELLOW,
-        ORANGE,
-        RED
-    };
-
-enum type_swap
-    {
-        STANDARD,
-        FIX
-    }; 
-   
-enum type_trend 
-    {
-        BEARISH,
-        BULLISH
-    };
-
-enum type_stop_drawdown
-    {
-        INIT,
-        STEP
-    };
-    
-enum type_trailing_stop
-    {
-        BREAK,
-        TRAILING
-    };
- 
-enum result_type
-    {
-        NONE,
-        TAKEPROFIT,
-        STOPLOSS
+        Adjust=0,   //Adjust Section
+        Intra=1     //Intraday
     };
 
 
-enum where 
+enum type_order_trade
     {
-       DOWN,
-        UP
+        Buy=0,      //Buy
+        Sell=1      //Sell
     };
