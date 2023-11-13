@@ -1,7 +1,7 @@
 enum turn
     {
-        ON,
-        OFF
+        OFF,
+        ON
     };
 
 enum type_color
