@@ -1,23 +1,16 @@
 #include "enum.mqh"
 
-MqlDateTime time;
+MqlDateTime date_time;
 
 //Discomment the next variables if you need to how the time when this file was called
 //datetime start_time = TimeCurrent();
 
 //datetime local_start_time = TimeLocal();
 
+//Define the variable for get time in timer_ontick()
 datetime current_time;
 
 int remain_time;
-
-int Day;
-
-int Hours; 
-
-int Minutes; 
-
-int Seconds;
 
 int period;
 
@@ -45,20 +38,13 @@ void timer_ontick()
         remain_time = (int)(iTime(_Symbol, PERIOD_CURRENT, 0) - current_time + current_period);
         
         //The next struct is use to get the current time and date with for indepents integer variables
-        TimeToStruct(current_time, time);
-        
-        Day = time.day;
-       
-        Hours = time.hour;
-       
-        Minutes = time.min;
-       
-        Seconds = time.sec;
+
+        TimeToStruct(current_time, date_time);
         
         //This string is use to bring timer data in Comment in main file
         timer_string =                
                "\n" +
-               "      TIME " + IntegerToString(time.year) + "." + IntegerToString(time.mon) + "." + IntegerToString(time.day) + " " + IntegerToString(Hours) + ":" + IntegerToString(Minutes) + ":" + IntegerToString(Seconds) + " to UTS " + IntegerToString(current_time) +
+               "      TIME " + IntegerToString(date_time.year) + "." + IntegerToString(date_time.mon) + "." + IntegerToString(date_time.day) + " " + IntegerToString(date_time.hour) + ":" + IntegerToString(date_time.min) + ":" + IntegerToString(date_time.sec) + " to UTS " + IntegerToString(current_time) +
                "\n"
                "      Remain Time               " + IntegerToString(remain_time) +
                "\n";        
