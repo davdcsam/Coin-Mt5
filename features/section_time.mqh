@@ -3,9 +3,9 @@
 #include "send_order.mqh"
 #include "close_position.mqh"
 
-input group "Get Section"
+input group "Section Time"
 
-input turn get_section_show_string = ON; // Show String
+input turn section_time_show_string = ON; // Show String
 
 input turn close_position_out_section = OFF; // Close Positions Out Section
 
@@ -27,16 +27,16 @@ input int end_min = 0; // Min
 
 input int end_sec = 0; //Seg
 
-string get_section_string;
+string section_time_string;
 
-turn get_section_state = OFF;
+turn section_time_state = OFF;
 
-turn get_section_day_current = OFF;
+turn section_time_day_current = OFF;
 
-turn get_section_first_time_flag = OFF;
+turn section_time_first_time_flag = OFF;
 
-void get_section_ontick()
-    {       
+void set_section_time()
+    {
         if(
             date_time.hour > start_hour ||
             (date_time.hour == start_hour && date_time.min > start_min) ||
@@ -49,44 +49,61 @@ void get_section_ontick()
                 (date_time.hour == end_hour && date_time.min == end_min && date_time.sec <= end_sec)
             )
             {
-                get_section_state = ON;
+                section_time_state = ON;
             }
             else 
             {
-                get_section_state = OFF;
+                section_time_state = OFF;
             }
         }
         else 
         {
-            get_section_state = OFF;
-        }
+            section_time_state = OFF;
+        }    
+    }
 
-
+void section_flag_swicther_day()
+    {
         if(last_operation_day == date_time.day)
             {
-                get_section_day_current = ON;
-            } else 
+                section_time_day_current = ON;
+            } else
                 {
-                    get_section_day_current = OFF;
-                    
-                    get_section_first_time_flag = ON;
+                    section_time_day_current = OFF;
+                    section_time_first_time_flag = ON;
                 }
-        
-        if(close_position_out_section == ON && get_section_state == OFF)
+    }
+
+void section_close_out()
+    {
+        if(close_position_out_section == ON && section_time_state == OFF)
             {
                 close_position_magic_symbol();
             }
-        
-        if(get_section_show_string == ON)
+    }
+
+void section_show_string()
+    {
+        if(section_time_show_string == ON)
             {
-                get_section_string =
+                section_time_string =
                         "\n" +
-                        "      State " + EnumToString(get_section_state) + " At " + 
+                        "      State " + EnumToString(section_time_state) + " At " + 
                         IntegerToString(start_hour) + ":" + IntegerToString(start_min) + ":" + IntegerToString(start_sec) + " to " + 
                         IntegerToString(end_hour) + ":" + IntegerToString(end_min) + ":" + IntegerToString(end_sec) + 
                         "\n" +
                         "      Close Positions Out Section " + EnumToString(close_position_out_section) + 
                         "\n";
-           
             }
+    }
+
+void section_time_ontick()
+    {
+        set_section_time();
+
+        section_flag_swicther_day();
+   
+        section_close_out();
+
+        section_show_string();
     }
