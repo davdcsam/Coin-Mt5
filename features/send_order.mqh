@@ -10,7 +10,7 @@ MqlTradeResult result_trade = {};
 
 input group "Trade"
 
-input type_order_trade select_type = Buy;//Select Type
+input type_order_trade select_type = BUY;//Select Type
 
 input double lot_size = 4;//Lot Size
 

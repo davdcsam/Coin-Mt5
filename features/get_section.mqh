@@ -9,7 +9,7 @@ input turn get_section_show_string = ON; // Show String
 
 input turn close_position_out_section = OFF; // Close Positions Out Section
 
-input type_mode_section
+input type_mode_section mode_section = ADJUST;
 
 input group "Start Section"
 
