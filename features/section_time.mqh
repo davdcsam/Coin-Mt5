@@ -119,11 +119,24 @@ void section_time_oninit()
             local_end_hour = temp_hour;
             local_end_min = temp_min;
             local_end_sec = temp_sec;
-        }     
+        }
+        local_start_hour = start_hour;
+        local_start_min = start_min;
+        local_start_sec = start_sec;
+        local_end_hour = end_hour;
+        local_end_min = end_min;
+        local_end_sec = end_sec;
     }
 
 void section_time_ontick()
-    {   
+    {
+        local_start_hour = start_hour;
+        local_start_min = start_min;
+        local_start_sec = start_sec;
+        local_end_hour = end_hour;
+        local_end_min = end_min;
+        local_end_sec = end_sec;        
+
         set_section_time();
 
         section_flag_swicther_day();
