@@ -136,6 +136,8 @@ void send_order_ontick()
             {
                 send_order_string =
                     "\n" +
+                    "      Type                         "  + EnumToString(select_type) +
+                    "\n" +
                     "      Lot Size                      "  + DoubleToString(lot_size, _Digits) +
                     "\n"
                     "      Stop Loss                   "    + DoubleToString(stop_loss, 0) +

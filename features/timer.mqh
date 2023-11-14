@@ -45,7 +45,5 @@ void timer_ontick()
         timer_string =                
                "\n" +
                "      TIME " + IntegerToString(date_time.year) + "." + IntegerToString(date_time.mon) + "." + IntegerToString(date_time.day) + " " + IntegerToString(date_time.hour) + ":" + IntegerToString(date_time.min) + ":" + IntegerToString(date_time.sec) + " to UTS " + IntegerToString(current_time) +
-               "\n"
-               "      Remain Time               " + IntegerToString(remain_time) +
                "\n";        
 }
