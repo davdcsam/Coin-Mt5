@@ -1,15 +1,8 @@
 enum turn
     {
-        ON,
-        OFF
+        ON,         // On
+        OFF         // Off
     };
-
-enum type_mode_section
-    {
-        ADJUST=0,   //Adjust Section
-        INTRA=1     //Intraday
-    };
-
 
 enum type_order_trade
     {
