@@ -1,1 +1,24 @@
-# MQH
+# Generals
+mql/
+*.ex5
+*.mq5
+*.mqh
+*.cpython-311.pyc
+*.ttf
+!OpenSans-SemiBold.ttf
+!OpenSans-Regular.ttf
+Pipfile
+Pipfile.lock
+requirements.txt
+
+# Data
+
+# Assets
+
+# Files
+
+# Source
+
+# Tests 
+
+# Utils
