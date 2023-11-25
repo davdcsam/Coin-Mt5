@@ -1,0 +1,30 @@
+{
+    "add_terminal_button": {
+        "label": "Add Terminal",
+        "tag": "3c013590-342c-474c-84b0-e77da1376bc7"
+    },
+    "add_terminal_file_dialog_button": {
+        "label": "Select Path",
+        "tag": "4c6dd322-b7d0-4839-9af9-8623669604ae"
+    },
+    "add_terminal_button_submit": {
+        "label": "Summit",
+        "tag": "dae0e2cb-d09a-467a-a9ad-b2dbcbc3865d"
+    },
+    "add_terminal_button_clear": {
+        "label": "Clear",
+        "tag": "35a9c06e-afee-421c-89a5-3dc6c41847fd"
+    },
+    "add_terminal_button_cancel": {
+        "label": "Cancel",
+        "tag": "c2a3ba1b-3d50-4f1c-b228-00e8a74a2e06"
+    },
+    "set_input_button_load": {
+        "label": "Load",
+        "tag": "395e75da-4abd-448c-a15b-36e46f3d6246"
+    },
+    "set_input_button_save": {
+        "label": "Save",
+        "tag": "301cdcce-182f-4d86-9976-5265b4a6a294"
+    }
+}

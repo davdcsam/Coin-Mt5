@@ -1,0 +1,18 @@
+{
+    "main_window": {
+        "label": "Main Window",
+        "tag": "14fa0fa3-9f76-47b1-9ae2-0107be198426"
+    },
+    "add_terminal_window": {
+        "label": "Add MT5",
+        "tag": "35082ab6-36f4-4530-9033-19a0f270151d"
+    },
+    "set_input_window": {
+        "label": "Set Input",
+        "tag": "1acc282e-047d-4d8c-b65f-31b08271c3ff"
+    },
+    "terminal_output_window": {
+        "label": "Terminal Output",
+        "tag": "fd2f457d-ddf0-4861-9c9f-54167c36cf85"
+    }
+}

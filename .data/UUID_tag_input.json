@@ -1,0 +1,86 @@
+{
+    "add_terminal_input_user": {
+        "label": "User",
+        "tag": "e54ecc27-e461-4718-a8fe-1e41ee00e53a"
+    },
+    "add_terminal_input_password": {
+        "label": "Password",
+        "tag": "37136fed-5ef4-4386-a8fb-ed2664fd8245"
+    },
+    "add_terminal_input_server": {
+        "label": "Server",
+        "tag": "48ed41a7-028f-4e9f-822e-79a659787117"
+    },
+    "add_terminal_input_path": {
+        "label": "Path",
+        "tag": "88b6913b-363c-47b5-bd14-7e8534bf0408"
+    },
+    "set_input_lot_size": {
+        "label": "Lot Size",
+        "tag": "e7b3eb0c-89f9-4321-93b1-2bf0c2279e98"
+    },
+    "set_input_stop_loss": {
+        "label": "Stop Loss",
+        "tag": "39cea4fd-bbfc-4e90-8419-b58a4f157fa4"
+    },
+    "set_input_take_profit": {
+        "label": "Take Profit",
+        "tag": "d79fb567-2e62-4e82-b503-cdfa7014b7f7"
+    },
+    "set_input_magic_number": {
+        "label": "Magic Number",
+        "tag": "43bff148-7530-4213-b204-92ec3adf18fa"
+    },
+    "set_input_deviation_trade": {
+        "label": "Deviation Trade",
+        "tag": "220f7d29-279e-4a26-8b1d-913d6df24d60"
+    },
+    "set_input_level_line_start": {
+        "label": "Start Value to Lines",
+        "tag": "d702d6da-b290-4fea-ad41-3927d0796148"
+    },
+    "set_input_level_line_end": {
+        "label": "End Value to Lines",
+        "tag": "e16ad5f0-b421-4390-9046-fe144b749ec0"
+    },
+    "set_input_step": {
+        "label": "Step",
+        "tag": "34fa972b-e71e-4ce2-9226-3a7483819186"
+    },
+    "set_input_init_add": {
+        "label": "Add Init Line",
+        "tag": "846bccee-9c4a-408a-9602-8abd572ee740"
+    },
+    "set_input_add": {
+        "label": "Add Parallel",
+        "tag": "7efb3784-83b8-466e-ba3b-b7aa8559b3fb"
+    },
+    "set_input_section_time_start": {
+        "label": "Start Time",
+        "tag": "da5dd632-b485-4ebb-a064-67fc5fba2984"
+    },
+    "set_input_section_time_end": {
+        "label": "End Time",
+        "tag": "42cc5160-64ae-4def-973e-adc561425770"
+    },
+    "set_input_trailing_stop_state": {
+        "label": "State",
+        "tag": "75cbeaef-0645-4fe2-8198-c98040f43892"
+    },
+    "set_input_trailing_stop_type": {
+        "label": "Type",
+        "tag": "dcc82463-0040-44fa-8e23-5c5231c53c1d"
+    },
+    "set_input_trailing_stop_init_percent": {
+        "label": "Init Percent",
+        "tag": "62b9ad48-aeb5-4c8e-b362-f4278a9fd00a"
+    },
+    "set_input_trailing_stop_deviation_percent": {
+        "label": "Deviation Percent",
+        "tag": "52ad5003-50c8-4447-863b-1a7b56aad762"
+    },
+    "terminal_output_console": {
+        "label": "Make a note",
+        "tag": "b48581c7-44ab-42cc-8909-9dc1b2cbd312"
+    }
+}
