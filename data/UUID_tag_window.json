@@ -1,18 +1,18 @@
 {
     "main_window": {
         "label": "Main Window",
-        "tag": "14fa0fa3-9f76-47b1-9ae2-0107be198426"
+        "tag": "0fc239bb-14bc-46f0-83c1-5d8af1e9e655"
     },
     "add_terminal_window": {
         "label": "Add MT5",
-        "tag": "35082ab6-36f4-4530-9033-19a0f270151d"
+        "tag": "f4c05f04-fae9-43c9-94df-78766de0bd26"
     },
     "set_input_window": {
         "label": "Set Input",
-        "tag": "1acc282e-047d-4d8c-b65f-31b08271c3ff"
+        "tag": "25840502-d300-47a5-aa68-4f1d53ce128d"
     },
     "terminal_output_window": {
         "label": "Terminal Output",
-        "tag": "fd2f457d-ddf0-4861-9c9f-54167c36cf85"
+        "tag": "fd27c99a-5a82-4394-a37c-a9e4b8003611"
     }
 }

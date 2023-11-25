@@ -65,35 +65,17 @@ def main():
         tag=data.main_window["tag"],
     )
 
-    add_button(label='test', parent=main_window)
-
     """
     Creating instances of the Fonts, GetTerminal,
     SetInput, and TerminalOutput classes.
     """
     fonts_instance = Fonts()
-    # get_terminal_instance = GetTerminal()
-    # set_input_instance = SetInput(
-    #     tag=data.set_input_window["tag"],
-    #     parent=main_window,
-    #     width=400,
-    #     pos=(10, 20),
-    # )
-    # terminal_output_instance = TerminalOutput(
-    #     tag=data.terminal_output_window["tag"],
-    #     parent=main_window,
-    #     width=600,
-    #     pos=(400, 20),
-    # )
 
     """
     Setting the font, adding a menu bar,
     and adding the input and output sections to the window
     """
     fonts_instance.set_font()
-    # get_terminal_instance.add_menu_bar()
-    # set_input_instance.add()
-    # terminal_output_instance.add()
 
     # Setting the start and exit callbacks for the application
     set_start_callback(start_callback)

@@ -91,8 +91,8 @@ class InternalData:
             load the unit_files_restore restore file
             """
             for file in self.__dict__:
-                if name in self.__dict__[file]:
-                    return self.__dict__[file][name]
+                if name in self.__dict__["UUID_tag_not_classified.json"]:
+                    return self.__dict__["UUID_tag_not_classified.json"][name]
             # If the attribute does not exist in any file, create it
             self.__dict__[name] = self.AutoDict(
                 label=name.replace("_", " ").title(), tag=str(uuid4())
