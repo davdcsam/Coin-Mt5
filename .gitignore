@@ -3,6 +3,7 @@ mql/
 *.ex5
 *.mq5
 *.mqh
+*.json
 *.cpython-311.pyc
 *.ttf
 !OpenSans-SemiBold.ttf
