@@ -3,7 +3,6 @@
 # Third
 from dearpygui.dearpygui import (
     add_window,
-    add_button,
     configure_app,
     create_context,
     create_viewport,
