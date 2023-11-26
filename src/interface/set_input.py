@@ -100,10 +100,9 @@ class SetInput(BaseComponent):
             if function is not None:
                 function(parent=self.window)
             # Set the font for the text field
-            # fonts_instance.set_font_item(
-            #     data.__getattr__(f"set_input_text_{section}")["tag"]
-            # )
-            print(data.__getattr__(f"set_input_text_{section}")["label"])
+            fonts_instance.set_font_item(
+                data.__getattr__(f"set_input_text_{section}")["tag"]
+            )
         # Add a load/save button to the window
         self.load_save(parent=self.window)
 

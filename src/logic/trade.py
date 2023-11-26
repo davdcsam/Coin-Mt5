@@ -4,6 +4,7 @@ from multiprocessing import Value, Process, Queue
 import time
 
 # Third Party
+import MetaTrader5 as mt5
 
 # Owner
 from src.interface.terminal_output import output
@@ -29,21 +30,78 @@ class Trade:
         This method is called when the trading process is initialized.
         It prints the current time.
         """
-        self.queue.put(("OnInit {}".format(datetime.now().strftime("%H:%M:%S")), "s"))
+        # Establish connection to the MetaTrader 5 terminal
+        if not mt5.initialize():
+            print("initialize() failed, error code =", mt5.last_error())
+            quit()
+
+        # Attempt to enable the display of the EURUSD in MarketWatch
+        selected = mt5.symbol_select("EURUSD", True)
+        if not selected:
+            print("Failed to select EURUSD")
+            mt5.shutdown()
+            quit()
+
+        # display tick field values in the form of a list
+        symbol_info_tick = mt5.symbol_info_tick("EURUSD")
+
+        time_broker = time.gmtime(symbol_info_tick.time)
+
+        time_broker = time.strftime("%H:%M:%S", time_broker)
+
+        self.queue.put(("OnInit {}".format(time_broker), "s"))
 
     def OnTrade(self):
         """
         This method is called during the trading process.
         It prints the current time.
         """
-        self.queue.put(("{}".format(datetime.now().strftime("%H:%M:%S")), "s"))
+        # Establish connection to the MetaTrader 5 terminal
+        if not mt5.initialize():
+            print("initialize() failed, error code =", mt5.last_error())
+            quit()
+
+        # Attempt to enable the display of the EURUSD in MarketWatch
+        selected = mt5.symbol_select("EURUSD", True)
+        if not selected:
+            print("Failed to select EURUSD")
+            mt5.shutdown()
+            quit()
+
+        # display tick field values in the form of a list
+        symbol_info_tick = mt5.symbol_info_tick("EURUSD")
+
+        time_broker = time.gmtime(symbol_info_tick.time)
+
+        time_broker = time.strftime("%H:%M:%S", time_broker)
+
+        self.queue.put(("{}".format(time_broker), "s"))
 
     def OnDeinit(self):
         """
         This method is called when the trading process is deinitialized.
         It prints the current time.
         """
-        self.queue.put(("OnDeinit {}".format(datetime.now().strftime("%H:%M:%S")), "s"))
+        # Establish connection to the MetaTrader 5 terminal
+        if not mt5.initialize():
+            print("initialize() failed, error code =", mt5.last_error())
+            quit()
+
+        # Attempt to enable the display of the EURUSD in MarketWatch
+        selected = mt5.symbol_select("EURUSD", True)
+        if not selected:
+            print("Failed to select EURUSD")
+            mt5.shutdown()
+            quit()
+
+        # display tick field values in the form of a list
+        symbol_info_tick = mt5.symbol_info_tick("EURUSD")
+
+        time_broker = time.gmtime(symbol_info_tick.time)
+
+        time_broker = time.strftime("%H:%M:%S", time_broker)
+
+        self.queue.put(("OnDeinit {}".format(time_broker), "s"))
 
     def method(self):
         """

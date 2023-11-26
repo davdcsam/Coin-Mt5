@@ -20,6 +20,7 @@ from dearpygui.dearpygui import (
     set_value,
     window,
 )
+import MetaTrader5 as mt5
 from MetaTrader5 import initialize, login, last_error, shutdown
 
 # Owner
@@ -224,8 +225,9 @@ class GetTerminal:
 
         # If login is successful, change the connection status and print a success message
         if self.authorized:
-            self.change_status_conection(True)
+            self.change_status_connection(change_to_status=True)
             output(message=f"MetaTrader5 login successful {user}", f_type="t")
+            self.start_trade_instance()
         else:
             # If login fails, print an error message with the error code
             output(f"MT5 {user} login failed, error code: {last_error()}", "t")
@@ -281,7 +283,7 @@ class GetTerminal:
         try:
             # If the terminal is authorized, change the connection status, shut down the terminal, and print a message
             if self.authorized:
-                self.change_status_connection(False)
+                self.change_status_connection(change_to_status=False)
                 shutdown()
                 output(message="Connection to MetaTrader5 lost", f_type="t")
             # If the form exists, delete it
