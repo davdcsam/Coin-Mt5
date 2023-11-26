@@ -1,5 +1,5 @@
-from os import getcwd
 from uuid import uuid4
+from os import getcwd
 from json import load, dump
 
 
@@ -40,16 +40,13 @@ class InternalData:
             for file in files:
                 try:
                     # Try to open and load the JSON file
-                    with open(f"{getcwd()}/.data/{file}", "r+") as f:
+                    with open(f"{getcwd()}/data/{file}", "r+") as f:
                         json_data = load(f)
                 except FileNotFoundError:
-                    """
-                    If the file is not found, try to
-                    load the unit_files_restore restore file
-                    """
+                    # If the file is not found, try to load the unit_files_restore restore file
                     print(f"File {file} not found.")
                     try:
-                        with open(f"{getcwd()}/.data/{unit_files_restore}", "r+") as f:
+                        with open(f"{getcwd()}/data/{unit_files_restore}", "r+") as f:
                             json_data = load(f)[file]
                     except Exception as e:
                         print(f"An error occurred: {str(e)}")
@@ -86,13 +83,10 @@ class InternalData:
             # Return the attribute from the specified file
             return self.__dict__[file][name]
         else:
-            """
-            If the file is not found, try to
-            load the unit_files_restore restore file
-            """
+            # If no specific file is provided, look for the attribute in all files
             for file in self.__dict__:
-                if name in self.__dict__["UUID_tag_not_classified.json"]:
-                    return self.__dict__["UUID_tag_not_classified.json"][name]
+                if name in self.__dict__[file]:
+                    return self.__dict__[file][name]
             # If the attribute does not exist in any file, create it
             self.__dict__[name] = self.AutoDict(
                 label=name.replace("_", " ").title(), tag=str(uuid4())
@@ -103,7 +97,7 @@ class InternalData:
     def restore_files(self, unit_files_restore, json_data, file):
         # Try to open and load the restore file
         try:
-            with open(f"{getcwd()}/.data/{unit_files_restore}", "r+") as f:
+            with open(f"{getcwd()}/data/{unit_files_restore}", "r+") as f:
                 return load(f)[file]
         except Exception as e:
             print(f"An error occurred: {str(e)}")
@@ -148,10 +142,10 @@ class InternalData:
         # Iterate over all attributes and save them to JSON files
         for file, content in all_atributes.items():
             try:
-                with open(f"{path_dir}/.data/{file}", "w") as f:
+                with open(f"{path_dir}/data/{file}", "w") as f:
                     dump(content, f, indent=4)
             except FileNotFoundError:
-                print(f"Directory {path_dir}/.data/ not found.")
+                print(f"Directory {path_dir}/data/ not found.")
             except Exception as e:
                 print(f"An error occurred: {str(e)}")
 
@@ -171,11 +165,12 @@ class InternalData:
             for key, value in self.get_all_internal().items()
             if key.startswith("UUID")
         }
+
         # Save all attributes to a single JSON file
         try:
-            with open(f"{path_dir}/.data/{name}.json", "w") as f:
+            with open(f"{path_dir}/data/{name}.json", "w") as f:
                 dump(all_atributes, f, indent=4)
         except FileNotFoundError:
-            print(f"Directory {path_dir}/.data/ not found.")
+            print(f"Directory {path_dir}/data/ not found.")
         except Exception as e:
             print(f"An error occurred: {str(e)}")

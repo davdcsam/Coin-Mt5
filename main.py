@@ -20,6 +20,8 @@ from dearpygui.dearpygui import (
 
 # Owner
 from src.interface.set_font import Fonts
+from src.interface.set_input import SetInput
+from src.interface.terminal_output import TerminalOutput
 from src.logic.system_data import InternalData
 
 
@@ -62,6 +64,7 @@ def main():
     main_window = add_window(
         label=data.main_window["label"],
         tag=data.main_window["tag"],
+
     )
 
     """
@@ -69,12 +72,26 @@ def main():
     SetInput, and TerminalOutput classes.
     """
     fonts_instance = Fonts()
+    set_input_instance = SetInput(
+        tag=data.set_input_window["tag"],
+        parent=main_window,
+        width=400,
+        pos=(10, 20),
+    )
+    terminal_output_instance = TerminalOutput(
+        tag=data.terminal_output_window["tag"],
+        parent=main_window,
+        width=600,
+        pos=(400, 20),
+    )
 
     """
     Setting the font, adding a menu bar,
     and adding the input and output sections to the window
     """
     fonts_instance.set_font()
+    set_input_instance.add()
+    terminal_output_instance.add()
 
     # Setting the start and exit callbacks for the application
     set_start_callback(start_callback)

@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 dearpygui = "*"
 metatrader5 = "*"
+pandas = "*"
 
 [dev-packages]
 
