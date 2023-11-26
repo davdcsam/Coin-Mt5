@@ -26,16 +26,17 @@ from src.logic.system_data import InternalData
 
 
 def start_callback(sender, app_data):
-    pass
+    set_input_instance.load_last_inputs(sender=sender, app_data=app_data)
 
 
 def exit_callback(sender, app_data):
+    set_input_instance.save_last_inputs(sender=sender, app_data=app_data)
     data.save_to_json_files()
     data.save_to_unit_json_file()
 
 
 def main():
-    global data
+    global data, set_input_instance
     # Creating a context for DearPyGUI
     create_context()
 

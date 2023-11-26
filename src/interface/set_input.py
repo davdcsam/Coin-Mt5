@@ -10,8 +10,6 @@ from dearpygui.dearpygui import (
     add_input_float,
     add_input_int,
     add_time_picker,
-    add_checkbox,
-    add_slider_int,
     add_button,
     get_value,
     set_value,
@@ -58,40 +56,33 @@ class SetInput(BaseComponent):
         self.sections = [
             ("title", None),
             ("title_data_trade", self.data_trade),
-            ("title_create_levels", self.create_levels),
             ("title_section_time", self.section_time),
-            ("title_trailing_stop", self.trailing_stop),
         ]
         self.filedailog_filetypes = (("Set Files", "*.set"), ("All files", "*.*"))
         self.categories = {
-            "Data Trade": [
+            "Trade": [
                 "lot_size",
                 "stop_loss",
                 "take_profit",
                 "magic_number",
                 "deviation_trade",
-                "level_line_start",
-                "level_line_end",
-                "step",
-                "init_add",
-                "add",
             ],
-            "Get Section": [
+            "Section Time": [
                 "section_time_start",
                 "section_time_end",
-                "get_section_start_hour",
-                "get_section_start_min",
-                "get_section_end_hour",
-                "get_section_end_min",
             ],
-            "Trailing Stop": [
-                "trailing_stop_state",
-                "trailing_stop_type",
-                "trailing_stop_init_percent",
-                "trailing_stop_deviation_percent",
+            "Start Section": [
+                "start_hour",
+                "start_min",
+                "start_sec",
+            ],
+            "End Section": [
+                "end_hour",
+                "end_min",
+                "end_sec",
             ],
         }
-        self.last_input_filename = f"{getcwd()}/.data/last_inputs.set"
+        self.last_input_filename = f"{getcwd()}/data/last_inputs.set"
 
     def add(self):
         """
@@ -134,25 +125,6 @@ class SetInput(BaseComponent):
             width=200,
         )
 
-    def create_levels(self, parent):
-        """
-        Adds level creation input fields to the window.
-
-        Args:
-            parent: The parent widget.
-        """
-        self.add_components(
-            [
-                "set_input_level_line_start",
-                "set_input_level_line_end",
-                "set_input_step",
-                "set_input_init_add",
-                "set_input_add",
-            ],
-            add_input_int,
-            width=200,
-        )
-
     def section_time(self, parent):
         """
         Adds time section input fields to the window.
@@ -164,32 +136,6 @@ class SetInput(BaseComponent):
             ["set_input_section_time_start", "set_input_section_time_end"],
             add_time_picker,
             hour24=True,
-        )
-
-    def trailing_stop(self, parent):
-        """
-        Adds trailing stop input fields to the window.
-
-        Args:
-            parent: The parent widget.
-        """
-        self.add_components(
-            ["set_input_trailing_stop_state"],
-            add_checkbox,
-        )
-        self.add_components(
-            ["set_input_trailing_stop_type"],
-            add_input_int,
-            show=False,
-            width=200,
-        )
-        self.add_components(
-            [
-                "set_input_trailing_stop_init_percent",
-                "set_input_trailing_stop_deviation_percent",
-            ],
-            add_slider_int,
-            width=200,
         )
 
     def load_save(self, parent):
@@ -287,19 +233,18 @@ class SetInput(BaseComponent):
                         raise self.InvalidFormatError(
                             f"The file does not contain the required key: {key}"
                         )
-
                 # Update the inputs dictionary with the start and end times
                 inputs.update(
                     {
                         "section_time_start": {
-                            "hour": inputs.pop("get_section_start_hour"),
-                            "min": inputs.pop("get_section_start_min"),
-                            "sec": 0,
+                            "hour": inputs.pop("start_hour"),
+                            "min": inputs.pop("start_min"),
+                            "sec": inputs.pop("start_sec"),
                         },
                         "section_time_end": {
-                            "hour": inputs.pop("get_section_end_hour"),
-                            "min": inputs.pop("get_section_end_min"),
-                            "sec": 0,
+                            "hour": inputs.pop("end_hour"),
+                            "min": inputs.pop("end_min"),
+                            "sec": inputs.pop("end_sec"),
                         },
                     }
                 )
@@ -324,6 +269,7 @@ class SetInput(BaseComponent):
             )
             # Read the inputs from the selected file
             inputs = self.read_file(filename=filename, sender=sender, app_data=app_data)
+
             # Set the values of the input fields to the inputs
             self.set_values(inputs=inputs, sender=sender, app_data=app_data)
         except FileNotFoundError:
@@ -401,13 +347,14 @@ class SetInput(BaseComponent):
         # Update the values dictionary with the start and end times
         values.update(
             {
-                "get_section_start_hour": values["section_time_start"]["hour"],
-                "get_section_start_min": values["section_time_start"]["min"],
-                "get_section_end_hour": values["section_time_end"]["hour"],
-                "get_section_end_min": values["section_time_end"]["min"],
+                "start_hour": values["section_time_start"]["hour"],
+                "start_min": values["section_time_start"]["min"],
+                "start_sec": values["section_time_start"]["sec"],
+                "end_hour": values["section_time_end"]["hour"],
+                "end_min": values["section_time_end"]["min"],
+                "end_sec": values["section_time_end"]["sec"],
             }
         )
-
         # Initialize a dictionary to store the result
         result = {}
         # Iterate over the categories and names
