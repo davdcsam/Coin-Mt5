@@ -19,6 +19,7 @@ from dearpygui.dearpygui import (
 )
 
 # Owner
+from src.connection.get_terminal_mt5 import GetTerminal
 from src.interface.set_font import Fonts
 from src.interface.set_input import SetInput
 from src.interface.terminal_output import TerminalOutput
@@ -31,12 +32,13 @@ def start_callback(sender, app_data):
 
 def exit_callback(sender, app_data):
     set_input_instance.save_last_inputs(sender=sender, app_data=app_data)
+    get_terminal_instance.cancel_connect_terminal_mt5()
     data.save_to_json_files()
     data.save_to_unit_json_file()
 
 
 def main():
-    global data, set_input_instance
+    global data, set_input_instance, get_terminal_instance
     # Creating a context for DearPyGUI
     create_context()
 
@@ -72,7 +74,9 @@ def main():
     Creating instances of the Fonts, GetTerminal,
     SetInput, and TerminalOutput classes.
     """
+
     fonts_instance = Fonts()
+    get_terminal_instance = GetTerminal()
     set_input_instance = SetInput(
         tag=data.set_input_window["tag"],
         parent=main_window,
@@ -91,6 +95,7 @@ def main():
     and adding the input and output sections to the window
     """
     fonts_instance.set_font()
+    get_terminal_instance.add_menu_bar()
     set_input_instance.add()
     terminal_output_instance.add()
 
