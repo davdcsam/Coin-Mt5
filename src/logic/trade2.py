@@ -1,13 +1,13 @@
 # Standard
 from multiprocessing import Value, Process, Queue
+from multiprocessing.reduction import DupHandle
 import time
-from pprint import pprint
 
 # Third Party
 import MetaTrader5 as mt5
 
-# import dearpygui.dearpygui as dpg
-from dearpygui.dearpygui import show_item, hide_item, enable_item, disable_item
+import dearpygui.dearpygui as dpg
+from dearpygui.dearpygui import set_item_callback, set_item_label
 
 # Owner
 
@@ -16,43 +16,7 @@ from src.logic.system_data import InternalData
 
 data = InternalData()
 
-
-class SectionTime:
-    def __init__(self) -> None:
-        self.section_time_state = False
-
-    def section_time_oninit(self, inputs: dict):
-        self.local_start_hour = inputs["start_hour"]
-        self.local_start_min = inputs["start_min"]
-        self.local_start_sec = inputs["start_sec"]
-        self.local_end_hour = inputs["end_hour"]
-        self.local_end_min = inputs["end_min"]
-        self.local_end_sec = inputs["end_sec"]
-
-        if (
-            self.local_end_hour < self.local_start_hour
-            or (
-                self.local_end_hour == self.local_start_hour
-                and self.local_end_min < self.local_start_min
-            )
-            or (
-                self.local_end_hour == self.local_start_hour
-                and self.local_end_min == self.local_start_min
-                and self.local_end_sec < self.local_start_sec
-            )
-        ):
-            temp_hour = self.local_start_hour
-            temp_min = self.local_start_min
-            temp_sec = self.local_start_sec
-            self.local_start_hour = self.local_end_hour
-            self.local_start_min = self.local_end_min
-            self.local_start_sec = self.local_end_sec
-            self.local_end_hour = temp_hour
-            self.local_end_min = temp_min
-            self.local_end_sec = temp_sec
-
-
-class Trade(SectionTime):
+class Trade:
     """
     The Trade class is designed to handle trading processes.
     It uses multiprocessing to run trading methods in a separate process.
@@ -63,7 +27,6 @@ class Trade(SectionTime):
         Initializes the Trade class with a process set to None
         and a multiprocessing Value indicating whether the process is running.
         """
-        super()
         self.process = None
         self.running = Value("b", False)
         self.queue = Queue()
@@ -88,25 +51,14 @@ class Trade(SectionTime):
         It prints the current time.
         """
         self.required_initializer()
-
-        self.section_time_oninit(self.inputs)
-
-        self.queue.put(
-            (
-                f"Section Time \n    {self.local_start_hour}:{self.local_start_min}:{self.local_start_sec} to {self.local_end_hour}:{self.local_end_min}:{self.local_end_sec}",
-                "s",
-            )
-        )
-
-        self.terminal_info = mt5.terminal_info()
-
-        self.queue.put((f"Deploy in {self.terminal_info.name} Terminal", "t"))
-
+        # display tick field values in the form of a list
         symbol_info_tick = mt5.symbol_info_tick(self.symbol)
+
         time_broker = time.gmtime(symbol_info_tick.time)
+
         time_broker = time.strftime("%H:%M:%S", time_broker)
 
-        self.queue.put(("OnInit", "s"))
+        self.queue.put(("OnInit {}".format(time_broker), "s"))
 
     def OnTrade(self):
         """
@@ -115,11 +67,14 @@ class Trade(SectionTime):
         """
         self.required_initializer()
 
+        # display tick field values in the form of a list
         symbol_info_tick = mt5.symbol_info_tick(self.symbol)
+
         time_broker = time.gmtime(symbol_info_tick.time)
+
         time_broker = time.strftime("%H:%M:%S", time_broker)
 
-        self.queue.put((f"{time_broker}", "s"))
+        self.queue.put(("{}".format(time_broker), "s"))
 
     def OnDeinit(self):
         """
@@ -128,11 +83,14 @@ class Trade(SectionTime):
         """
         self.required_initializer()
 
+        # display tick field values in the form of a list
         symbol_info_tick = mt5.symbol_info_tick(self.symbol)
+
         time_broker = time.gmtime(symbol_info_tick.time)
+
         time_broker = time.strftime("%H:%M:%S", time_broker)
 
-        self.queue.put((f"OnDeinit {time_broker}", "s"))
+        self.queue.put(("OnDeinit {}".format(time_broker), "s"))
 
     def method(self):
         """
@@ -160,18 +118,18 @@ class Trade(SectionTime):
         else:
             # Check if there's already a process running
             if self.process is not None:
-                pprint("Ya se está ejecutando un proceso")
+                print("Ya se está ejecutando un proceso")
             else:
                 # Show the "Undeploy" button and hide the "Deploy" button
-                show_item(data.set_input_button_undeploy["tag"])
-                enable_item(data.set_input_button_undeploy["tag"])
-                hide_item(data.set_input_button_deploy["tag"])
-                disable_item(data.set_input_button_deploy["tag"])
+                dpg.show_item(data.set_input_button_undeploy["tag"])
+                dpg.enable_item(data.set_input_button_undeploy["tag"])
+                dpg.hide_item(data.set_input_button_deploy["tag"])
+                dpg.disable_item(data.set_input_button_deploy["tag"])
 
                 # If there are any inputs, set them
                 if inputs_dict is not None:
                     self.inputs = inputs_dict
-                    pprint(self.inputs)
+                    print(self.inputs)
 
                 # Set the running value to True and start the trading process
                 self.running.value = True
@@ -191,13 +149,13 @@ class Trade(SectionTime):
         """
         # Check if there's a process running
         if self.process is None:
-            pprint("No hay ningún proceso en ejecución")
+            print("No hay ningún proceso en ejecución")
         else:
             # Show the "Deploy" button and hide the "Undeploy" button
-            hide_item(data.set_input_button_undeploy["tag"])
-            disable_item(data.set_input_button_undeploy["tag"])
-            show_item(data.set_input_button_deploy["tag"])
-            enable_item(data.set_input_button_deploy["tag"])
+            dpg.hide_item(data.set_input_button_undeploy["tag"])
+            dpg.disable_item(data.set_input_button_undeploy["tag"])
+            dpg.show_item(data.set_input_button_deploy["tag"])
+            dpg.enable_item(data.set_input_button_deploy["tag"])
 
             # Call the OnDeinit method and stop the trading process
             self.OnDeinit()
@@ -205,3 +163,5 @@ class Trade(SectionTime):
             self.process.join()
             self.process = None
             mt5.shutdown()  # Shut down the MetaTrader 5 terminal
+
+

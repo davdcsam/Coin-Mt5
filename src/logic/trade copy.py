@@ -21,7 +21,7 @@ class SectionTime:
     def __init__(self) -> None:
         self.section_time_state = False
 
-    def section_time_oninit(self, inputs: dict):
+    def section_time_onint(self, inputs: dict = None):
         self.local_start_hour = inputs["start_hour"]
         self.local_start_min = inputs["start_min"]
         self.local_start_sec = inputs["start_sec"]
@@ -50,6 +50,10 @@ class SectionTime:
             self.local_end_hour = temp_hour
             self.local_end_min = temp_min
             self.local_end_sec = temp_sec
+            print("Hihasujhidsafoijhsadlkjsadlkjflkjsdlkjasdflkjsadflk")
+
+    def section_time_ontick(self, inputs: dict = None):
+        pass
 
 
 class Trade(SectionTime):
@@ -63,7 +67,7 @@ class Trade(SectionTime):
         Initializes the Trade class with a process set to None
         and a multiprocessing Value indicating whether the process is running.
         """
-        super()
+        super().__init__()
         self.process = None
         self.running = Value("b", False)
         self.queue = Queue()
@@ -89,24 +93,19 @@ class Trade(SectionTime):
         """
         self.required_initializer()
 
-        self.section_time_oninit(self.inputs)
+        self.section_time_onint(self.inputs)
 
-        self.queue.put(
-            (
-                f"Section Time \n    {self.local_start_hour}:{self.local_start_min}:{self.local_start_sec} to {self.local_end_hour}:{self.local_end_min}:{self.local_end_sec}",
-                "s",
-            )
-        )
+        self.queue.put((f"Section Time \n    {self.local_start_hour}:{self.local_start_min}:{self.local_start_sec} to {self.local_end_hour}:{self.local_end_min}:{self.local_end_sec}", 's'))
 
         self.terminal_info = mt5.terminal_info()
 
-        self.queue.put((f"Deploy in {self.terminal_info.name} Terminal", "t"))
+        self.queue.put((f"Deploy in {self.terminal_info.name} Terminal", 't'))
 
-        symbol_info_tick = mt5.symbol_info_tick(self.symbol)
-        time_broker = time.gmtime(symbol_info_tick.time)
-        time_broker = time.strftime("%H:%M:%S", time_broker)
+        self.symbol_info_tick = mt5.symbol_info_tick(self.symbol)
+        self.time_broker = time.gmtime(self.symbol_info_tick.time)
+        self.time_broker = time.strftime("%H:%M:%S", self.time_broker)
 
-        self.queue.put(("OnInit", "s"))
+        self.queue.put(("OnInit {}".format(self.time_broker), "s"))
 
     def OnTrade(self):
         """
@@ -115,11 +114,11 @@ class Trade(SectionTime):
         """
         self.required_initializer()
 
-        symbol_info_tick = mt5.symbol_info_tick(self.symbol)
-        time_broker = time.gmtime(symbol_info_tick.time)
-        time_broker = time.strftime("%H:%M:%S", time_broker)
+        self.symbol_info_tick = mt5.symbol_info_tick(self.symbol)
+        self.time_broker = time.gmtime(self.symbol_info_tick.time)
+        self.time_broker = time.strftime("%H:%M:%S", self.time_broker)
 
-        self.queue.put((f"{time_broker}", "s"))
+        self.queue.put(("{}".format(self.time_broker), "s"))
 
     def OnDeinit(self):
         """
@@ -128,11 +127,11 @@ class Trade(SectionTime):
         """
         self.required_initializer()
 
-        symbol_info_tick = mt5.symbol_info_tick(self.symbol)
-        time_broker = time.gmtime(symbol_info_tick.time)
-        time_broker = time.strftime("%H:%M:%S", time_broker)
+        self.symbol_info_tick = mt5.symbol_info_tick(self.symbol)
+        self.time_broker = time.gmtime(self.symbol_info_tick.time)
+        self.time_broker = time.strftime("%H:%M:%S", self.time_broker)
 
-        self.queue.put((f"OnDeinit {time_broker}", "s"))
+        self.queue.put(("OnDeinit {}".format(self.time_broker), "s"))
 
     def method(self):
         """
