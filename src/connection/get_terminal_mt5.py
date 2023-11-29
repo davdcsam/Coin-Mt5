@@ -2,6 +2,7 @@
 from asyncio import new_event_loop, set_event_loop
 from json import load
 from os import getcwd
+import time
 from tkinter import filedialog as fd
 
 # Third Party
@@ -191,6 +192,8 @@ class GetTerminal:
         else:
             # If login fails, print an error message with the error code
             output(f"MT5 {user} login failed, error code: {last_error()}", "t")
+
+        time.sleep(0.1)
 
     def submit_connect_terminal_mt5(self):
         """
