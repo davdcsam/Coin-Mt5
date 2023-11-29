@@ -29,15 +29,34 @@ class SectionTime:
         self.local_end_min = inputs["end_min"]
         self.local_end_sec = inputs["end_sec"]
 
+        if (
+            self.local_end_hour < self.local_start_hour
+            or (
+                self.local_end_hour == self.local_start_hour
+                and self.local_end_min < self.local_start_min
+            )
+            or (
+                self.local_end_hour == self.local_start_hour
+                and self.local_end_min == self.local_start_min
+                and self.local_end_sec < self.local_start_sec
+            )
+        ):
+            temp_hour = self.local_start_hour
+            temp_min = self.local_start_min
+            temp_sec = self.local_start_sec
+            self.local_start_hour = self.local_end_hour
+            self.local_start_min = self.local_end_min
+            self.local_start_sec = self.local_end_sec
+            self.local_end_hour = temp_hour
+            self.local_end_min = temp_min
+            self.local_end_sec = temp_sec
+            print("Hihasujhidsafoijhsadlkjsadlkjflkjsdlkjasdflkjsadflk")
 
-class TimeBroker:
-    def update_time(self, symbol: str):
-        self.symbol_info_tick = mt5.symbol_info_tick(symbol)
-        self.time_broker = time.gmtime(self.symbol_info_tick.time)
-        self.time_broker = time.strftime("%H:%M:%S", self.time_broker)
+    def section_time_ontick(self, inputs: dict = None):
+        pass
 
 
-class Trade(SectionTime, TimeBroker):
+class Trade(SectionTime):
     """
     The Trade class is designed to handle trading processes.
     It uses multiprocessing to run trading methods in a separate process.
@@ -74,15 +93,17 @@ class Trade(SectionTime, TimeBroker):
         """
         self.required_initializer()
 
-        self.terminal_info = mt5.terminal_info()
-
         self.section_time_onint(self.inputs)
 
         self.queue.put((f"Section Time \n    {self.local_start_hour}:{self.local_start_min}:{self.local_start_sec} to {self.local_end_hour}:{self.local_end_min}:{self.local_end_sec}", 's'))
 
+        self.terminal_info = mt5.terminal_info()
+
         self.queue.put((f"Deploy in {self.terminal_info.name} Terminal", 't'))
 
-        self.update_time(self.symbol)
+        self.symbol_info_tick = mt5.symbol_info_tick(self.symbol)
+        self.time_broker = time.gmtime(self.symbol_info_tick.time)
+        self.time_broker = time.strftime("%H:%M:%S", self.time_broker)
 
         self.queue.put(("OnInit {}".format(self.time_broker), "s"))
 
@@ -93,7 +114,9 @@ class Trade(SectionTime, TimeBroker):
         """
         self.required_initializer()
 
-        self.update_time(self.symbol)
+        self.symbol_info_tick = mt5.symbol_info_tick(self.symbol)
+        self.time_broker = time.gmtime(self.symbol_info_tick.time)
+        self.time_broker = time.strftime("%H:%M:%S", self.time_broker)
 
         self.queue.put(("{}".format(self.time_broker), "s"))
 
@@ -104,7 +127,9 @@ class Trade(SectionTime, TimeBroker):
         """
         self.required_initializer()
 
-        self.update_time(self.symbol)
+        self.symbol_info_tick = mt5.symbol_info_tick(self.symbol)
+        self.time_broker = time.gmtime(self.symbol_info_tick.time)
+        self.time_broker = time.strftime("%H:%M:%S", self.time_broker)
 
         self.queue.put(("OnDeinit {}".format(self.time_broker), "s"))
 
