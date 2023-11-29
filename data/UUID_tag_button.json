@@ -30,5 +30,9 @@
     "set_input_button_deploy": {
         "label": "Deploy Bot",
         "tag": "7a8a12f6-d026-4900-b46a-2232909d9a40"
+    },
+    "set_input_button_undeploy": {
+        "label": "Undeploy Bot",
+        "tag": "7a8a12f6-d026-4900-b46a-2232909d9a40"
     }
 }
