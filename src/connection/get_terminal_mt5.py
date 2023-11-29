@@ -2,7 +2,6 @@
 from asyncio import new_event_loop, set_event_loop
 from json import load
 from os import getcwd
-from threading import Thread
 from tkinter import filedialog as fd
 
 # Third Party
@@ -20,13 +19,12 @@ from dearpygui.dearpygui import (
     set_value,
     window,
 )
-import MetaTrader5 as mt5
-from MetaTrader5 import initialize, login, last_error, shutdown
+# import MetaTrader5 as mt5
+from MetaTrader5 import initialize, login, last_error
 
 # Owner
 from src.logic.system_data import InternalData
 from src.interface.terminal_output import output
-from src.logic.trade import Trade
 
 data = InternalData()
 
@@ -95,7 +93,6 @@ class GetTerminal:
         ]
         # Initialize the authorization status and the trade instance
         self.authorized = False
-        self.trade_instance = Trade()
 
     def add_menu_bar(self):
         """
@@ -111,41 +108,6 @@ class GetTerminal:
             parent=menu_bar,
             callback=self.add_terminal,
         )
-        add_menu_item(
-            label=data.terminal_status["label"],
-            tag=data.terminal_status["tag"],
-            parent=menu_bar,
-            callback=self.cancel_connect_terminal_mt5,
-        )
-        add_menu_item(
-            label=data.__getattr__("test", "UUID_tag_not_classified.json")["label"],
-            tag=data.__getattr__("test", "UUID_tag_not_classified.json")["tag"],
-            parent=menu_bar,
-            callback=self.start_trade_instance,
-        )
-
-    def start_trade_instance(self):
-        """
-        Starts the trade instance in a new thread.
-        """
-        # Create a new thread that will run the start method of the trade instance
-        thread = Thread(target=self.trade_instance.start)
-        # Start the new thread
-        thread.start()
-
-    def change_status_connection(self, change_to_status: bool = True):
-        """
-        Changes the label of the status connection menu item between "Online" & "Offline".
-
-        Args:
-            change_to_status (bool): If True, change status to "Online". If False, change status to "Offline".
-        """
-        # If change_to_status is True, set the label to "Online"
-        if change_to_status:
-            set_item_label(data.terminal_status["tag"], "Online")
-        else:
-            # Otherwise, set the label to "Offline"
-            set_item_label(data.terminal_status["tag"], "Offline")
 
     def add_terminal(self):
         """
@@ -225,9 +187,7 @@ class GetTerminal:
 
         # If login is successful, change the connection status and print a success message
         if self.authorized:
-            self.change_status_connection(change_to_status=True)
             output(message=f"MetaTrader5 login successful {user}", f_type="t")
-            self.start_trade_instance()
         else:
             # If login fails, print an error message with the error code
             output(f"MT5 {user} login failed, error code: {last_error()}", "t")
@@ -278,14 +238,7 @@ class GetTerminal:
         This method stops the trade instance, changes the connection status,
         shuts down the terminal, and deletes the form.
         """
-        # Stop the trade instance
-        self.trade_instance.stop()
         try:
-            # If the terminal is authorized, change the connection status, shut down the terminal, and print a message
-            if self.authorized:
-                self.change_status_connection(change_to_status=False)
-                shutdown()
-                output(message="Connection to MetaTrader5 lost", f_type="t")
             # If the form exists, delete it
             if does_item_exist(data.add_terminal_window["tag"]):
                 delete_item(data.add_terminal_window["tag"])

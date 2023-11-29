@@ -5,6 +5,7 @@ mql/
 *.mqh
 *.set
 *.json
+!data/*.json
 *.csv
 *.cpython-311.pyc
 *.ttf

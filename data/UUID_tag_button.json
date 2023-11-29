@@ -1,0 +1,34 @@
+{
+    "add_terminal_button": {
+        "label": "Add Terminal",
+        "tag": "52281169-4e6e-47ec-b0f7-5a9f4e6129ad"
+    },
+    "add_terminal_file_dialog_button": {
+        "label": "Select Path",
+        "tag": "0d768954-205a-48da-9e91-9fccffba01f2"
+    },
+    "add_terminal_button_submit": {
+        "label": "Summit",
+        "tag": "0e390591-f0da-4140-aa53-3db6b3a9c505"
+    },
+    "add_terminal_button_clear": {
+        "label": "Clear",
+        "tag": "dbf96253-f020-49af-9371-bf85f9b78d6a"
+    },
+    "add_terminal_button_cancel": {
+        "label": "Cancel",
+        "tag": "4841c508-cd00-4888-bf80-fbec43e56e27"
+    },
+    "set_input_button_load": {
+        "label": "Load",
+        "tag": "1d540a64-c00d-468c-a064-557d82e155f2"
+    },
+    "set_input_button_save": {
+        "label": "Save",
+        "tag": "398d2173-938e-448d-a133-fcfce643d8fe"
+    },
+    "set_input_button_deploy": {
+        "label": "Deploy Bot",
+        "tag": "7a8a12f6-d026-4900-b46a-2232909d9a40"
+    }
+}

@@ -27,7 +27,7 @@ class Trade:
 
     def required_initializer(self):
         # Establish connection to the MetaTrader 5 terminal
-        if not mt5.initialize():
+        if not mt5.initialize(timeout=1000):
             print("initialize() failed, error code =", mt5.last_error())
             quit()
 
@@ -98,21 +98,28 @@ class Trade:
             self.OnTrade()
             time.sleep(1)
 
-    def start(self):
+    def start(self, inputs_dict=None, symbol=None):
         """
         This method starts the trading process
         if it is not already running.It sets the running value
         to True and starts a new process targeting the method function.
         """
-        if self.process is not None:
-            print("Ya se está ejecutando un proceso")
+        if not mt5.initialize(timeout=1000):
+            output("Account not logged", 'w')
+            self.stop()
         else:
-            self.running.value = True
-            self.process = Process(target=self.method)
-            self.process.start()
-            while self.queue is not None:
-                message_queue = self.queue.get()
-                output(message_queue[0], message_queue[1])
+            if self.process is not None:
+                print("Ya se está ejecutando un proceso")
+            else:
+                if inputs_dict is not None:
+                    self.inputs = inputs_dict
+                    print(self.inputs)
+                self.running.value = True
+                self.process = Process(target=self.method)
+                self.process.start()
+                while self.queue is not None:
+                    message_queue = self.queue.get()
+                    output(message_queue[0], message_queue[1])
 
     def stop(self):
         """
@@ -127,3 +134,4 @@ class Trade:
             self.running.value = False
             self.process.join()
             self.process = None
+            mt5.shotdown()

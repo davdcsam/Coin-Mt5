@@ -1,0 +1,30 @@
+{
+    "set_input_text_title": {
+        "label": "Set Input",
+        "tag": "59e50089-e880-47fc-af5e-252e66daa059"
+    },
+    "set_input_text_title_data_trade": {
+        "label": "Data Trade",
+        "tag": "6cf333ef-3b25-4702-8ab9-90a0b6a7b6e7"
+    },
+    "set_input_text_title_create_levels": {
+        "label": "Create Levels",
+        "tag": "49a0185a-69d4-4c26-82a7-b2aebfd80391"
+    },
+    "set_input_text_title_section_time": {
+        "label": "Section Time",
+        "tag": "7be285f1-9bb9-4556-ad6d-3397f5b8989d"
+    },
+    "set_input_text_title_trailing_stop": {
+        "label": "Trailing Stop",
+        "tag": "e1b7e083-8293-49e3-860b-316add64909f"
+    },
+    "terminal_output_text_container": {
+        "label": "Welcome to BreakLevel\n",
+        "tag": "a2ad0d9a-c914-4848-8fd7-a3d7fed96d6d"
+    },
+    "terminal_status": {
+        "label": "Offline",
+        "tag": "1acdcff5-e1f9-4d66-af6e-e109c2f366ca"
+    }
+}

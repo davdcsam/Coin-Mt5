@@ -1,0 +1,50 @@
+{
+    "add_terminal_input_user": {
+        "label": "User",
+        "tag": "3977eb69-250c-4096-b7ed-29405a8343aa"
+    },
+    "add_terminal_input_password": {
+        "label": "Password",
+        "tag": "22f6bcf8-ab55-4ec4-89aa-4ff08a947d57"
+    },
+    "add_terminal_input_server": {
+        "label": "Server",
+        "tag": "a7b6028f-fd18-415a-b0f5-97a248cb4455"
+    },
+    "add_terminal_input_path": {
+        "label": "Path",
+        "tag": "d49f8840-ad8a-42a1-a663-c3e6571d0a6f"
+    },
+    "set_input_lot_size": {
+        "label": "Lot Size",
+        "tag": "9f0751f0-9baa-4661-8348-5c373662a27f"
+    },
+    "set_input_stop_loss": {
+        "label": "Stop Loss",
+        "tag": "239f53f8-8975-4197-84ab-a54648c3e638"
+    },
+    "set_input_take_profit": {
+        "label": "Take Profit",
+        "tag": "aa772d7e-ee7b-4467-a35a-ff45f2b61119"
+    },
+    "set_input_magic_number": {
+        "label": "Magic Number",
+        "tag": "4eee2691-307d-475a-bafd-9ad19dc13724"
+    },
+    "set_input_deviation_trade": {
+        "label": "Deviation Trade",
+        "tag": "57252e58-77e1-4b21-9474-56bfca0b3794"
+    },
+    "set_input_section_time_start": {
+        "label": "Start Time",
+        "tag": "1a43b81c-fbb6-48af-9be0-757022722504"
+    },
+    "set_input_section_time_end": {
+        "label": "End Time",
+        "tag": "b7c24d5e-2fbd-4a62-a0b8-10da47514624"
+    },
+    "terminal_output_console": {
+        "label": "Make a note",
+        "tag": "9fc734df-0bcf-48dd-9522-d9cf2d4c11c1"
+    }
+}

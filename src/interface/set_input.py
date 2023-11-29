@@ -1,6 +1,9 @@
 # Standard
+from ast import arg
+from cProfile import label
 from tkinter import filedialog
 from pprint import pprint
+from threading import Thread
 from os import getcwd
 
 # Third Party
@@ -20,6 +23,7 @@ from src.interface.base_component import BaseComponent
 from src.interface.set_font import Fonts
 from src.logic.system_data import InternalData
 from src.interface.terminal_output import output
+from src.logic.trade import Trade
 
 data = InternalData()
 fonts_instance = Fonts()
@@ -83,6 +87,7 @@ class SetInput(BaseComponent):
             ],
         }
         self.last_input_filename = f"{getcwd()}/data/last_inputs.set"
+        self.trade_instance = Trade()
 
     def add(self):
         """
@@ -96,7 +101,10 @@ class SetInput(BaseComponent):
                 tag=data.__getattr__(f"set_input_text_{section}")["tag"],
                 parent=self.window,
             )
-            # If a function is provided for the section, call it with the window as the parent
+            """
+            If a function is provided for the section,
+            call it with the window as the parent
+            """
             if function is not None:
                 function(parent=self.window)
             # Set the font for the text field
@@ -154,6 +162,23 @@ class SetInput(BaseComponent):
             add_button,
             callback=self.save_file,
         )
+        self.add_components(
+            ["set_input_button_deploy"],
+            add_button,
+            callback=self.start_trade_instance,
+        )
+
+    def start_trade_instance(self, sender, app_data):
+        """
+        Starts the trade instance in a new thread.
+        """
+        # Create a new thread that will run the start method of the trade instance
+        thread = Thread(
+            target=self.trade_instance.start,
+            args=(self.get_values(sender, app_data),),
+        )
+        # Start the new thread
+        thread.start()
 
     ###########################################################################
 
@@ -312,7 +337,6 @@ class SetInput(BaseComponent):
             # Print an error message if any other error occurred
             print(f"An error occurred while reading the file: {e}")
 
-
     ##########################################################################
 
     def get_values(self, sender, app_data):
@@ -453,7 +477,10 @@ class SetInput(BaseComponent):
             data = self.get_values(sender=sender, app_data=app_data)
             # Write the data to the last input file
             self.write_file(
-                filename=self.last_input_filename, data=data, sender=sender, app_data=app_data
+                filename=self.last_input_filename,
+                data=data,
+                sender=sender,
+                app_data=app_data,
             )
         except FileNotFoundError:
             # Print an error message if the file was not found

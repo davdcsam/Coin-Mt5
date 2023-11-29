@@ -1,0 +1,144 @@
+{
+    "UUID_tag_window.json": {
+        "main_window": {
+            "label": "Main Window",
+            "tag": "620626b8-8f8e-462c-99da-964a24b75628"
+        },
+        "add_terminal_window": {
+            "label": "Add MT5",
+            "tag": "cc8bbaae-5623-4d69-b7b5-5dbd0ab8c748"
+        },
+        "set_input_window": {
+            "label": "Set Input",
+            "tag": "531ff016-62b3-473a-bde8-dae24ca51a44"
+        },
+        "terminal_output_window": {
+            "label": "Terminal Output",
+            "tag": "5bcbf05c-69f5-4de5-8c92-8730331a1aba"
+        }
+    },
+    "UUID_tag_button.json": {
+        "add_terminal_button": {
+            "label": "Add Terminal",
+            "tag": "52281169-4e6e-47ec-b0f7-5a9f4e6129ad"
+        },
+        "add_terminal_file_dialog_button": {
+            "label": "Select Path",
+            "tag": "0d768954-205a-48da-9e91-9fccffba01f2"
+        },
+        "add_terminal_button_submit": {
+            "label": "Summit",
+            "tag": "0e390591-f0da-4140-aa53-3db6b3a9c505"
+        },
+        "add_terminal_button_clear": {
+            "label": "Clear",
+            "tag": "dbf96253-f020-49af-9371-bf85f9b78d6a"
+        },
+        "add_terminal_button_cancel": {
+            "label": "Cancel",
+            "tag": "4841c508-cd00-4888-bf80-fbec43e56e27"
+        },
+        "set_input_button_load": {
+            "label": "Load",
+            "tag": "1d540a64-c00d-468c-a064-557d82e155f2"
+        },
+        "set_input_button_save": {
+            "label": "Save",
+            "tag": "398d2173-938e-448d-a133-fcfce643d8fe"
+        },
+        "set_input_button_deploy": {
+            "label": "Deploy Bot",
+            "tag": "7a8a12f6-d026-4900-b46a-2232909d9a40"
+        }
+    },
+    "UUID_tag_item.json": {
+        "set_input_text_title": {
+            "label": "Set Input",
+            "tag": "59e50089-e880-47fc-af5e-252e66daa059"
+        },
+        "set_input_text_title_data_trade": {
+            "label": "Data Trade",
+            "tag": "6cf333ef-3b25-4702-8ab9-90a0b6a7b6e7"
+        },
+        "set_input_text_title_create_levels": {
+            "label": "Create Levels",
+            "tag": "49a0185a-69d4-4c26-82a7-b2aebfd80391"
+        },
+        "set_input_text_title_section_time": {
+            "label": "Section Time",
+            "tag": "7be285f1-9bb9-4556-ad6d-3397f5b8989d"
+        },
+        "set_input_text_title_trailing_stop": {
+            "label": "Trailing Stop",
+            "tag": "e1b7e083-8293-49e3-860b-316add64909f"
+        },
+        "terminal_output_text_container": {
+            "label": "Welcome to BreakLevel\n",
+            "tag": "a2ad0d9a-c914-4848-8fd7-a3d7fed96d6d"
+        },
+        "terminal_status": {
+            "label": "Offline",
+            "tag": "1acdcff5-e1f9-4d66-af6e-e109c2f366ca"
+        }
+    },
+    "UUID_tag_input.json": {
+        "add_terminal_input_user": {
+            "label": "User",
+            "tag": "3977eb69-250c-4096-b7ed-29405a8343aa"
+        },
+        "add_terminal_input_password": {
+            "label": "Password",
+            "tag": "22f6bcf8-ab55-4ec4-89aa-4ff08a947d57"
+        },
+        "add_terminal_input_server": {
+            "label": "Server",
+            "tag": "a7b6028f-fd18-415a-b0f5-97a248cb4455"
+        },
+        "add_terminal_input_path": {
+            "label": "Path",
+            "tag": "d49f8840-ad8a-42a1-a663-c3e6571d0a6f"
+        },
+        "set_input_lot_size": {
+            "label": "Lot Size",
+            "tag": "9f0751f0-9baa-4661-8348-5c373662a27f"
+        },
+        "set_input_stop_loss": {
+            "label": "Stop Loss",
+            "tag": "239f53f8-8975-4197-84ab-a54648c3e638"
+        },
+        "set_input_take_profit": {
+            "label": "Take Profit",
+            "tag": "aa772d7e-ee7b-4467-a35a-ff45f2b61119"
+        },
+        "set_input_magic_number": {
+            "label": "Magic Number",
+            "tag": "4eee2691-307d-475a-bafd-9ad19dc13724"
+        },
+        "set_input_deviation_trade": {
+            "label": "Deviation Trade",
+            "tag": "57252e58-77e1-4b21-9474-56bfca0b3794"
+        },
+        "set_input_section_time_start": {
+            "label": "Start Time",
+            "tag": "1a43b81c-fbb6-48af-9be0-757022722504"
+        },
+        "set_input_section_time_end": {
+            "label": "End Time",
+            "tag": "b7c24d5e-2fbd-4a62-a0b8-10da47514624"
+        },
+        "terminal_output_console": {
+            "label": "Make a note",
+            "tag": "9fc734df-0bcf-48dd-9522-d9cf2d4c11c1"
+        }
+    },
+    "UUID_tag_not_classified.json": {
+        "new_atr": {
+            "label": "New Atr",
+            "tag": "fac81300-8a3b-4a8b-9d8c-05d32afee4da"
+        },
+        "test": {
+            "label": "Test",
+            "tag": "0dc6a3bb-73bc-41d9-8076-b8d08e4515ae"
+        }
+    }
+}
