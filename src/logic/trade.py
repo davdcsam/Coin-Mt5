@@ -1,12 +1,20 @@
 # Standard
 from multiprocessing import Value, Process, Queue
+from multiprocessing.reduction import DupHandle
 import time
 
 # Third Party
 import MetaTrader5 as mt5
 
+import dearpygui.dearpygui as dpg
+from dearpygui.dearpygui import set_item_callback, set_item_label
+
 # Owner
+
 from src.interface.terminal_output import output
+from src.logic.system_data import InternalData
+
+data = InternalData()
 
 
 class Trade:
@@ -101,22 +109,35 @@ class Trade:
     def start(self, inputs_dict=None, symbol=None):
         """
         This method starts the trading process
-        if it is not already running.It sets the running value
+        if it is not already running. It sets the running value
         to True and starts a new process targeting the method function.
         """
+        # Try to initialize the MetaTrader 5 terminal
         if not mt5.initialize(timeout=1000):
-            output("Account not logged", 'w')
-            self.stop()
+            output("Account not logged", "w")
+            self.stop()  # Stop the trading process if the initialization fails
         else:
+            # Check if there's already a process running
             if self.process is not None:
                 print("Ya se está ejecutando un proceso")
             else:
+                # Show the "Undeploy" button and hide the "Deploy" button
+                dpg.show_item(data.set_input_button_undeploy["tag"])
+                dpg.enable_item(data.set_input_button_undeploy["tag"])
+                dpg.hide_item(data.set_input_button_deploy["tag"])
+                dpg.disable_item(data.set_input_button_deploy["tag"])
+
+                # If there are any inputs, set them
                 if inputs_dict is not None:
                     self.inputs = inputs_dict
                     print(self.inputs)
+
+                # Set the running value to True and start the trading process
                 self.running.value = True
                 self.process = Process(target=self.method)
                 self.process.start()
+
+                # Process any messages in the queue
                 while self.queue is not None:
                     message_queue = self.queue.get()
                     output(message_queue[0], message_queue[1])
@@ -127,11 +148,19 @@ class Trade:
         It sets the running value to False, joins the process,
         and sets the process to None.
         """
+        # Check if there's a process running
         if self.process is None:
             print("No hay ningún proceso en ejecución")
         else:
+            # Show the "Deploy" button and hide the "Undeploy" button
+            dpg.hide_item(data.set_input_button_undeploy["tag"])
+            dpg.disable_item(data.set_input_button_undeploy["tag"])
+            dpg.show_item(data.set_input_button_deploy["tag"])
+            dpg.enable_item(data.set_input_button_deploy["tag"])
+
+            # Call the OnDeinit method and stop the trading process
             self.OnDeinit()
             self.running.value = False
             self.process.join()
             self.process = None
-            mt5.shotdown()
+            mt5.shutdown()  # Shut down the MetaTrader 5 terminal

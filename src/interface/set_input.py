@@ -167,6 +167,12 @@ class SetInput(BaseComponent):
             add_button,
             callback=self.start_trade_instance,
         )
+        self.add_components(
+            ["set_input_button_undeploy"],
+            add_button,
+            callback=self.trade_instance.stop,
+            show=False
+        )
 
     def start_trade_instance(self, sender, app_data):
         """
