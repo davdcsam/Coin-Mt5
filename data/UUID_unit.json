@@ -131,14 +131,5 @@
             "tag": "9fc734df-0bcf-48dd-9522-d9cf2d4c11c1"
         }
     },
-    "UUID_tag_not_classified.json": {
-        "new_atr": {
-            "label": "New Atr",
-            "tag": "fac81300-8a3b-4a8b-9d8c-05d32afee4da"
-        },
-        "test": {
-            "label": "Test",
-            "tag": "0dc6a3bb-73bc-41d9-8076-b8d08e4515ae"
-        }
-    }
+    "UUID_tag_not_classified.json": {}
 }

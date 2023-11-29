@@ -76,7 +76,6 @@ def main():
     Creating instances of the Fonts, GetTerminal,
     SetInput, and TerminalOutput classes.
     """
-
     fonts_instance = Fonts()
     get_terminal_instance = GetTerminal()
     set_input_instance = SetInput(
