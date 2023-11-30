@@ -22,12 +22,12 @@ class SectionTime:
         self.section_time_state = False
 
     def section_time_oninit(self, inputs: dict):
-        self.local_start_hour = inputs["start_hour"]
-        self.local_start_min = inputs["start_min"]
-        self.local_start_sec = inputs["start_sec"]
-        self.local_end_hour = inputs["end_hour"]
-        self.local_end_min = inputs["end_min"]
-        self.local_end_sec = inputs["end_sec"]
+        self.local_start_hour = int(inputs["start_hour"])
+        self.local_start_min = int(inputs["start_min"])
+        self.local_start_sec = int(inputs["start_sec"])
+        self.local_end_hour = int(inputs["end_hour"])
+        self.local_end_min = int(inputs["end_min"])
+        self.local_end_sec = int(inputs["end_sec"])
 
         if (
             self.local_end_hour < self.local_start_hour
@@ -51,6 +51,37 @@ class SectionTime:
             self.local_end_min = temp_min
             self.local_end_sec = temp_sec
 
+    def section_time_ontrade(self, time_broker: time.struct_time):
+        if (
+            time_broker.tm_hour > self.local_start_hour
+            or (
+                time_broker.tm_hour == self.local_start_hour
+                and time_broker.tm_min > self.local_start_min
+            )
+            or (
+                time_broker.tm_hour == self.local_start_hour
+                and time_broker.tm_min == self.local_start_min
+                and time_broker.tm_sec >= self.local_start_sec
+            )
+        ):
+            if (
+                time_broker.tm_hour < self.local_end_hour
+                or (
+                    time_broker.tm_hour == self.local_end_hour
+                    and time_broker.tm_min < self.local_end_min
+                )
+                or (
+                    time_broker.tm_hour == self.local_end_hour
+                    and time_broker.tm_min == self.local_end_min
+                    and time_broker.tm_sec <= self.local_end_sec
+                )
+            ):
+                self.section_time_state = True
+            else:
+                self.section_time_state = False
+        else:
+            self.section_time_state = False
+
 
 class Trade(SectionTime):
     """
@@ -69,7 +100,7 @@ class Trade(SectionTime):
         self.queue = Queue()
         self.symbol = "EURUSD"
 
-    def required_initializer(self):
+    def required_initializer(self) -> None:
         # Establish connection to the MetaTrader 5 terminal
         if not mt5.initialize(timeout=1000):
             print("initialize() failed, error code =", mt5.last_error())
@@ -104,9 +135,12 @@ class Trade(SectionTime):
 
         symbol_info_tick = mt5.symbol_info_tick(self.symbol)
         time_broker = time.gmtime(symbol_info_tick.time)
-        time_broker = time.strftime("%H:%M:%S", time_broker)
 
-        self.queue.put(("OnInit", "s"))
+        self.section_time_oninit(self.inputs)
+
+        self.queue.put(
+            ("OnInit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
+        )
 
     def OnTrade(self):
         """
@@ -117,9 +151,17 @@ class Trade(SectionTime):
 
         symbol_info_tick = mt5.symbol_info_tick(self.symbol)
         time_broker = time.gmtime(symbol_info_tick.time)
-        time_broker = time.strftime("%H:%M:%S", time_broker)
 
-        self.queue.put((f"{time_broker}", "s"))
+        self.section_time_ontrade(time_broker)
+
+        self.queue.put(
+            (
+                "{} {}".format(
+                    time.strftime("%H:%M:%S", time_broker), str(self.section_time_state)
+                ),
+                "s",
+            )
+        )
 
     def OnDeinit(self):
         """
@@ -130,9 +172,10 @@ class Trade(SectionTime):
 
         symbol_info_tick = mt5.symbol_info_tick(self.symbol)
         time_broker = time.gmtime(symbol_info_tick.time)
-        time_broker = time.strftime("%H:%M:%S", time_broker)
 
-        self.queue.put((f"OnDeinit {time_broker}", "s"))
+        self.queue.put(
+            ("OnDeinit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
+        )
 
     def method(self):
         """
