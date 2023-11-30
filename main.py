@@ -28,15 +28,15 @@ from src.logic.system_data import InternalData
 
 def start_callback(sender, app_data):
     set_input_instance.load_last_inputs(sender=sender, app_data=app_data)
-    data.save_to_json_files()
-    data.save_to_unit_json_file()
+    # data.save_to_json_files()
+    # data.save_to_unit_json_file()
 
 
 def exit_callback(sender, app_data):
     set_input_instance.save_last_inputs(sender=sender, app_data=app_data)
     get_terminal_instance.cancel_connect_terminal_mt5()
-    data.save_to_json_files()
-    data.save_to_unit_json_file()
+    # data.save_to_json_files()
+    # data.save_to_unit_json_file()
 
 
 def main():
@@ -69,7 +69,6 @@ def main():
     main_window = add_window(
         label=data.main_window["label"],
         tag=data.main_window["tag"],
-
     )
 
     """

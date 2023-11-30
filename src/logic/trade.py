@@ -10,7 +10,6 @@ import MetaTrader5 as mt5
 from dearpygui.dearpygui import show_item, hide_item, enable_item, disable_item
 
 # Owner
-
 from src.interface.terminal_output import output
 from src.logic.system_data import InternalData
 
@@ -51,7 +50,7 @@ class SectionTime:
             self.local_end_min = temp_min
             self.local_end_sec = temp_sec
 
-    def section_time_ontrade(self, time_broker: time.struct_time):
+    def section_time_ontick(self, time_broker: time.struct_time):
         if (
             time_broker.tm_hour > self.local_start_hour
             or (
@@ -113,7 +112,7 @@ class Trade(SectionTime):
             mt5.shutdown()
             quit()
 
-    def OnInit(self):
+    def _OnInit(self):
         """
         This method is called when the trading process is initialized.
         It prints the current time.
@@ -142,17 +141,16 @@ class Trade(SectionTime):
             ("OnInit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
         )
 
-    def OnTrade(self):
+    def _OnTick(self):
         """
         This method is called during the trading process.
         It prints the current time.
         """
         self.required_initializer()
 
-        symbol_info_tick = mt5.symbol_info_tick(self.symbol)
-        time_broker = time.gmtime(symbol_info_tick.time)
+        time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
-        self.section_time_ontrade(time_broker)
+        self.section_time_ontick(time_broker)
 
         self.queue.put(
             (
@@ -163,7 +161,7 @@ class Trade(SectionTime):
             )
         )
 
-    def OnDeinit(self):
+    def _OnDeinit(self):
         """
         This method is called when the trading process is deinitialized.
         It prints the current time.
@@ -177,17 +175,17 @@ class Trade(SectionTime):
             ("OnDeinit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
         )
 
-    def method(self):
+    def _method(self):
         """
         This method runs the trading process. It calls OnInit,
         then enters a loop where it calls OnTrade every second
         as long as the process is running, and finally calls
         OnDeinit when the process stops.
         """
-        self.OnInit()
+        self._OnInit()
         time.sleep(1)
         while self.running.value:
-            self.OnTrade()
+            self._OnTick()
             time.sleep(1)
 
     def start(self, inputs_dict=None, symbol=None):
@@ -218,7 +216,7 @@ class Trade(SectionTime):
 
                 # Set the running value to True and start the trading process
                 self.running.value = True
-                self.process = Process(target=self.method)
+                self.process = Process(target=self._method)
                 self.process.start()
 
                 # Process any messages in the queue
@@ -243,7 +241,7 @@ class Trade(SectionTime):
             enable_item(data.set_input_button_deploy["tag"])
 
             # Call the OnDeinit method and stop the trading process
-            self.OnDeinit()
+            self._OnDeinit()
             self.running.value = False
             self.process.join()
             self.process = None
