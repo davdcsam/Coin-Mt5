@@ -110,7 +110,7 @@ class SectionTime:
                     self.section_time_first_time_flag = False
         else:
             pprint(
-                "sections_time_first_time_flag already is {}".format(
+                "section_time_first_time_flag already is {}".format(
                     self.section_time_first_time_flag
                 )
             )
@@ -136,15 +136,29 @@ class Trade(SectionTime):
     def required_initializer(self) -> None:
         # Establish connection to the MetaTrader 5 terminal
         if not mt5.initialize(timeout=1000):
-            print("initialize() failed, error code =", mt5.last_error())
+            self.queue.put((f"Initialize failed, error code: {mt5.last_error()}", "e"))
+            self.stop()
             quit()
 
         # Attempt to enable the display of the EURUSD in MarketWatch
         selected = mt5.symbol_select(self.symbol, True)
         if not selected:
-            print(f"Failed to select {self.symbol}")
+            self.queue.put((f"Failed to select {self.symbol}"))
             mt5.shutdown()
             quit()
+
+        # symbol_info = mt5.symbol_info(self.symbol)
+        # if symbol_info is None:
+        #     self.queue.put((f"{self.symbol} not found, cannot check orders", "e"))
+        #     mt5.shutdown()
+        #     quit()
+
+        # # if the symbol is unavailable in MarketWatch, add it
+        # if not symbol_info.visible:
+        #     self.queue.put((f"{self.symbol}, is not visible, trying to switch ON", "e"))
+        #     if not mt5.symbol_select(self.symbol, True):
+        #         mt5.shutdown()
+        #         quit()
 
     def _OnInit(self):
         """
@@ -219,6 +233,8 @@ class Trade(SectionTime):
         while self.running.value:
             self._OnTick()
             time.sleep(1)
+        else:
+            self._OnDeinit()
 
     def start(self, inputs_dict=None):
         """
@@ -273,7 +289,6 @@ class Trade(SectionTime):
             enable_item(data.set_input_button_deploy["tag"])
 
             # Call the OnDeinit method and stop the trading process
-            self._OnDeinit()
             self.running.value = False
             self.process.join()
             self.process = None
