@@ -21,7 +21,7 @@ class SectionTime:
     def __init__(self) -> None:
         self.section_time_state = False
         self.section_time_first_time_flag = False
-        self.total_positions_magic_symbol = False
+        self.total_positions_magic_symbol = None
         self.positions_symbols = {}
         self.positions_symbols_magic = {}
 
@@ -89,13 +89,20 @@ class SectionTime:
 
     def section_time_verify_first_time_flag(self, symbol: str = None):
         positions_symbols = mt5.positions_get(symbol=symbol)
-        if positions_symbols is None:
+        if len(positions_symbols) == 0:
             pprint(f"No positions in {symbol}, error code={mt5.last_error()}")
+            self.section_time_first_time_flag = True
         else:
-            df_positions_symbols = pd.DataFrame(
+            self.df_positions_symbols = pd.DataFrame(
                 list(positions_symbols), columns=positions_symbols[0]._asdict().keys()
             )
-            print(df_positions_symbols)
+            df_positions_magic_zero = self.df_positions_symbols[
+                self.df_positions_symbols["magic"] == 0
+            ]
+            if len(df_positions_magic_zero) == 0:
+                self.section_time_first_time_flag = True
+            else:
+                self.section_time_first_time_flag = False
 
 
 class Trade(SectionTime):
@@ -131,7 +138,6 @@ class Trade(SectionTime):
     def _OnInit(self):
         """
         This method is called when the trading process is initialized.
-        It prints the current time.
         """
         self.required_initializer()
 
@@ -156,12 +162,9 @@ class Trade(SectionTime):
             ("OnInit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
         )
 
-        self.section_time_verify_first_time_flag(self.symbol)
-
     def _OnTick(self):
         """
         This method is called during the trading process.
-        It prints the current time.
         """
         self.required_initializer()
 
@@ -169,10 +172,16 @@ class Trade(SectionTime):
 
         self.section_time_ontick(time_broker)
 
+        self.section_time_verify_first_time_flag(self.symbol)
+
+        print(f"Flag First Time {self.section_time_first_time_flag}")
+
         self.queue.put(
             (
-                "{} {}".format(
-                    time.strftime("%H:%M:%S", time_broker), str(self.section_time_state)
+                "Time:{} FST:{} FTF:{}".format(
+                    time.strftime("%H:%M:%S", time_broker),
+                    str(self.section_time_state),
+                    str(self.section_time_first_time_flag),
                 ),
                 "s",
             )
@@ -181,7 +190,6 @@ class Trade(SectionTime):
     def _OnDeinit(self):
         """
         This method is called when the trading process is deinitialized.
-        It prints the current time.
         """
         self.required_initializer()
 
@@ -195,8 +203,7 @@ class Trade(SectionTime):
         """
         This method runs the trading process. It calls OnInit,
         then enters a loop where it calls OnTrade every second
-        as long as the process is running, and finally calls
-        OnDeinit when the process stops.
+        as long as the process is running.
         """
         self._OnInit()
         time.sleep(1)
