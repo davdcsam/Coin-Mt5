@@ -5,6 +5,7 @@ from pprint import pprint
 
 # Third Party
 import MetaTrader5 as mt5
+import pandas as pd
 
 # import dearpygui.dearpygui as dpg
 from dearpygui.dearpygui import show_item, hide_item, enable_item, disable_item
@@ -19,6 +20,10 @@ data = InternalData()
 class SectionTime:
     def __init__(self) -> None:
         self.section_time_state = False
+        self.section_time_first_time_flag = False
+        self.total_positions_magic_symbol = False
+        self.positions_symbols = {}
+        self.positions_symbols_magic = {}
 
     def section_time_oninit(self, inputs: dict):
         self.local_start_hour = int(inputs["start_hour"])
@@ -27,6 +32,7 @@ class SectionTime:
         self.local_end_hour = int(inputs["end_hour"])
         self.local_end_min = int(inputs["end_min"])
         self.local_end_sec = int(inputs["end_sec"])
+        self.magic_number = int(inputs["magic_number"])
 
         if (
             self.local_end_hour < self.local_start_hour
@@ -81,6 +87,16 @@ class SectionTime:
         else:
             self.section_time_state = False
 
+    def section_time_verify_first_time_flag(self, symbol: str = None):
+        positions_symbols = mt5.positions_get(symbol=symbol)
+        if positions_symbols is None:
+            pprint(f"No positions in {symbol}, error code={mt5.last_error()}")
+        else:
+            df_positions_symbols = pd.DataFrame(
+                list(positions_symbols), columns=positions_symbols[0]._asdict().keys()
+            )
+            print(df_positions_symbols)
+
 
 class Trade(SectionTime):
     """
@@ -132,14 +148,15 @@ class Trade(SectionTime):
 
         self.queue.put((f"Deploy in {self.terminal_info.name} Terminal", "t"))
 
-        symbol_info_tick = mt5.symbol_info_tick(self.symbol)
-        time_broker = time.gmtime(symbol_info_tick.time)
+        time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
         self.section_time_oninit(self.inputs)
 
         self.queue.put(
             ("OnInit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
         )
+
+        self.section_time_verify_first_time_flag(self.symbol)
 
     def _OnTick(self):
         """
@@ -168,8 +185,7 @@ class Trade(SectionTime):
         """
         self.required_initializer()
 
-        symbol_info_tick = mt5.symbol_info_tick(self.symbol)
-        time_broker = time.gmtime(symbol_info_tick.time)
+        time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
         self.queue.put(
             ("OnDeinit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
@@ -188,7 +204,7 @@ class Trade(SectionTime):
             self._OnTick()
             time.sleep(1)
 
-    def start(self, inputs_dict=None, symbol=None):
+    def start(self, inputs_dict=None):
         """
         This method starts the trading process
         if it is not already running. It sets the running value
