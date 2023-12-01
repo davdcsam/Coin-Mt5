@@ -49,6 +49,7 @@ class SectionTime:
             temp_hour = self.local_start_hour
             temp_min = self.local_start_min
             temp_sec = self.local_start_sec
+
             self.local_start_hour = self.local_end_hour
             self.local_start_min = self.local_end_min
             self.local_start_sec = self.local_end_sec
@@ -87,22 +88,32 @@ class SectionTime:
         else:
             self.section_time_state = False
 
-    def section_time_verify_first_time_flag(self, symbol: str = None):
-        positions_symbols = mt5.positions_get(symbol=symbol)
-        if len(positions_symbols) == 0:
-            pprint(f"No positions in {symbol}, error code={mt5.last_error()}")
-            self.section_time_first_time_flag = True
-        else:
-            self.df_positions_symbols = pd.DataFrame(
-                list(positions_symbols), columns=positions_symbols[0]._asdict().keys()
-            )
-            df_positions_magic_zero = self.df_positions_symbols[
-                self.df_positions_symbols["magic"] == 0
-            ]
-            if len(df_positions_magic_zero) == 0:
+    def section_time_verify_first_time_flag_ontick(self, symbol: str = None):
+        if self.section_time_first_time_flag is False:
+            positions_symbols = mt5.positions_get(symbol=symbol)
+
+            if len(positions_symbols) == 0:
+                pprint(f"No positions in {symbol}, error code={mt5.last_error()}")
                 self.section_time_first_time_flag = True
             else:
-                self.section_time_first_time_flag = False
+                self.df_positions_symbols = pd.DataFrame(
+                    list(positions_symbols),
+                    columns=positions_symbols[0]._asdict().keys(),
+                )
+                df_positions_symbol_magic_zero = self.df_positions_symbols[
+                    self.df_positions_symbols["magic"] == self.magic_number
+                ]
+
+                if len(df_positions_symbol_magic_zero) == 0:
+                    self.section_time_first_time_flag = True
+                else:
+                    self.section_time_first_time_flag = False
+        else:
+            pprint(
+                "sections_time_first_time_flag already is {}".format(
+                    self.section_time_first_time_flag
+                )
+            )
 
 
 class Trade(SectionTime):
@@ -116,7 +127,7 @@ class Trade(SectionTime):
         Initializes the Trade class with a process set to None
         and a multiprocessing Value indicating whether the process is running.
         """
-        super()
+        super().__init__()
         self.process = None
         self.running = Value("b", False)
         self.queue = Queue()
@@ -172,9 +183,7 @@ class Trade(SectionTime):
 
         self.section_time_ontick(time_broker)
 
-        self.section_time_verify_first_time_flag(self.symbol)
-
-        print(f"Flag First Time {self.section_time_first_time_flag}")
+        self.section_time_verify_first_time_flag_ontick(self.symbol)
 
         self.queue.put(
             (
