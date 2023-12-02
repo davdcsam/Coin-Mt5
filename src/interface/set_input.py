@@ -1,17 +1,13 @@
 # Standard
-from ast import arg
-from cProfile import label
-from email.policy import default
-import time
 from tkinter import filedialog
 from pprint import pprint
 from threading import Thread
 from os import getcwd
-from types import NoneType
 
 # Third Party
 # import dearpygui.dearpygui as dpg
 from dearpygui.dearpygui import (
+    add_combo,
     add_text,
     add_input_float,
     add_input_int,
@@ -64,10 +60,13 @@ class SetInput(BaseComponent):
             ("title", None),
             ("title_data_trade", self.data_trade),
             ("title_section_time", self.section_time),
+            (None, self.load_save),
+            ("title_bot_manager", self.bot_manager),
         ]
         self.filedailog_filetypes = (("Set Files", "*.set"), ("All files", "*.*"))
         self.categories = {
             "Trade": [
+                "select_type",
                 "lot_size",
                 "stop_loss",
                 "take_profit",
@@ -98,24 +97,27 @@ class SetInput(BaseComponent):
         """
         # Iterate over the sections
         for section, function in self.sections:
-            # Add a text field to the window for each section
-            add_text(
-                data.__getattr__(f"set_input_text_{section}")["label"],
-                tag=data.__getattr__(f"set_input_text_{section}")["tag"],
-                parent=self.window,
-            )
+            """
+            If a sections is diferent to None,
+            add a text field to the window for each section.
+            And set the title font
+            """
+            if section is not None:
+                add_text(
+                    data.__getattr__(f"set_input_text_{section}")["label"],
+                    tag=data.__getattr__(f"set_input_text_{section}")["tag"],
+                    parent=self.window,
+                )
+                fonts_instance.set_font_item(
+                    data.__getattr__(f"set_input_text_{section}")["tag"]
+                )
+
             """
             If a function is provided for the section,
             call it with the window as the parent
             """
             if function is not None:
                 function(parent=self.window)
-            # Set the font for the text field
-            fonts_instance.set_font_item(
-                data.__getattr__(f"set_input_text_{section}")["tag"]
-            )
-        # Add a load/save button to the window
-        self.load_save(parent=self.window)
 
     def data_trade(self, parent):
         """
@@ -124,6 +126,15 @@ class SetInput(BaseComponent):
         Args:
             parent: The parent widget.
         """
+        self.list_order_type = [key for key in self.trade_instance.order_types_dict.keys()]
+
+        self.add_components(
+            ["set_input_select_type"],
+            add_combo,
+            width=200,
+            items=self.list_order_type,
+        )
+
         self.add_components(
             ["set_input_lot_size", "set_input_stop_loss", "set_input_take_profit"],
             add_input_float,
@@ -165,6 +176,8 @@ class SetInput(BaseComponent):
             add_button,
             callback=self.save_file,
         )
+
+    def bot_manager(self, parent):
         self.add_components(
             ["set_input_button_deploy"],
             add_button,
@@ -181,7 +194,10 @@ class SetInput(BaseComponent):
         """
         Starts the trade instance in a new thread.
         """
-        # Create a new thread that will run the start method of the trade instance
+        """
+        Create a new thread that will run the
+        start method of the trade instance.
+        """
         thread = Thread(
             target=self.trade_instance.start,
             args=(self.get_values(sender, app_data),),

@@ -121,6 +121,10 @@ class Trade(SectionTime):
         self.running = Value("b", False)
         self.queue = Queue()
         self.symbol = "EURUSD"
+        self.order_types_dict = {
+            "Buy": mt5.ORDER_TYPE_BUY,
+            "Sell": mt5.ORDER_TYPE_SELL
+        }
 
     def required_initializer(self) -> None:
         # Establish connection to the MetaTrader 5 terminal
