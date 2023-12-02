@@ -174,7 +174,7 @@ class Trade(SectionTime):
 
         self.section_time_verify_first_time_flag(self.symbol)
 
-        print(f"Flag First Time {self.section_time_first_time_flag}")
+        self.operation_module()
 
         self.queue.put(
             (
@@ -198,6 +198,13 @@ class Trade(SectionTime):
         self.queue.put(
             ("OnDeinit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
         )
+
+    def operation_module(self):
+        if (
+            self.section_time_state is True
+            and self.section_time_first_time_flag is True
+        ):
+            self.queue.put(("Trade", "s"))
 
     def _method(self):
         """

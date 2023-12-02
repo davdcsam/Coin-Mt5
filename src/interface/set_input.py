@@ -1,10 +1,13 @@
 # Standard
 from ast import arg
 from cProfile import label
+from email.policy import default
+import time
 from tkinter import filedialog
 from pprint import pprint
 from threading import Thread
 from os import getcwd
+from types import NoneType
 
 # Third Party
 # import dearpygui.dearpygui as dpg
@@ -171,7 +174,7 @@ class SetInput(BaseComponent):
             ["set_input_button_undeploy"],
             add_button,
             callback=self.trade_instance.stop,
-            show=False
+            show=False,
         )
 
     def start_trade_instance(self, sender, app_data):
@@ -204,16 +207,19 @@ class SetInput(BaseComponent):
             # Get the default type of the component
             default_type = type(get_value(component["tag"]))
             # Check if the type of the value matches the default type
-            if type(value) is not default_type:
+            if type(value) is not default_type and default_type is not type(None):
                 try:
                     # Try to convert the value to the default type
+                    print(key, value)
                     value = default_type(value)
                     # Set the value of the component
                     set_value(component["tag"], value)
                     # Print a message indicating the value has been set
                     output(message=f"Set {value} to {key}")
                 except ValueError:
-                    # Print an error message if the value could not be converted
+                    """
+                    Print an error message if the value could not be converted
+                    """
                     pprint(
                         f"Could not convert {value} to type {default_type}\n",
                         f"Could not set {value} to {component['label']}",
