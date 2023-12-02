@@ -132,6 +132,10 @@ class Trade(SectionTime):
         self.running = Value("b", False)
         self.queue = Queue()
         self.symbol = "EURUSD"
+        self.order_types_dict = {
+            "Buy": mt5.ORDER_TYPE_BUY,
+            "Sell": mt5.ORDER_TYPE_SELL
+        }
 
     def required_initializer(self) -> None:
         # Establish connection to the MetaTrader 5 terminal
@@ -197,7 +201,13 @@ class Trade(SectionTime):
 
         self.section_time_ontick(time_broker)
 
+<<<<<<< HEAD
         self.section_time_verify_first_time_flag_ontick(self.symbol)
+=======
+        self.section_time_verify_first_time_flag(self.symbol)
+
+        self.operation_module()
+>>>>>>> main
 
         self.queue.put(
             (
@@ -221,6 +231,13 @@ class Trade(SectionTime):
         self.queue.put(
             ("OnDeinit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
         )
+
+    def operation_module(self):
+        if (
+            self.section_time_state is True
+            and self.section_time_first_time_flag is True
+        ):
+            self.queue.put(("Trade", "s"))
 
     def _method(self):
         """

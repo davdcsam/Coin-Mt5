@@ -15,6 +15,10 @@
         "label": "Path",
         "tag": "d49f8840-ad8a-42a1-a663-c3e6571d0a6f"
     },
+    "set_input_select_type": {
+        "label": "Select Type",
+        "tag": ""
+    },
     "set_input_lot_size": {
         "label": "Lot Size",
         "tag": "9f0751f0-9baa-4661-8348-5c373662a27f"

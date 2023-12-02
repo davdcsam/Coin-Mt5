@@ -15,9 +15,9 @@
         "label": "Section Time",
         "tag": "7be285f1-9bb9-4556-ad6d-3397f5b8989d"
     },
-    "set_input_text_title_trailing_stop": {
-        "label": "Trailing Stop",
-        "tag": "e1b7e083-8293-49e3-860b-316add64909f"
+    "set_input_text_title_bot_manager": {
+        "label": "Bot Manager",
+        "tag": ""
     },
     "terminal_output_text_container": {
         "label": "Welcome to BreakLevel\n",
