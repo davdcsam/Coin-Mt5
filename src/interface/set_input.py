@@ -126,7 +126,9 @@ class SetInput(BaseComponent):
         Args:
             parent: The parent widget.
         """
-        self.list_order_type = [key for key in self.trade_instance.order_types_dict.keys()]
+        self.list_order_type = [
+            key for key in self.trade_instance.order_types_dict.keys()
+        ]
 
         self.add_components(
             ["set_input_select_type"],
@@ -395,7 +397,18 @@ class SetInput(BaseComponent):
         # Get the values for each tag
         values = {name: get_value(tag) for name, tag in tags.items()}
 
-        # Update the values dictionary with the start and end times
+        # Update the values
+        if values["select_type"] != "":
+            values.update(
+                {
+                    "select_type": self.trade_instance.order_types_dict[
+                        values["select_type"]
+                    ]
+                }
+            )
+        else:
+            values.update({"select_type": 0})
+
         values.update(
             {
                 "start_hour": values["section_time_start"]["hour"],

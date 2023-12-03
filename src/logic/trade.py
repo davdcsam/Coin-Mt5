@@ -20,7 +20,7 @@ data = InternalData()
 class SectionTime:
     def __init__(self) -> None:
         self.section_time_state = False
-        self.section_time_first_time_flag = False
+        self.section_time_no_position_flag = False
         self.total_positions_magic_symbol = None
         self.positions_symbols = {}
         self.positions_symbols_magic = {}
@@ -88,13 +88,13 @@ class SectionTime:
         else:
             self.section_time_state = False
 
-    def section_time_verify_first_time_flag_ontick(self, symbol: str = None):
-        if self.section_time_first_time_flag is False:
+    def section_time_verify_no_position_flag(self, symbol: str = None):
+        if self.section_time_no_position_flag is False:
             positions_symbols = mt5.positions_get(symbol=symbol)
 
             if len(positions_symbols) == 0:
                 pprint(f"No positions in {symbol}, error code={mt5.last_error()}")
-                self.section_time_first_time_flag = True
+                self.section_time_no_position_flag = True
             else:
                 self.df_positions_symbols = pd.DataFrame(
                     list(positions_symbols),
@@ -105,13 +105,13 @@ class SectionTime:
                 ]
 
                 if len(df_positions_symbol_magic_zero) == 0:
-                    self.section_time_first_time_flag = True
+                    self.section_time_no_position_flag = True
                 else:
-                    self.section_time_first_time_flag = False
+                    self.section_time_no_position_flag = False
         else:
             pprint(
                 "section_time_first_time_flag already is {}".format(
-                    self.section_time_first_time_flag
+                    self.section_time_no_position_flag
                 )
             )
 
@@ -201,9 +201,7 @@ class Trade(SectionTime):
 
         self.section_time_ontick(time_broker)
 
-        self.section_time_verify_first_time_flag_ontick(self.symbol)
-
-        self.section_time_verify_first_time_flag(self.symbol)
+        self.section_time_verify_no_position_flag(self.symbol)
 
         self.operation_module()
 
@@ -212,7 +210,7 @@ class Trade(SectionTime):
                 "Time:{} FST:{} FTF:{}".format(
                     time.strftime("%H:%M:%S", time_broker),
                     str(self.section_time_state),
-                    str(self.section_time_first_time_flag),
+                    str(self.section_time_no_position_flag),
                 ),
                 "s",
             )
@@ -233,7 +231,7 @@ class Trade(SectionTime):
     def operation_module(self):
         if (
             self.section_time_state is True
-            and self.section_time_first_time_flag is True
+            and self.section_time_no_position_flag is True
         ):
             self.queue.put(("Trade", "s"))
 
