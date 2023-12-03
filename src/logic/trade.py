@@ -201,13 +201,11 @@ class Trade(SectionTime):
 
         self.section_time_ontick(time_broker)
 
-<<<<<<< HEAD
         self.section_time_verify_first_time_flag_ontick(self.symbol)
-=======
+
         self.section_time_verify_first_time_flag(self.symbol)
 
         self.operation_module()
->>>>>>> main
 
         self.queue.put(
             (
