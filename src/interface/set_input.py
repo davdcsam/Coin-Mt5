@@ -16,6 +16,7 @@ from dearpygui.dearpygui import (
     get_value,
     set_value,
 )
+from numpy import isin
 
 # Owner
 from src.interface.base_component import BaseComponent
@@ -224,12 +225,14 @@ class SetInput(BaseComponent):
             component = data.__getattr__(f"set_input_{key}")
             # Get the default type of the component
             default_type = type(get_value(component["tag"]))
+
+            print(type(value), default_type, "\n")
             # Check if the type of the value matches the default type
-            if type(value) is not default_type and default_type is not type(None):
+            if not isinstance(value, default_type) and default_type is not None:
                 try:
                     # Try to convert the value to the default type
-                    print(key, value)
                     value = default_type(value)
+
                     # Set the value of the component
                     set_value(component["tag"], value)
                     # Print a message indicating the value has been set
@@ -242,6 +245,13 @@ class SetInput(BaseComponent):
                         f"Could not convert {value} to type {default_type}\n",
                         f"Could not set {value} to {component['label']}",
                     )
+            # elif isinstance(value, dict):
+            #     """Error when seeting dicts, 'cuase the the value dict is not a number"""
+            #     print(type(value), value)
+            #     set_value(component["tag"], value)
+            elif isinstance(value, str):
+                set_value(component["tag"], value)
+
 
     def read_file(self, filename, sender, app_data):
         """
@@ -287,9 +297,17 @@ class SetInput(BaseComponent):
                         raise self.InvalidFormatError(
                             f"The file does not contain the required key: {key}"
                         )
+                temp_select_type = None
+
+                for key, value in self.trade_instance.order_types_dict.items():
+                    if int(inputs["select_type"]) == value:
+                        temp_select_type = key
+                        print(f"\nSet {key} to temp_select_tyoe")
+
                 # Update the inputs dictionary with the start and end times
                 inputs.update(
                     {
+                        "select_type": temp_select_type,
                         "section_time_start": {
                             "hour": inputs.pop("start_hour"),
                             "min": inputs.pop("start_min"),
@@ -302,6 +320,8 @@ class SetInput(BaseComponent):
                         },
                     }
                 )
+
+            pprint(inputs)
             # Return the inputs dictionary
             return inputs
 
