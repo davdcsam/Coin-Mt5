@@ -26,12 +26,41 @@ class InvalidFormatError(Exception):
     pass
 
 
-class LoadFiles(InvalidFormatError):
-    def __init__(self, categories: dict, filedailog_filetypes: tuple, last_input_filename: str) -> None:
+class RequiredLoadSaveFiles:
+    def __init__(self) -> None:
+        self.filedailog_filetypes = (("Set Files", "*.set"), ("All files", "*.*"))
+        self.categories = {
+            "Trade": [
+                "select_type",
+                "lot_size",
+                "stop_loss",
+                "take_profit",
+                "magic_number",
+                "deviation_trade",
+            ],
+            "Section Time": [
+                "section_time_start",
+                "section_time_end",
+            ],
+            "Start Section": [
+                "start_hour",
+                "start_min",
+                "start_sec",
+            ],
+            "End Section": [
+                "end_hour",
+                "end_min",
+                "end_sec",
+            ],
+        }
+        self.last_input_filename = f"{getcwd()}/data/last_inputs.set"
+
+
+class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
+    def __init__(self, trade_instance) -> None:
         InvalidFormatError.__init__(self)
-        self.categories = categories
-        self.filedailog_filetypes = filedailog_filetypes
-        self.last_input_filename = last_input_filename
+        RequiredLoadSaveFiles.__init__(self)
+        self.trade_instance = trade_instance
 
     def set_values(self, inputs, sender, app_data):
         """
@@ -42,6 +71,10 @@ class LoadFiles(InvalidFormatError):
             sender: The widget that triggered the callback.
             app_data: Additional data from the widget.
         """
+        # Verify if inputs is a dict
+        if not isinstance(inputs, dict):
+            return
+
         # Verify no extra inputs
         for key in list(inputs.keys()):
             # If key is not in categories list, it'll pop element in inputs arg
@@ -225,12 +258,11 @@ class LoadFiles(InvalidFormatError):
             print(f"An error occurred while reading the file: {e}")
 
 
-class SaveFiles(InvalidFormatError):
-    def __init__(self, categories: dict, filedailog_filetypes: tuple, last_input_filename: str) -> None:
+class SaveFiles(InvalidFormatError, RequiredLoadSaveFiles):
+    def __init__(self, trade_instance) -> None:
         InvalidFormatError.__init__(self)
-        self.categories = categories
-        self.filedailog_filetypes = filedailog_filetypes
-        self.last_input_filename = last_input_filename
+        RequiredLoadSaveFiles.__init__(self)
+        self.trade_instance = trade_instance
 
     def get_values(self, sender, app_data):
         """

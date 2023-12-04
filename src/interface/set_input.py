@@ -17,7 +17,7 @@ from dearpygui.dearpygui import (
 # Owner
 from src.interface.base_component import BaseComponent
 from src.interface.set_font import Fonts
-from src.logic.load_save_files import InvalidFormatError, LoadFiles, SaveFiles
+from src.logic.load_save_files import LoadFiles, SaveFiles
 from src.logic.system_data import InternalData
 from src.logic.trade import Trade
 
@@ -32,10 +32,6 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
 
     Attributes:
         sections (list): List of sections to be added to the window.
-        filedailog_filetypes (tuple): File types for
-          the file dialog.
-        categories (dict): Categories of input fields.
-        last_input_filename (str): Path to the last inputs file.
         trade_instance (class 'src.logic.trade.Trade'): Trade Instance
     """
 
@@ -47,43 +43,7 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
             tag (str): Unique label for the component.
             parent (str): Label of the parent component.
         """
-        self.filedailog_filetypes = (("Set Files", "*.set"), ("All files", "*.*"))
-        self.categories = {
-            "Trade": [
-                "select_type",
-                "lot_size",
-                "stop_loss",
-                "take_profit",
-                "magic_number",
-                "deviation_trade",
-            ],
-            "Section Time": [
-                "section_time_start",
-                "section_time_end",
-            ],
-            "Start Section": [
-                "start_hour",
-                "start_min",
-                "start_sec",
-            ],
-            "End Section": [
-                "end_hour",
-                "end_min",
-                "end_sec",
-            ],
-        }
-        self.last_input_filename = f"{getcwd()}/data/last_inputs.set"
-
         self.trade_instance = Trade()
-
-        BaseComponent.__init__(self, tag, parent, **kwargs)
-        InvalidFormatError.__init__(self)
-        LoadFiles.__init__(
-            self, self.categories, self.filedailog_filetypes, self.last_input_filename
-        )
-        SaveFiles.__init__(
-            self, self.categories, self.filedailog_filetypes, self.last_input_filename
-        )
         self.sections = [
             ("title", None),
             ("title_data_trade", self.data_trade),
@@ -91,6 +51,9 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
             (None, self.load_save),
             ("title_bot_manager", self.bot_manager),
         ]
+        BaseComponent.__init__(self, tag, parent, **kwargs)
+        LoadFiles.__init__(self, self.trade_instance)
+        SaveFiles.__init__(self, self.trade_instance)
 
     def add(self):
         """
@@ -197,8 +160,6 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
             width=200,
         )
 
-    ###########################################################################
-
     def start_trade_instance(self, sender, app_data):
         """
         Starts the trade instance in a new thread.
@@ -213,7 +174,3 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
         )
         # Start the new thread
         thread.start()
-
-    ##########################################################################
-
-    #########################################################################
