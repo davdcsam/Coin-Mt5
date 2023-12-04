@@ -1,8 +1,10 @@
 # Standard
+import inspect
 from tkinter import filedialog
 from pprint import pprint
 from threading import Thread
 from os import getcwd
+from types import NoneType
 
 # Third Party
 # import dearpygui.dearpygui as dpg
@@ -26,6 +28,207 @@ from src.logic.trade import Trade
 
 data = InternalData()
 fonts_instance = Fonts()
+
+
+class LoadFiles:
+    ###########################################################################
+
+    def start_trade_instance(self, sender, app_data):
+        """
+        Starts the trade instance in a new thread.
+        """
+        """
+        Create a new thread that will run the
+        start method of the trade instance.
+        """
+        thread = Thread(
+            target=self.trade_instance.start,
+            args=(self.get_values(sender, app_data),),
+        )
+        # Start the new thread
+        thread.start()
+
+    ###########################################################################
+
+    def set_values(self, inputs, sender, app_data):
+        """
+        Sets the values of the input fields in the window.
+
+        Args:
+            inputs (dict): Dictionary of input field values.
+            sender: The widget that triggered the callback.
+            app_data: Additional data from the widget.
+        """
+        # Iterate over the inputs
+        for key, value in inputs.items():
+            # Get the component associated with the key
+            component = data.__getattr__(f"set_input_{key}")
+            # Get the default type of the component
+            default_type = type(get_value(component["tag"]))
+
+            # Verify is the widget exist
+            if default_type is None:
+                continue
+
+            # Check if the type of the value matches the default type
+            if not isinstance(value, default_type):
+                try:
+                    # Try to convert the value to the default type
+                    value = default_type(value)
+                    # Set the value of the component
+                    set_value(component["tag"], value)
+                    output(message=f"Set {value} to {key}")
+                except ValueError:
+                    """
+                    Print an error message if the value could not be converted
+                    """
+                    pprint(
+                        f"Could not convert {value} to type {default_type}\n",
+                        f"Could not set {value} to {component['label']}",
+                    )
+            elif isinstance(value, str):
+                set_value(component["tag"], value)
+                output(message=f"Set {value} to {key}")
+            elif isinstance(value, dict):
+                # Convert the value of the dict to a integer
+                for var in value:
+                    value[var] = int(value[var])
+                # Set the value of the component
+                set_value(component["tag"], value)
+                output(message=f"Set {value} to {key}")
+
+    def read_file(self, filename, sender, app_data):
+        """
+        Reads input field values from a file.
+
+        Args:
+            filename (str): Path to the file.
+            sender: The widget that triggered the callback.
+            app_data: Additional data from the widget.
+
+        Returns:
+            dict: Dictionary of input field values.
+        """
+        # Check if a filename is provided
+        if filename:
+            # Open the file in read mode
+            with open(filename, "r", encoding="utf-16") as f:
+                # Initialize a dictionary to store the inputs
+                inputs = {}
+                # Iterate over the lines in the file
+                for line in f:
+                    # Strip whitespace from the line
+                    line = line.strip()
+                    # Check if the line contains an equals sign
+                    if "=" in line:
+                        # If it does, split the line into a key and value
+                        key, value = line.split("=")
+                    else:
+                        # If it doesn't, skip the line
+                        continue
+                    # Add the key and value to the inputs dictionary
+                    inputs[key] = value
+
+                # Verify if the file has the correct format
+                required_keys = [
+                    name
+                    for category in self.categories.values()
+                    for name in category
+                    if name not in ["section_time_end", "section_time_start"]
+                ]
+                for key in required_keys:
+                    if key not in inputs:
+                        raise self.InvalidFormatError(
+                            f"The file does not contain the required key: {key}"
+                        )
+
+                # Convert the select_type to a int
+                temp_select_type = None
+
+                for key, value in self.trade_instance.order_types_dict.items():
+                    if int(inputs["select_type"]) == value:
+                        temp_select_type = key
+
+                # Update the inputs dictionary
+                inputs.update(
+                    {
+                        "select_type": temp_select_type,
+                        "section_time_start": {
+                            "hour": inputs.pop("start_hour"),
+                            "min": inputs.pop("start_min"),
+                            "sec": inputs.pop("start_sec"),
+                        },
+                        "section_time_end": {
+                            "hour": inputs.pop("end_hour"),
+                            "min": inputs.pop("end_min"),
+                            "sec": inputs.pop("end_sec"),
+                        },
+                    }
+                )
+
+            return inputs
+
+    def load_file(self, sender, app_data):
+        """
+        Loads input field values from a file selected by the user.
+
+        Args:
+            sender: The widget that triggered the callback.
+            app_data: Additional data from the widget.
+        """
+        try:
+            # Open a file dialog for the user to select a file to load from
+            filename = filedialog.askopenfilename(
+                title="Open",
+                initialdir=f"{getcwd()}/files/set_input",
+                filetypes=self.filedailog_filetypes,
+                defaultextension=".set",
+            )
+            # Read the inputs from the selected file
+            inputs = self.read_file(filename=filename, sender=sender, app_data=app_data)
+
+            # Set the values of the input fields to the inputs
+            self.set_values(inputs=inputs, sender=sender, app_data=app_data)
+        except FileNotFoundError:
+            # Print an error message if the file was not found
+            print("The file was not found.")
+        except PermissionError:
+            # Print an error message if the user does not have permission to read the file
+            print("You do not have permission to read the file.")
+        except self.InvalidFormatError as e:
+            # Print an error message if the file format is invalid
+            print(str(e))
+        except Exception as e:
+            # Print an error message if any other error occurred
+            print(f"An error occurred while reading the file: {e}")
+
+    def load_last_inputs(self, sender, app_data):
+        """
+        Loads the last input field values from a file.
+
+        Args:
+            sender: The widget that triggered the callback.
+            app_data: Additional data from the widget.
+        """
+        try:
+            # Read the inputs from the last input file
+            inputs = self.read_file(
+                filename=self.last_input_filename, sender=sender, app_data=app_data
+            )
+            # Set the values of the input fields to the inputs
+            self.set_values(inputs, sender, app_data)
+        except FileNotFoundError:
+            # Print an error message if the file was not found
+            print("Last inputs was not found.")
+        except PermissionError:
+            # Print an error message if the user does not have permission to read the file
+            print("You do not have permission to read the file.")
+        except self.InvalidFormatError as e:
+            # Print an error message if the file format is invalid
+            print(str(e))
+        except Exception as e:
+            # Print an error message if any other error occurred
+            print(f"An error occurred while reading the file: {e}")
 
 
 class SetInput(BaseComponent):
@@ -56,7 +259,7 @@ class SetInput(BaseComponent):
             tag (str): Unique label for the component.
             parent (str): Label of the parent component.
         """
-        super().__init__(tag, parent, **kwargs)
+        BaseComponent.__init__(self, tag, parent, **kwargs)
         self.sections = [
             ("title", None),
             ("title_data_trade", self.data_trade),
@@ -190,6 +393,14 @@ class SetInput(BaseComponent):
             callback=self.trade_instance.stop,
             show=False,
         )
+        self.add_components(
+            ["set_input_select_symbol"],
+            add_combo,
+            items=["US30", "US100"],
+            width=200,
+        )
+
+    ###########################################################################
 
     def start_trade_instance(self, sender, app_data):
         """
@@ -217,6 +428,14 @@ class SetInput(BaseComponent):
             sender: The widget that triggered the callback.
             app_data: Additional data from the widget.
         """
+        # Verify no extra inputs
+        for key in list(inputs.keys()):
+            # If key is not in categories list, it'll pop element in inputs arg
+            if not any(key in category for category in self.categories.values()):
+                inputs.pop(key)
+
+        pprint(inputs)
+
         # Iterate over the inputs
         for key, value in inputs.items():
             # Get the component associated with the key
@@ -224,9 +443,8 @@ class SetInput(BaseComponent):
             # Get the default type of the component
             default_type = type(get_value(component["tag"]))
 
-            # Verify is the widget exist
-            if default_type is None:
-                continue
+            # print(f"\n{key} {value}")
+            # print(f"{type(key)} {type(value)} default type={default_type}\n")
 
             # Check if the type of the value matches the default type
             if not isinstance(value, default_type):
@@ -244,6 +462,10 @@ class SetInput(BaseComponent):
                         f"Could not convert {value} to type {default_type}\n",
                         f"Could not set {value} to {component['label']}",
                     )
+                    continue
+                except TypeError:
+                    pprint(f"Widget {key} {value} doesn't exist")
+                    continue
             elif isinstance(value, str):
                 set_value(component["tag"], value)
                 output(message=f"Set {value} to {key}")

@@ -2,133 +2,145 @@
     "UUID_tag_window.json": {
         "main_window": {
             "label": "Main Window",
-            "tag": "620626b8-8f8e-462c-99da-964a24b75628"
+            "tag": "e57261e8-122b-4f1d-9046-34471ec286e8"
         },
         "add_terminal_window": {
             "label": "Add MT5",
-            "tag": "cc8bbaae-5623-4d69-b7b5-5dbd0ab8c748"
+            "tag": "819042ad-4bdb-49e4-97b3-d67a449ad48c"
         },
         "set_input_window": {
             "label": "Set Input",
-            "tag": "531ff016-62b3-473a-bde8-dae24ca51a44"
+            "tag": "97e89d9c-44e4-4d40-9657-4693007690f5"
         },
         "terminal_output_window": {
             "label": "Terminal Output",
-            "tag": "5bcbf05c-69f5-4de5-8c92-8730331a1aba"
+            "tag": "ae9499a3-c3ef-4a2b-9ac6-e3e91bbf84c1"
         }
     },
     "UUID_tag_button.json": {
         "add_terminal_button": {
             "label": "Add Terminal",
-            "tag": "52281169-4e6e-47ec-b0f7-5a9f4e6129ad"
+            "tag": "476018a9-f8b6-453f-b426-9bda645f2cf7"
         },
         "add_terminal_file_dialog_button": {
             "label": "Select Path",
-            "tag": "0d768954-205a-48da-9e91-9fccffba01f2"
+            "tag": "30514ead-6f7a-467c-a987-c53dab404b79"
         },
         "add_terminal_button_submit": {
             "label": "Summit",
-            "tag": "0e390591-f0da-4140-aa53-3db6b3a9c505"
+            "tag": "9ada17fc-60e6-48af-bc04-ea459f2144ad"
         },
         "add_terminal_button_clear": {
             "label": "Clear",
-            "tag": "dbf96253-f020-49af-9371-bf85f9b78d6a"
+            "tag": "bc189ba6-059c-4991-81b2-ac593b2cb967"
         },
         "add_terminal_button_cancel": {
             "label": "Cancel",
-            "tag": "4841c508-cd00-4888-bf80-fbec43e56e27"
+            "tag": "d892ac92-7a11-4c67-aafd-d457591d0e9f"
         },
         "set_input_button_load": {
             "label": "Load",
-            "tag": "1d540a64-c00d-468c-a064-557d82e155f2"
+            "tag": "04add73b-2209-45f7-8df2-379dd2a78706"
         },
         "set_input_button_save": {
             "label": "Save",
-            "tag": "398d2173-938e-448d-a133-fcfce643d8fe"
+            "tag": "ed3396ed-63cb-437e-8137-55f6f25aaff6"
         },
         "set_input_button_deploy": {
             "label": "Deploy Bot",
-            "tag": "7a8a12f6-d026-4900-b46a-2232909d9a40"
+            "tag": "9d1bc466-bb28-4beb-84d2-b8f6fd443889"
+        },
+        "set_input_button_undeploy": {
+            "label": "Undeploy Bot",
+            "tag": "6d97eb38-3403-45f3-859a-66b759e41923"
         }
     },
     "UUID_tag_item.json": {
         "set_input_text_title": {
             "label": "Set Input",
-            "tag": "59e50089-e880-47fc-af5e-252e66daa059"
+            "tag": "4e77b8b3-51c7-48c4-8484-39d0c08f1b88"
         },
         "set_input_text_title_data_trade": {
             "label": "Data Trade",
-            "tag": "6cf333ef-3b25-4702-8ab9-90a0b6a7b6e7"
+            "tag": "1e723bfa-df22-49a4-b314-88f9b4226fd8"
         },
         "set_input_text_title_create_levels": {
             "label": "Create Levels",
-            "tag": "49a0185a-69d4-4c26-82a7-b2aebfd80391"
+            "tag": "d4f4a306-d0de-4711-982d-4b73d230cf5f"
         },
         "set_input_text_title_section_time": {
             "label": "Section Time",
-            "tag": "7be285f1-9bb9-4556-ad6d-3397f5b8989d"
+            "tag": "0ce693ef-9e7c-4f0f-ba36-414227224aef"
         },
-        "set_input_text_title_trailing_stop": {
-            "label": "Trailing Stop",
-            "tag": "e1b7e083-8293-49e3-860b-316add64909f"
+        "set_input_text_title_bot_manager": {
+            "label": "Bot Manager",
+            "tag": "10434f3f-3d3a-4a1f-b0a9-24eb8452eaac"
         },
         "terminal_output_text_container": {
             "label": "Welcome to BreakLevel\n",
-            "tag": "a2ad0d9a-c914-4848-8fd7-a3d7fed96d6d"
+            "tag": "95dcfe25-1d75-49f9-8a65-190b9ac2f08d"
         },
         "terminal_status": {
             "label": "Offline",
-            "tag": "1acdcff5-e1f9-4d66-af6e-e109c2f366ca"
+            "tag": "dc63677c-09c4-4f08-834b-7ed5bf792c79"
         }
     },
     "UUID_tag_input.json": {
         "add_terminal_input_user": {
             "label": "User",
-            "tag": "3977eb69-250c-4096-b7ed-29405a8343aa"
+            "tag": "3a9ef801-d035-4dd7-8c25-5690c64d6d57"
         },
         "add_terminal_input_password": {
             "label": "Password",
-            "tag": "22f6bcf8-ab55-4ec4-89aa-4ff08a947d57"
+            "tag": "2b7055d9-463a-43f4-b15c-b4f57ea96c2f"
         },
         "add_terminal_input_server": {
             "label": "Server",
-            "tag": "a7b6028f-fd18-415a-b0f5-97a248cb4455"
+            "tag": "14cba45a-7f44-46a7-aa12-04e6c4c787bf"
         },
         "add_terminal_input_path": {
             "label": "Path",
-            "tag": "d49f8840-ad8a-42a1-a663-c3e6571d0a6f"
+            "tag": "f5ca1c7f-4d4a-4d27-9fe3-4f383449acd3"
+        },
+        "set_input_select_type": {
+            "label": "Select Type",
+            "tag": "57ecddc4-6cb6-4f9c-a8cb-169f31cda385"
         },
         "set_input_lot_size": {
             "label": "Lot Size",
-            "tag": "9f0751f0-9baa-4661-8348-5c373662a27f"
+            "tag": "67c714dc-0deb-4afc-aa7b-7438ac52861d"
         },
         "set_input_stop_loss": {
             "label": "Stop Loss",
-            "tag": "239f53f8-8975-4197-84ab-a54648c3e638"
+            "tag": "161b78d5-ac89-48a2-b0a0-c60f47ffc8e0"
         },
         "set_input_take_profit": {
             "label": "Take Profit",
-            "tag": "aa772d7e-ee7b-4467-a35a-ff45f2b61119"
+            "tag": "6350b142-f62b-4837-afb7-0a17a3b64d5e"
         },
         "set_input_magic_number": {
             "label": "Magic Number",
-            "tag": "4eee2691-307d-475a-bafd-9ad19dc13724"
+            "tag": "428ecb7b-63f6-436a-8969-d24f90e1eb77"
         },
         "set_input_deviation_trade": {
             "label": "Deviation Trade",
-            "tag": "57252e58-77e1-4b21-9474-56bfca0b3794"
+            "tag": "51f0cdf4-b312-4fb7-bda3-344572761f67"
         },
         "set_input_section_time_start": {
             "label": "Start Time",
-            "tag": "1a43b81c-fbb6-48af-9be0-757022722504"
+            "tag": "7cf30957-35c0-4202-984b-81858d606d10"
         },
         "set_input_section_time_end": {
             "label": "End Time",
-            "tag": "b7c24d5e-2fbd-4a62-a0b8-10da47514624"
+            "tag": "bbae0c5c-45e7-4434-81e0-7c584e111e68"
+        },
+        "set_input_select_symbol": {
+            "label": "Symbol",
+            "tag": "9061a1b9-2cc8-4946-8431-ea2f7319cf1e"
         },
         "terminal_output_console": {
             "label": "Make a note",
-            "tag": "9fc734df-0bcf-48dd-9522-d9cf2d4c11c1"
+            "tag": "3a598bc7-21ec-4e0d-bea9-104a6e96cf99"
         }
     },
     "UUID_tag_not_classified.json": {}
