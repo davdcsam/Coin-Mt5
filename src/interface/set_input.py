@@ -16,7 +16,6 @@ from dearpygui.dearpygui import (
     get_value,
     set_value,
 )
-from numpy import isin
 
 # Owner
 from src.interface.base_component import BaseComponent
@@ -39,6 +38,7 @@ class SetInput(BaseComponent):
           the file dialog.
         categories (dict): Categories of input fields.
         last_input_filename (str): Path to the last inputs file.
+        trade_instance (class 'src.logic.trade.Trade'): Trade Instance
     """
 
     class InvalidFormatError(Exception):
@@ -130,14 +130,12 @@ class SetInput(BaseComponent):
         self.list_order_type = [
             key for key in self.trade_instance.order_types_dict.keys()
         ]
-
         self.add_components(
             ["set_input_select_type"],
             add_combo,
             width=200,
             items=self.list_order_type,
         )
-
         self.add_components(
             ["set_input_lot_size", "set_input_stop_loss", "set_input_take_profit"],
             add_input_float,
@@ -226,16 +224,17 @@ class SetInput(BaseComponent):
             # Get the default type of the component
             default_type = type(get_value(component["tag"]))
 
-            print(type(value), default_type, "\n")
+            # Verify is the widget exist
+            if default_type is None:
+                continue
+
             # Check if the type of the value matches the default type
-            if not isinstance(value, default_type) and default_type is not None:
+            if not isinstance(value, default_type):
                 try:
                     # Try to convert the value to the default type
                     value = default_type(value)
-
                     # Set the value of the component
                     set_value(component["tag"], value)
-                    # Print a message indicating the value has been set
                     output(message=f"Set {value} to {key}")
                 except ValueError:
                     """
@@ -245,13 +244,16 @@ class SetInput(BaseComponent):
                         f"Could not convert {value} to type {default_type}\n",
                         f"Could not set {value} to {component['label']}",
                     )
-            # elif isinstance(value, dict):
-            #     """Error when seeting dicts, 'cuase the the value dict is not a number"""
-            #     print(type(value), value)
-            #     set_value(component["tag"], value)
             elif isinstance(value, str):
                 set_value(component["tag"], value)
-
+                output(message=f"Set {value} to {key}")
+            elif isinstance(value, dict):
+                # Convert the value of the dict to a integer
+                for var in value:
+                    value[var] = int(value[var])
+                # Set the value of the component
+                set_value(component["tag"], value)
+                output(message=f"Set {value} to {key}")
 
     def read_file(self, filename, sender, app_data):
         """
@@ -297,14 +299,15 @@ class SetInput(BaseComponent):
                         raise self.InvalidFormatError(
                             f"The file does not contain the required key: {key}"
                         )
+
+                # Convert the select_type to a int
                 temp_select_type = None
 
                 for key, value in self.trade_instance.order_types_dict.items():
                     if int(inputs["select_type"]) == value:
                         temp_select_type = key
-                        print(f"\nSet {key} to temp_select_tyoe")
 
-                # Update the inputs dictionary with the start and end times
+                # Update the inputs dictionary
                 inputs.update(
                     {
                         "select_type": temp_select_type,
@@ -321,8 +324,6 @@ class SetInput(BaseComponent):
                     }
                 )
 
-            pprint(inputs)
-            # Return the inputs dictionary
             return inputs
 
     def load_file(self, sender, app_data):
