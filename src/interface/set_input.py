@@ -1,5 +1,4 @@
 # Standard
-from plistlib import load
 from threading import Thread
 
 

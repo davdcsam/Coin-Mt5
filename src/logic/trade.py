@@ -252,6 +252,13 @@ class Trade(SectionTime):
         if it is not already running. It sets the running value
         to True and starts a new process targeting the method function.
         """
+        # Try to initialize the MetaTrader 5 terminal
+        if not mt5.initialize(timeout=1000):
+            output("Account not logged", "w")
+            self.stop()  # Stop the trading process if the initialization fails
+            return
+
+        # Check if the symbol is available
         if mt5.symbol_info(symbol) is None:
             output(f"Symbol {symbol} not allowed, Deploy failed", "e")
             return
@@ -260,35 +267,30 @@ class Trade(SectionTime):
             self.symbol = s_info.name
             print(f"\n{self.symbol}\n")
 
-        # Try to initialize the MetaTrader 5 terminal
-        if not mt5.initialize(timeout=1000):
-            output("Account not logged", "w")
-            self.stop()  # Stop the trading process if the initialization fails        
+        # Check if there's already a process running
+        if self.process is not None:
+            pprint("Ya se está ejecutando un proceso")
         else:
-            # Check if there's already a process running
-            if self.process is not None:
-                pprint("Ya se está ejecutando un proceso")
-            else:
-                # Show the "Undeploy" button and hide the "Deploy" button
-                show_item(data.set_input_button_undeploy["tag"])
-                enable_item(data.set_input_button_undeploy["tag"])
-                hide_item(data.set_input_button_deploy["tag"])
-                disable_item(data.set_input_button_deploy["tag"])
+            # Show the "Undeploy" button and hide the "Deploy" button
+            show_item(data.set_input_button_undeploy["tag"])
+            enable_item(data.set_input_button_undeploy["tag"])
+            hide_item(data.set_input_button_deploy["tag"])
+            disable_item(data.set_input_button_deploy["tag"])
 
-                # If there are any inputs, set them
-                if inputs_dict is not None:
-                    self.inputs = inputs_dict
-                    pprint(self.inputs)
+            # If there are any inputs, set them
+            if inputs_dict is not None:
+                self.inputs = inputs_dict
+                pprint(self.inputs)
 
-                # Set the running value to True and start the trading process
-                self.running.value = True
-                self.process = Process(target=self._method)
-                self.process.start()
+            # Set the running value to True and start the trading process
+            self.running.value = True
+            self.process = Process(target=self._method)
+            self.process.start()
 
-                # Process any messages in the queue
-                while self.queue is not None:
-                    message_queue = self.queue.get()
-                    output(message_queue[0], message_queue[1])
+            # Process any messages in the queue
+            while self.queue is not None:
+                message_queue = self.queue.get()
+                output(message_queue[0], message_queue[1])
 
     def stop(self):
         """

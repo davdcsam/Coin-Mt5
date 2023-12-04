@@ -1,7 +1,7 @@
 # Standart
 from tkinter import filedialog
 from pprint import pprint
-from os import getcwd
+from os import getcwd, path
 
 
 # Third Party
@@ -258,11 +258,24 @@ class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
             print(f"An error occurred while reading the file: {e}")
 
     def load_symbols(self, filename: str = "symbols.txt"):
-        with open(f"{getcwd()}/data/{filename}", "r+") as f:
-            symbols = [line.strip() for line in f.readlines()]
-            if len(symbols) == 0:
-                symbols.append(["US30", "BCHUSD"])
-            return symbols
+        filepath = path.join(getcwd(), "data", filename)
+
+        if not path.exists(filepath):
+            print(f"The file {filepath} does not exist.")
+            return ["US30", "BCHUSD"]
+
+        try:
+            with open(filepath, "r") as f:
+                symbols = [line.strip() for line in f.readlines()]
+        except IOError as e:
+            print(f"An error occurred while opening the file: {str(e)}")
+            return ["US30", "BCHUSD"]
+
+        if len(symbols) == 0:
+            symbols.append("BCHUSD")
+            symbols.append("US30")
+
+        return symbols
 
 
 class SaveFiles(InvalidFormatError, RequiredLoadSaveFiles):
