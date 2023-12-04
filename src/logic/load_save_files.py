@@ -257,6 +257,13 @@ class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
             # Print an error message if any other error occurred
             print(f"An error occurred while reading the file: {e}")
 
+    def load_symbols(self, filename: str = "symbols.txt"):
+        with open(f"{getcwd()}/data/{filename}", "r+") as f:
+            symbols = [line.strip() for line in f.readlines()]
+            if len(symbols) == 0:
+                symbols.append(["US30", "BCHUSD"])
+            return symbols
+
 
 class SaveFiles(InvalidFormatError, RequiredLoadSaveFiles):
     def __init__(self, trade_instance) -> None:

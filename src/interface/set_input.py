@@ -1,6 +1,6 @@
 # Standard
+from plistlib import load
 from threading import Thread
-from os import getcwd
 
 
 # Third Party
@@ -12,6 +12,7 @@ from dearpygui.dearpygui import (
     add_input_int,
     add_time_picker,
     add_button,
+    get_value,
 )
 
 # Owner
@@ -51,6 +52,7 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
             (None, self.load_save),
             ("title_bot_manager", self.bot_manager),
         ]
+        self.symbols = self.load_symbols()
         BaseComponent.__init__(self, tag, parent, **kwargs)
         LoadFiles.__init__(self, self.trade_instance)
         SaveFiles.__init__(self, self.trade_instance)
@@ -156,7 +158,8 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
         self.add_components(
             ["set_input_select_symbol"],
             add_combo,
-            items=["US30", "US100"],
+            items=self.symbols,
+            default_value=self.symbols[0],
             width=200,
         )
 
@@ -170,7 +173,10 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
         """
         thread = Thread(
             target=self.trade_instance.start,
-            args=(self.get_values(sender, app_data),),
+            args=(
+                self.get_values(sender, app_data),
+                get_value(data.set_input_select_symbol["tag"]),
+            ),
         )
         # Start the new thread
         thread.start()

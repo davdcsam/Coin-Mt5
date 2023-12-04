@@ -132,10 +132,7 @@ class Trade(SectionTime):
         self.running = Value("b", False)
         self.queue = Queue()
         self.symbol = "EURUSD"
-        self.order_types_dict = {
-            "Buy": mt5.ORDER_TYPE_BUY,
-            "Sell": mt5.ORDER_TYPE_SELL
-        }
+        self.order_types_dict = {"Buy": mt5.ORDER_TYPE_BUY, "Sell": mt5.ORDER_TYPE_SELL}
 
     def required_initializer(self) -> None:
         # Establish connection to the MetaTrader 5 terminal
@@ -249,16 +246,24 @@ class Trade(SectionTime):
         else:
             self._OnDeinit()
 
-    def start(self, inputs_dict=None):
+    def start(self, inputs_dict=None, symbol: str = "US30"):
         """
         This method starts the trading process
         if it is not already running. It sets the running value
         to True and starts a new process targeting the method function.
         """
+        if mt5.symbol_info(symbol) is None:
+            output(f"Symbol {symbol} not allowed, Deploy failed", "e")
+            return
+        else:
+            s_info = mt5.symbol_info(symbol)
+            self.symbol = s_info.name
+            print(f"\n{self.symbol}\n")
+
         # Try to initialize the MetaTrader 5 terminal
         if not mt5.initialize(timeout=1000):
             output("Account not logged", "w")
-            self.stop()  # Stop the trading process if the initialization fails
+            self.stop()  # Stop the trading process if the initialization fails        
         else:
             # Check if there's already a process running
             if self.process is not None:
