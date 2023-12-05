@@ -138,11 +138,7 @@ class GetTerminal:
             {
                 "data": data.add_terminal_button_clear,
                 "callback": self.clear_connect_terminal_mt5,
-            },
-            {
-                "data": data.add_terminal_button_cancel,
-                "callback": self.cancel_connect_terminal_mt5,
-            },
+            }
         ]
         # Initialize the authorization status and the trade instance
         self.authorized = False
