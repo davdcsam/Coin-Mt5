@@ -23,6 +23,7 @@ class InvalidFormatError(Exception):
     """
     Exception raised when the file format is invalid.
     """
+
     pass
 
 
@@ -81,8 +82,6 @@ class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
             if not any(key in category for category in self.categories.values()):
                 inputs.pop(key)
 
-        pprint(inputs)
-
         # Iterate over the inputs
         for key, value in inputs.items():
             # Get the component associated with the key
@@ -100,7 +99,11 @@ class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
                     value = default_type(value)
                     # Set the value of the component
                     set_value(component["tag"], value)
-                    output(message=f"Set {value} to {key}")
+                    output(
+                        message="Set {} to {}".format(
+                            value, data.__getattr__(f"set_input_{key}")["label"]
+                        )
+                    )
                 except ValueError:
                     """
                     Print an error message if the value could not be converted
@@ -115,14 +118,25 @@ class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
                     continue
             elif isinstance(value, str):
                 set_value(component["tag"], value)
-                output(message=f"Set {value} to {key}")
+                output(
+                    message="Set {} to {}".format(
+                        value, data.__getattr__(f"set_input_{key}")["label"]
+                    )
+                )
             elif isinstance(value, dict):
                 # Convert the value of the dict to a integer
                 for var in value:
                     value[var] = int(value[var])
                 # Set the value of the component
                 set_value(component["tag"], value)
-                output(message=f"Set {value} to {key}")
+                output(
+                    message="Set {}:{}:{} to {}".format(
+                        value["hour"],
+                        value["min"],
+                        value["sec"],
+                        data.__getattr__(f"set_input_{key}")["label"],
+                    )
+                )
 
     def read_file(self, filename, sender, app_data):
         """
@@ -192,7 +206,7 @@ class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
                         },
                     }
                 )
-
+            output(f"\n          Loading inputs from {path.basename(filename)}", "s")
             return inputs
 
     def load_file(self, sender, app_data):

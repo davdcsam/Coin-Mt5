@@ -22,7 +22,6 @@ class SectionTime:
         self.section_time_state = False
         self.section_time_no_position_flag = False
         self.total_positions_magic_symbol = None
-        self.positions_symbols = {}
         self.positions_symbols_magic = {}
 
     def section_time_oninit(self, inputs: dict):
@@ -89,31 +88,31 @@ class SectionTime:
             self.section_time_state = False
 
     def section_time_verify_no_position_flag(self, symbol: str = None):
-        if self.section_time_no_position_flag is False:
-            positions_symbols = mt5.positions_get(symbol=symbol)
+        if self.section_time_no_position_flag:
+            # pprint(
+            #     "section_time_first_time_flag already is {}".format(
+            #         self.section_time_no_position_flag
+            #     )
+            # )
+            return
 
-            if len(positions_symbols) == 0:
-                pprint(f"No positions in {symbol}, error code={mt5.last_error()}")
+        positions_symbol = mt5.positions_get(symbol=symbol)
+        if len(positions_symbol) == 0:
+            pprint(f"No positions in {symbol}")
+            self.section_time_no_position_flag = True
+        else:
+            self.df_positions_symbol = pd.DataFrame(
+                list(positions_symbol),
+                columns=positions_symbol[0]._asdict().keys(),
+            )
+            df_positions_symbol_magic_zero = self.df_positions_symbol[
+                self.df_positions_symbol["magic"] == self.magic_number
+            ]
+
+            if len(df_positions_symbol_magic_zero) == 0:
                 self.section_time_no_position_flag = True
             else:
-                self.df_positions_symbols = pd.DataFrame(
-                    list(positions_symbols),
-                    columns=positions_symbols[0]._asdict().keys(),
-                )
-                df_positions_symbol_magic_zero = self.df_positions_symbols[
-                    self.df_positions_symbols["magic"] == self.magic_number
-                ]
-
-                if len(df_positions_symbol_magic_zero) == 0:
-                    self.section_time_no_position_flag = True
-                else:
-                    self.section_time_no_position_flag = False
-        else:
-            pprint(
-                "section_time_first_time_flag already is {}".format(
-                    self.section_time_no_position_flag
-                )
-            )
+                self.section_time_no_position_flag = False
 
 
 class Trade(SectionTime):
@@ -133,6 +132,7 @@ class Trade(SectionTime):
         self.queue = Queue()
         self.symbol = "EURUSD"
         self.order_types_dict = {"Buy": mt5.ORDER_TYPE_BUY, "Sell": mt5.ORDER_TYPE_SELL}
+        self.first_trade_flag = True
 
     def required_initializer(self) -> None:
         # Establish connection to the MetaTrader 5 terminal
@@ -145,27 +145,25 @@ class Trade(SectionTime):
         selected = mt5.symbol_select(self.symbol, True)
         if not selected:
             self.queue.put((f"Failed to select {self.symbol}"))
-            mt5.shutdown()
+            self.stop()
             quit()
 
-        # symbol_info = mt5.symbol_info(self.symbol)
-        # if symbol_info is None:
-        #     self.queue.put((f"{self.symbol} not found, cannot check orders", "e"))
-        #     mt5.shutdown()
-        #     quit()
-
-        # # if the symbol is unavailable in MarketWatch, add it
-        # if not symbol_info.visible:
-        #     self.queue.put((f"{self.symbol}, is not visible, trying to switch ON", "e"))
-        #     if not mt5.symbol_select(self.symbol, True):
-        #         mt5.shutdown()
-        #         quit()
+        self.symbol_info = mt5.symbol_info(self.symbol)
+        if self.symbol_info is None:
+            self.queue.put((f"{self.symbol} not found, cannot check orders", "e"))
+            self.stop()
+            quit()
 
     def _OnInit(self):
         """
         This method is called when the trading process is initialized.
         """
-        self.required_initializer()
+        self.deviation_trade = int(self.inputs["deviation_trade"])
+        self.lot_size = float(self.inputs['lot_size'])
+        self.magic_number = int(self.inputs["magic_number"])
+        self.select_type = int(self.inputs["select_type"])
+        self.stop_loss = float(self.inputs["stop_loss"])
+        self.take_profit = float(self.inputs["take_profit"])
 
         self.section_time_oninit(self.inputs)
 
@@ -182,8 +180,6 @@ class Trade(SectionTime):
 
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
-        self.section_time_oninit(self.inputs)
-
         self.queue.put(
             ("OnInit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
         )
@@ -192,15 +188,11 @@ class Trade(SectionTime):
         """
         This method is called during the trading process.
         """
-        self.required_initializer()
-
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
         self.section_time_ontick(time_broker)
 
         self.section_time_verify_no_position_flag(self.symbol)
-
-        self.operation_module()
 
         self.queue.put(
             (
@@ -213,11 +205,12 @@ class Trade(SectionTime):
             )
         )
 
+        self._operation_module()
+
     def _OnDeinit(self):
         """
         This method is called when the trading process is deinitialized.
         """
-        self.required_initializer()
 
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
@@ -225,12 +218,32 @@ class Trade(SectionTime):
             ("OnDeinit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
         )
 
-    def operation_module(self):
+    def _operation_module(self):
         if (
             self.section_time_state is True
             and self.section_time_no_position_flag is True
+            and self.first_trade_flag is True
         ):
+            # self.trade_request = {
+            #     "action": mt5.TRADE_ACTION_DEAL,
+            #     "symbol": self.symbol,
+            #     "volume": lot,
+            #     "type": mt5.ORDER_TYPE_BUY,
+            #     "price": price,
+            #     "sl": price - 100 * point,
+            #     "tp": price + 100 * point,
+            #     "deviation": deviation,
+            #     "magic": 234000,
+            #     "comment": "python script open",
+            #     "type_time": mt5.ORDER_TIME_GTC,
+            #     "type_filling": mt5.ORDER_FILLING_RETURN,
+            # }
+            # pprint(self.trade_request)
             self.queue.put(("Trade", "s"))
+
+
+            self.first_trade_flag = False
+            self.running.value = False
 
     def _method(self):
         """
@@ -238,6 +251,8 @@ class Trade(SectionTime):
         then enters a loop where it calls OnTrade every second
         as long as the process is running.
         """
+        self.required_initializer()
+
         self._OnInit()
         time.sleep(1)
         while self.running.value:
@@ -265,11 +280,16 @@ class Trade(SectionTime):
         else:
             s_info = mt5.symbol_info(symbol)
             self.symbol = s_info.name
-            print(f"\n{self.symbol}\n")
+            # If the symbol is unavailable in MarketWatch, add it
+            if not s_info.visible:
+                output(f"{self.symbol}, is not visible, trying to switch ON", "e")
+                if not mt5.symbol_select(self.symbol, True):
+                    mt5.shutdown()
+                    quit()
 
         # Check if there's already a process running
         if self.process is not None:
-            pprint("Ya se está ejecutando un proceso")
+            pprint("Already there is a process running")
         else:
             # Show the "Undeploy" button and hide the "Deploy" button
             show_item(data.set_input_button_undeploy["tag"])
@@ -278,9 +298,9 @@ class Trade(SectionTime):
             disable_item(data.set_input_button_deploy["tag"])
 
             # If there are any inputs, set them
-            if inputs_dict is not None:
+            if inputs_dict is not None or not isinstance(inputs_dict, dict):
                 self.inputs = inputs_dict
-                pprint(self.inputs)
+                # pprint(self.inputs)
 
             # Set the running value to True and start the trading process
             self.running.value = True
@@ -300,7 +320,7 @@ class Trade(SectionTime):
         """
         # Check if there's a process running
         if self.process is None:
-            pprint("No hay ningún proceso en ejecución")
+            pprint("There isn't a procces running")
         else:
             # Show the "Deploy" button and hide the "Undeploy" button
             hide_item(data.set_input_button_undeploy["tag"])
@@ -308,8 +328,9 @@ class Trade(SectionTime):
             show_item(data.set_input_button_deploy["tag"])
             enable_item(data.set_input_button_deploy["tag"])
 
-            # Call the OnDeinit method and stop the trading process
+            # Stop the trading process
             self.running.value = False
             self.process.join()
             self.process = None
-            mt5.shutdown()  # Shut down the MetaTrader 5 terminal
+            # Shut down the MetaTrader 5 terminal
+            mt5.shutdown()

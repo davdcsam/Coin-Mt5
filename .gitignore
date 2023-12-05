@@ -8,6 +8,7 @@ mql/
 *.csv
 *.cpython-311.pyc
 *.ttf
+*.txt
 !OpenSans-SemiBold.ttf
 !OpenSans-Regular.ttf
 Pipfile
