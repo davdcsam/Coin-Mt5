@@ -155,12 +155,39 @@ class GetTerminal:
         menu_bar = add_viewport_menu_bar()
 
         # Add menu items to the menu bar with their callbacks
-        add_menu_item(
+        add_terminal = add_menu(
             label=data.add_terminal_button["label"],
             tag=data.add_terminal_button["tag"],
             parent=menu_bar,
-            callback=self.add_terminal,
         )
+
+        add_text("Complete the form to add a terminal", parent=add_terminal)
+
+        # Add input fields to the window
+        for field in self.input_fields:
+            add_input_text(
+                label=field["data"]["label"],
+                tag=field["data"]["tag"],
+                no_spaces=True,
+                password=field["password"],
+                default_value=field["default_value"],
+                parent=add_terminal,
+            )
+
+        # Add buttons to the window
+        for field in self.button_fields:
+            add_button(
+                label=field["data"]["label"],
+                tag=field["data"]["tag"],
+                callback=field["callback"],
+                parent=add_terminal,
+            )
+
+
+
+
+
+
 
         error_table_button = add_menu(
             tag=data.menu_error_table_button["tag"],
@@ -188,39 +215,21 @@ class GetTerminal:
             add_text(row[1], parent=table_row)
             add_text(row[2], parent=table_row)
 
-    def add_terminal(self):
-        """
-        Adds a window with input fields and buttons to the terminal.
-        """
-        # Create a new window with specific properties
-        with window(
-            label=data.add_terminal_window["label"],
-            tag=data.add_terminal_window["tag"],
-            autosize=True,
-            no_collapse=True,
-            no_close=True,
-            no_title_bar=True,
-        ):
-            # Add a text field to the window
-            add_text("Complete the form to add a terminal")
+    # def add_terminal(self):
+    #     """
+    #     Adds a window with input fields and buttons to the terminal.
+    #     """
+    #     # Create a new window with specific properties
+    #     with window(
+    #         label=data.add_terminal_window["label"],
+    #         tag=data.add_terminal_window["tag"],
+    #         autosize=True,
+    #         no_collapse=True,
+    #         no_close=True,
+    #         no_title_bar=True,
+    #     ):
+    #         # Add a text field to the window
 
-            # Add input fields to the window
-            for field in self.input_fields:
-                add_input_text(
-                    label=field["data"]["label"],
-                    tag=field["data"]["tag"],
-                    no_spaces=True,
-                    password=field["password"],
-                    default_value=field["default_value"],
-                )
-
-            # Add buttons to the window
-            for field in self.button_fields:
-                add_button(
-                    label=field["data"]["label"],
-                    tag=field["data"]["tag"],
-                    callback=field["callback"],
-                )
 
     def path_callback(self, sender, app_data):
         """
@@ -312,16 +321,3 @@ class GetTerminal:
         # Iterate over the input fields and set their value to an empty string
         for field in self.input_fields:
             set_value(field["data"]["tag"], "")
-
-    def cancel_connect_terminal_mt5(self):
-        """
-        Cancels the form to connect to a MetaTrader 5 terminal.
-        This method stops the trade instance, changes the connection status,
-        shuts down the terminal, and deletes the form.
-        """
-        try:
-            # If the form exists, delete it
-            if does_item_exist(data.add_terminal_window["tag"]):
-                delete_item(data.add_terminal_window["tag"])
-        except AttributeError:
-            pass

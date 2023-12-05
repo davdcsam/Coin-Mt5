@@ -38,9 +38,9 @@
             "label": "Cancel",
             "tag": "992b610a-6f0c-4c80-9f3f-6feede77dec0"
         },
-        "help_button": {
-            "label": "Help",
-            "tag": "abc1b316-a65c-4e2b-88ab-d23d99bd387b"
+        "menu_error_table_button": {
+            "label": "Error Table",
+            "tag": "bd04b314-7625-4677-84b4-617ba7b79fbb"
         },
         "set_input_button_load": {
             "label": "Load",
