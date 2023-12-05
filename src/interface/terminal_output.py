@@ -4,7 +4,7 @@ from os import getcwd
 
 # Third Party
 # import pandas as pd
-from pandas import DataFrame
+from pandas import DataFrame, isna
 # import dearpygui.dearpygui as dpg
 from dearpygui.dearpygui import add_text, get_value, set_value
 
@@ -56,7 +56,12 @@ def output(message: str, f_type: str = "s"):
     }
 
     # Adding the new row to the DataFrame
-    df.loc[len(df)] = new_row
+    insert_loc = df.index.max()
+
+    if isna(insert_loc):
+        df.loc[0] = new_row
+    else:
+        df.loc[insert_loc + 1] = new_row
 
     # Saving the DataFrame to a CSV file
     df.to_csv(csv_file_path, mode="w")
