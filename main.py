@@ -1,4 +1,5 @@
 # Standard
+from os import getcwd
 
 # Third
 from dearpygui.dearpygui import (
@@ -35,8 +36,8 @@ def start_callback(sender, app_data):
 def exit_callback(sender, app_data):
     set_input_instance.save_last_inputs(sender=sender, app_data=app_data)
     get_terminal_instance.cancel_connect_terminal_mt5()
-    # data.save_to_json_files()
-    # data.save_to_unit_json_file()
+    data.save_to_json_files()
+    data.save_to_unit_json_file()
 
 
 def main():
@@ -47,13 +48,17 @@ def main():
     # Configuring the application to manage callbacks manually
     configure_app(manual_callback_management=True)
 
+    icon_small = f"{getcwd()}/assets/coin.ico"
+    icon_large = f"{getcwd()}/assets/coin.png"
     # Creating a viewport for the application
     create_viewport(
-        title="3doors",
+        title="Coin",
         width=1030,
         height=780,
         resizable=True,
         decorated=True,
+        small_icon=icon_small,
+        large_icon=icon_large,
     )
 
     # Setting up DearPyGUI
