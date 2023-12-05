@@ -149,6 +149,9 @@ class Trade(SectionTime):
             quit()
 
         self.symbol_info = mt5.symbol_info(self.symbol)
+
+        # pprint(self.symbol_info._asdict())
+
         if self.symbol_info is None:
             self.queue.put((f"{self.symbol} not found, cannot check orders", "e"))
             self.stop()
@@ -159,9 +162,9 @@ class Trade(SectionTime):
         This method is called when the trading process is initialized.
         """
         self.deviation_trade = int(self.inputs["deviation_trade"])
-        self.lot_size = float(self.inputs['lot_size'])
+        self.lot_size = float(self.inputs["lot_size"])
         self.magic_number = int(self.inputs["magic_number"])
-        self.select_type = int(self.inputs["select_type"])
+        self.order_type = int(self.inputs["select_type"])
         self.stop_loss = float(self.inputs["stop_loss"])
         self.take_profit = float(self.inputs["take_profit"])
 
@@ -188,6 +191,8 @@ class Trade(SectionTime):
         """
         This method is called during the trading process.
         """
+        self.required_initializer()
+
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
         self.section_time_ontick(time_broker)
@@ -224,23 +229,61 @@ class Trade(SectionTime):
             and self.section_time_no_position_flag is True
             and self.first_trade_flag is True
         ):
-            # self.trade_request = {
-            #     "action": mt5.TRADE_ACTION_DEAL,
-            #     "symbol": self.symbol,
-            #     "volume": lot,
-            #     "type": mt5.ORDER_TYPE_BUY,
-            #     "price": price,
-            #     "sl": price - 100 * point,
-            #     "tp": price + 100 * point,
-            #     "deviation": deviation,
-            #     "magic": 234000,
-            #     "comment": "python script open",
-            #     "type_time": mt5.ORDER_TIME_GTC,
-            #     "type_filling": mt5.ORDER_FILLING_RETURN,
-            # }
-            # pprint(self.trade_request)
-            self.queue.put(("Trade", "s"))
+            self.trade_request = {
+                "action": mt5.TRADE_ACTION_DEAL,
+                "symbol": self.symbol,
+                "volume": self.lot_size,
+                "type": self.order_type,
+                "deviation": self.deviation_trade,
+                "magic": self.magic_number,
+                "comment": "",
+                "type_time": self.symbol_info.order_gtc_mode,
+                "type_filling": mt5.ORDER_FILLING_IOC,
+            }
+            if self.order_type == 0:  # Buy
+                price = self.symbol_info.ask
+                sl = price - self.stop_loss
+                tp = price + self.take_profit
+            elif self.order_type == 1:  # Sell
+                price = self.symbol_info.bid
+                sl = price + self.stop_loss
+                tp = price - self.take_profit
+            self.trade_request.update({"price": price, "sl": sl, "tp": tp})
 
+            check_result = mt5.order_check(self.trade_request)
+
+            pprint(self.trade_request)
+
+            if check_result.retcode != mt5.TRADE_RETCODE_DONE:
+                print("Error at order_check, retcode={}".format(check_result.retcode))
+                self.running.value = False
+            else:
+                print("Order can be send it, ", check_result)
+
+            self.result = mt5.order_send(self.trade_request)
+
+            if self.result.retcode != mt5.TRADE_RETCODE_DONE:
+                self.queue.put(
+                    ("Error en order_send, retcode={}".format(self.result.retcode), "e")
+                )
+            else:
+                result_dict = self.result._asdict()
+                self.queue.put((f"Position {self.result.order} done", "t"))
+                for field in result_dict.keys():
+                    print("   {}={}".format(field, result_dict[field]))
+                    # If this is a trading request structure, display it element by element as well
+                    if field == "request":
+                        trade_request_dict = result_dict[field]._asdict()
+                        for trade_req_filed in trade_request_dict:
+                            self.queue.put(
+                                (
+                                    "         Result: {}={}".format(
+                                        trade_req_filed,
+                                        trade_request_dict[trade_req_filed],
+                                    ),
+                                    "t",
+                                )
+                            )
 
             self.first_trade_flag = False
             self.running.value = False
