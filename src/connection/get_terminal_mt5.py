@@ -4,19 +4,23 @@ from json import load
 from os import getcwd
 import time
 from tkinter import filedialog as fd
+import webbrowser
 
 # Third Party
-# import dearpygui.dearpygui as dpg
 from dearpygui.dearpygui import (
     add_button,
+    add_child,
     add_input_text,
+    add_table,
+    add_table_column,
+    add_table_row,
+    add_menu,
     add_menu_item,
     add_text,
     add_viewport_menu_bar,
     delete_item,
     does_item_exist,
     get_value,
-    set_item_label,
     set_value,
     window,
 )
@@ -29,6 +33,53 @@ from src.logic.system_data import InternalData
 from src.interface.terminal_output import output
 
 data = InternalData()
+error_table = [
+    (10004, "REQUOTE", "Requote"),
+    (10006, "REJECT", "Request rejected"),
+    (10007, "CANCEL", "Request canceled by trader"),
+    (10008, "PLACED", "Order placed"),
+    (10009, "DONE", "Request completed"),
+    (10010, "DONE_PARTIAL", "Only part of the request was completed"),
+    (10011, "ERROR", "Request processing error"),
+    (10012, "TIMEOUT", "Request canceled by timeout"),
+    (10013, "INVALID", "Invalid request"),
+    (10014, "INVALID_VOLUME", "Invalid volume in the request"),
+    (10015, "INVALID_PRICE", "Invalid price in the request"),
+    (10016, "INVALID_STOPS", "Invalid stops in the request"),
+    (10017, "TRADE_DISABLED", "Trade is disabled"),
+    (10018, "MARKET_CLOSED", "Market is closed"),
+    (10019, "NO_MONEY", "There is not enough money to complete the request"),
+    (10020, "PRICE_CHANGED", "Prices changed"),
+    (10021, "PRICE_OFF", "There are no quotes to process the request"),
+    (10022, "INVALID_EXPIRATION", "Invalid order expiration date in the request"),
+    (10023, "ORDER_CHANGED", "Order state changed"),
+    (10024, "TOO_MANY_REQUESTS", "Too frequent requests"),
+    (10025, "NO_CHANGES", "No changes in request"),
+    (10026, "SERVER_DISABLES_AT", "Autotrading disabled by server"),
+    (10027, "CLIENT_DISABLES_AT", "Autotrading disabled by client terminal"),
+    (10028, "LOCKED", "Request locked for processing"),
+    (10029, "FROZEN", "Order or position frozen"),
+    (10030, "INVALID_FILL", "Invalid order filling type"),
+    (10031, "CONNECTION", "No connection with the trade server"),
+    (10032, "ONLY_REAL", "Operation is allowed only for live accounts"),
+    (10033, "LIMIT_ORDERS", "The number of pending orders has reached the limit"),
+    (
+        10034,
+        "LIMIT_VOLUME",
+        "The volume of orders and positions for the symbol has reached the limit",
+    ),
+    (10035, "INVALID_ORDER", "Incorrect or prohibited order type"),
+    (
+        10036,
+        "POSITION_CLOSED",
+        "Position with the specified POSITION_IDENTIFIER has already been closed",
+    ),
+    (
+        10038,
+        "INVALID_CLOSE_VOLUME",
+        "A close volume exceeds the current position volume",
+    ),
+]
 
 
 class GetTerminal:
@@ -111,7 +162,31 @@ class GetTerminal:
             callback=self.add_terminal,
         )
 
-        add_menu_item(label=data.help_button["label"], tag=data.help_button["tag"], parent=menu_bar, )
+        error_table_button = add_menu(
+            tag=data.menu_error_table_button["tag"],
+            label=data.menu_error_table_button["label"],
+            parent=menu_bar,
+        )
+
+        def open_new_tab_web():
+            webbrowser.open("https://www.mql5.com/en/docs/constants/errorswarnings")
+
+        container_table = add_child(height=400, width=700, parent=error_table_button)
+        add_button(
+            label="Open Codes of Errors and Warnings",
+            parent=container_table,
+            callback=open_new_tab_web,
+        )
+        table = add_table(header_row=True, parent=container_table)
+        add_table_column(label="Code", width_fixed=True, parent=table)
+        add_table_column(label="TRADE_RETCODE", width_fixed=True, parent=table)
+        add_table_column(label="Description", parent=table)
+
+        for row in error_table:
+            table_row = add_table_row(parent=table)
+            add_text(str(row[0]), parent=table_row)
+            add_text(row[1], parent=table_row)
+            add_text(row[2], parent=table_row)
 
     def add_terminal(self):
         """

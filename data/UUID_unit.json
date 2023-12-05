@@ -36,7 +36,11 @@
         },
         "add_terminal_button_cancel": {
             "label": "Cancel",
-            "tag": "d892ac92-7a11-4c67-aafd-d457591d0e9f"
+            "tag": "992b610a-6f0c-4c80-9f3f-6feede77dec0"
+        },
+        "help_button": {
+            "label": "Help",
+            "tag": "abc1b316-a65c-4e2b-88ab-d23d99bd387b"
         },
         "set_input_button_load": {
             "label": "Load",
