@@ -20,6 +20,7 @@ from dearpygui.dearpygui import (
     set_value,
     window,
 )
+
 # import MetaTrader5 as mt5
 from MetaTrader5 import initialize, login, last_error
 
@@ -109,6 +110,8 @@ class GetTerminal:
             parent=menu_bar,
             callback=self.add_terminal,
         )
+
+        add_menu_item(label=data.help_button["label"], tag=data.help_button["tag"], parent=menu_bar, )
 
     def add_terminal(self):
         """
