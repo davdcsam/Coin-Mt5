@@ -5,8 +5,9 @@ from os import getcwd
 # Third Party
 # import pandas as pd
 from pandas import DataFrame, isna
+
 # import dearpygui.dearpygui as dpg
-from dearpygui.dearpygui import add_text
+from dearpygui.dearpygui import add_text, get_item_width
 
 # Owner
 from src.interface.base_component import BaseComponent
@@ -29,9 +30,6 @@ format_type = {
 csv_file_path = getcwd() + "\\files\\output_terminal\\output_terminal-{}.csv".format(
     datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 )
-
-# Getting the tag container from the terminal output text container
-tag_container = data.terminal_output_text_container["tag"]
 
 
 # Defining a function to log a message with a specific format type
@@ -67,7 +65,11 @@ def output(message: str, f_type: str = "s"):
     df.to_csv(csv_file_path, mode="w")
 
     # Adding a new text widget for each message
-    add_text(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {format_type[f_type]} {message}", parent=data.terminal_output_window["tag"])
+    add_text(
+        f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {format_type[f_type]} {message}",
+        parent=data.terminal_output_window["tag"],
+        wrap=get_item_width(data.terminal_output_window["tag"]),
+    )
 
     # Printing the message
     print(message)
@@ -111,34 +113,3 @@ class TerminalOutput(BaseComponent):
         Creates a CSV file for the terminal output.
         """
         return df.to_csv(csv_file_path, mode="w")
-
-    # # Logging an internal output message
-    # def _internal_output(self, sender, app_data):
-    #     """
-    #     Logs an internal output message.
-
-    #     Args:
-    #         sender: The widget that triggered the callback.
-    #         app_data: Additional data from the widget.
-    #     """
-    #     # Creating a new row with the current datetime, format type, and message
-    #     new_row = {
-    #         "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    #         "type": format_type["n"],
-    #         "message": get_value(sender),
-    #     }
-
-    #     # Adding the new row to the DataFrame
-    #     df.loc[len(df)] = new_row
-
-    #     # Saving the DataFrame to a CSV file
-    #     df.to_csv(csv_file_path, mode="w")
-
-    #     # Getting the current console output and appending the new message to it
-    #     console_output = (
-    #         get_value(tag_container)
-    #         + f"{datetime.now()} {format_type['n']} {get_value(sender)}\n"
-    #     )
-
-    #     # Setting the value of the tag container to the updated console output
-    #     set_value(tag_container, console_output)
