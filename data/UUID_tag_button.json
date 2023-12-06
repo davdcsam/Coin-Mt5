@@ -1,7 +1,7 @@
 {
-    "add_terminal_button": {
+    "menu_add_terminal_button": {
         "label": "Add Terminal",
-        "tag": "52281169-4e6e-47ec-b0f7-5a9f4e6129ad"
+        "tag": "476018a9-f8b6-453f-b426-9bda645f2cf7"
     },
     "add_terminal_file_dialog_button": {
         "label": "Select Path",
@@ -23,6 +23,10 @@
         "label": "Error Table",
         "tag": "abc1b316-a65c-4e2b-88ab-d23d99bd387b"
     },
+    "menu_logs_button": {
+        "label": "Logs",
+        "tag": ""
+    },    
     "set_input_button_load": {
         "label": "Load",
         "tag": "1d540a64-c00d-468c-a064-557d82e155f2"

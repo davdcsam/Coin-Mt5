@@ -1,9 +1,9 @@
 # Standart
 from json import load
-from os import getcwd
+from os import getcwd, startfile, path
 import webbrowser
 
-# Third Party
+# Third
 from dearpygui.dearpygui import (
     add_button,
     add_child,
@@ -12,13 +12,16 @@ from dearpygui.dearpygui import (
     add_table_column,
     add_table_row,
     add_menu,
+    add_menu_item,
     add_text,
     add_viewport_menu_bar,
 )
 
 # Owner
+from src.interface.terminal_output import csv_file_path
 from src.logic.system_data import InternalData
 from src.logic.terminal_mt5 import GetTerminal
+from utils.clean_output_terminal import clean_output_dir
 
 
 class MenuBar(GetTerminal):
@@ -131,13 +134,13 @@ class MenuBar(GetTerminal):
         menu_bar = add_viewport_menu_bar()
 
         # Add menu to the menu bar with their callbacks
-        add_terminal = add_menu(
-            label=self.dt.add_terminal_button["label"],
-            tag=self.dt.add_terminal_button["tag"],
+        add_terminal_menu = add_menu(
+            label=self.dt.menu_add_terminal_button["label"],
+            tag=self.dt.menu_add_terminal_button["tag"],
             parent=menu_bar,
         )
 
-        add_text("Complete the form to add a terminal", parent=add_terminal)
+        add_text("Complete the form to add a terminal", parent=add_terminal_menu)
 
         # Add input fields to the menu add terminal
         for field in self.add_terminal_input_fields:
@@ -147,7 +150,7 @@ class MenuBar(GetTerminal):
                 no_spaces=True,
                 password=field["password"],
                 default_value=field["default_value"],
-                parent=add_terminal,
+                parent=add_terminal_menu,
             )
 
         # Add buttons to the menu add terminal
@@ -156,16 +159,16 @@ class MenuBar(GetTerminal):
                 label=field["data"]["label"],
                 tag=field["data"]["tag"],
                 callback=field["callback"],
-                parent=add_terminal,
+                parent=add_terminal_menu,
             )
 
-        error_table_button = add_menu(
+        error_table_menu = add_menu(
             tag=self.dt.menu_error_table_button["tag"],
             label=self.dt.menu_error_table_button["label"],
             parent=menu_bar,
         )
 
-        container_table = add_child(width=630, height=430, parent=error_table_button)
+        container_table = add_child(width=630, height=430, parent=error_table_menu)
 
         add_button(
             label="Open Codes of Errors and Warnings",
@@ -185,3 +188,25 @@ class MenuBar(GetTerminal):
             add_text(str(row[0]), parent=table_row)
             add_text(row[1], parent=table_row)
             add_text(row[2], parent=table_row)
+
+        logs_menu = add_menu(
+            tag=self.dt.menu_logs_button["tag"],
+            label=self.dt.menu_logs_button["label"],
+            parent=menu_bar,
+        )
+
+        add_menu_item(
+            label="Open Current Logs",
+            parent=logs_menu,
+            callback=lambda: startfile(csv_file_path),
+        )
+        add_menu_item(
+            label="Open Folder",
+            parent=logs_menu,
+            callback=lambda: startfile(path.dirname(csv_file_path)),
+        )
+        add_menu_item(
+            label="Clean Folder",
+            parent=logs_menu,
+            callback=lambda: clean_output_dir(),
+        )

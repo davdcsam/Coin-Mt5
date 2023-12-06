@@ -18,7 +18,7 @@
         }
     },
     "UUID_tag_button.json": {
-        "add_terminal_button": {
+        "menu_add_terminal_button": {
             "label": "Add Terminal",
             "tag": "476018a9-f8b6-453f-b426-9bda645f2cf7"
         },
@@ -41,6 +41,10 @@
         "menu_error_table_button": {
             "label": "Error Table",
             "tag": "bd04b314-7625-4677-84b4-617ba7b79fbb"
+        },
+        "menu_logs_button": {
+            "label": "Logs",
+            "tag": ""
         },
         "set_input_button_load": {
             "label": "Load",

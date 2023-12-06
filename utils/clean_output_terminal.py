@@ -1,20 +1,26 @@
+# Standard
 from os import getcwd, path, remove
 from glob import glob
 
+# Third
 
-def clean_output_dir(excets: list):
-    # Obtén el directorio actual
-    current_dir = f"{getcwd()}/files/output_terminal/"
+# Owner
+from src.interface.terminal_output import csv_file_path
 
-    # Encuentra todos los archivos .csv en el directorio actual
-    csv_files = glob(path.join(current_dir, '*.csv'))
 
-    csv_deleted = []
+def clean_output_dir(
+    exceptions: list = [path.basename(csv_file_path)],
+    directory: str = f"{getcwd()}/files/output_terminal/",
+):
+    files = glob(path.join(directory, "*csv"))
 
-    # Elimina cada archivo .csv que no esté en la lista de excepciones
-    for file in csv_files:
-        if path.basename(file) not in excets:
+    deleted = []
+
+    for file in files:
+        if path.basename(file) not in exceptions:
             remove(file)
-            csv_deleted.append(path.basename(file))
+            deleted.append(path.basename(file))
 
-    print(csv_deleted)
+    print(deleted)
+
+    return deleted
