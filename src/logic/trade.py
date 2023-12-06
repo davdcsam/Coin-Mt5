@@ -22,13 +22,27 @@ dt = InternalData()
 
 
 class SectionTime:
+    """
+    This class represents a time section. It has methods to initialize the section,
+    check if a given time falls within the section, and verify if there are no positions
+    for a given symbol within the section.
+    """
+
     def __init__(self) -> None:
+        """
+        Initializes the SectionTime object with default values.
+        """
         self.section_time_state = False
         self.section_time_no_position_flag = False
         self.total_positions_magic_symbol = None
         self.positions_symbols_magic = {}
 
     def section_time_oninit(self, inputs: dict):
+        """
+        Initializes the start and end times of the section from the input dictionary.
+        If the end time is earlier than the start time, they are swapped.
+        """
+        # Extracting the start and end times from the input dictionary
         self.local_start_hour = int(inputs["start_hour"])
         self.local_start_min = int(inputs["start_min"])
         self.local_start_sec = int(inputs["start_sec"])
@@ -37,6 +51,7 @@ class SectionTime:
         self.local_end_sec = int(inputs["end_sec"])
         self.magic_number = int(inputs["magic_number"])
 
+        # Swapping the start and end times if the end time is earlier
         if (
             self.local_end_hour < self.local_start_hour
             or (
@@ -61,6 +76,11 @@ class SectionTime:
             self.local_end_sec = temp_sec
 
     def section_time_ontick(self, time_broker: time.struct_time):
+        """
+        Checks if the given time falls within the start and end times of the section.
+        Updates the section_time_state accordingly.
+        """
+        # Checking if the given time is after the start time
         if (
             time_broker.tm_hour > self.local_start_hour
             or (
@@ -73,6 +93,7 @@ class SectionTime:
                 and time_broker.tm_sec >= self.local_start_sec
             )
         ):
+            # Checking if the given time is before the end time
             if (
                 time_broker.tm_hour < self.local_end_hour
                 or (
@@ -92,6 +113,11 @@ class SectionTime:
             self.section_time_state = False
 
     def section_time_verify_no_position_flag(self, symbol: str = None):
+        """
+        Verifies if there are no positions for the given symbol within the section.
+        Updates the section_time_no_position_flag accordingly.
+        """
+        # Checking if the section_time_no_position_flag is already set
         if self.section_time_no_position_flag:
             # pprint(
             #     "section_time_first_time_flag already is {}".format(
@@ -100,19 +126,27 @@ class SectionTime:
             # )
             return
 
+        # Getting the positions for the given symbol
         positions_symbol = mt5.positions_get(symbol=symbol)
+
+        """
+        Checking if there are no positions for the given symbol,
+        set the section_time_no_position_flag to Tru
+        """
         if len(positions_symbol) == 0:
             pprint(f"No positions in {symbol}")
             self.section_time_no_position_flag = True
+        # Otherwise create a dataframe with open positions in the symbol.
         else:
             self.df_positions_symbol = pd.DataFrame(
                 list(positions_symbol),
                 columns=positions_symbol[0]._asdict().keys(),
             )
+            # Check if these positions have the same magic number to create a new child dataframe.
             df_positions_symbol_magic_zero = self.df_positions_symbol[
                 self.df_positions_symbol["magic"] == self.magic_number
             ]
-
+            # Check if this child dataframe is empty to set the flag to True.
             if len(df_positions_symbol_magic_zero) == 0:
                 self.section_time_no_position_flag = True
             else:
@@ -121,9 +155,10 @@ class SectionTime:
 
 class Trade(SectionTime):
     """
-    The Trade class is designed to handle trading processes.
-    It uses multiprocessing to run trading methods in a separate process.
+    The Trade class is a subclass of SectionTime, designed to manage trading processes in a separate process using multiprocessing.
+    It handles the initialization, execution, and deinitialization of trades, and provides real-time updates on the trading process.
     """
+
     def __init__(self) -> None:
         super().__init__()
         self.process = None
@@ -134,13 +169,17 @@ class Trade(SectionTime):
         self.first_trade_flag = True
 
     def required_initializer(self) -> None:
+        """
+        Establishes connection to the MetaTrader 5 terminal and enables the display of the EURUSD in MarketWatch.
+        If any of these operations fail, it stops the process and quits.
+        """
         # Establish connection to the MetaTrader 5 terminal
         if not mt5.initialize(timeout=1000):
             self.queue.put((f"Initialize failed, error code: {mt5.last_error()}", "e"))
             self.stop()
             quit()
 
-        # Attempt to enable the display of the EURUSD in MarketWatch
+        # Attempt to enable the display of the self.symbol in MarketWatch
         selected = mt5.symbol_select(self.symbol, True)
         if not selected:
             self.queue.put((f"Failed to select {self.symbol}"))
@@ -158,7 +197,8 @@ class Trade(SectionTime):
 
     def _OnInit(self):
         """
-        This method is called when the trading process is initialized.
+        Called when the trading process is initialized.
+        Sets up the trading parameters and verifies the terminal information.
         """
         self.deviation_trade = int(self.inputs["deviation_trade"])
         self.lot_size = float(self.inputs["lot_size"])
@@ -183,12 +223,13 @@ class Trade(SectionTime):
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
         self.queue.put(
-            ("OnInit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
+            ("OnInit {}".format(time.strftime("%H:%M:%S", time_broker)), "t")
         )
 
     def _OnTick(self):
         """
-        This method is called during the trading process.
+        Called during the trading process.
+        Checks the current time and verifies if a trade can be placed based on the section time.
         """
         self.required_initializer()
 
@@ -205,7 +246,7 @@ class Trade(SectionTime):
                     str(self.section_time_state),
                     str(self.section_time_no_position_flag),
                 ),
-                "s",
+                "t",
             )
         )
 
@@ -222,11 +263,17 @@ class Trade(SectionTime):
         )
 
     def _operation_module(self):
+        """
+        Checks if a trade can be placed based on the section time and if no position is currently open.
+        If conditions are met, it prepares a trade request.
+        """
+        # Check if the section time state is True, no position is currently open, and it's the first trade
         if (
             self.section_time_state is True
             and self.section_time_no_position_flag is True
             and self.first_trade_flag is True
         ):
+            # Prepare a trade request with the necessary parameters
             self.trade_request = {
                 "action": mt5.TRADE_ACTION_DEAL,
                 "symbol": self.symbol,
@@ -238,33 +285,42 @@ class Trade(SectionTime):
                 "type_time": self.symbol_info.order_gtc_mode,
                 "type_filling": mt5.ORDER_FILLING_IOC,
             }
+            # If the order type is Buy, calculate the price, stop loss, and take profit
             if self.order_type == 0:  # Buy
                 price = self.symbol_info.ask
                 sl = price - self.stop_loss
                 tp = price + self.take_profit
+            # If the order type is Sell, calculate the price, stop loss, and take profit
             elif self.order_type == 1:  # Sell
                 price = self.symbol_info.bid
                 sl = price + self.stop_loss
                 tp = price - self.take_profit
+            # Update the trade request with the calculated price, stop loss, and take profit
             self.trade_request.update({"price": price, "sl": sl, "tp": tp})
 
+            # Check if the trade request is valid
             check_result = mt5.order_check(self.trade_request)
 
+            # Print the trade request for debugging purposes
             pprint(self.trade_request)
 
+            # If the trade request is not valid, print an error message and stop the process
             if check_result.retcode != mt5.TRADE_RETCODE_DONE:
                 print("Error at order_check, retcode={}".format(check_result.retcode))
                 self.running.value = False
             else:
                 print("Order can be send it, ", check_result)
 
+            # Send the trade request
             self.result = mt5.order_send(self.trade_request)
 
+            # If the trade request was not successful, print an error message
             if self.result.retcode != mt5.TRADE_RETCODE_DONE:
                 self.queue.put(
                     ("Error en order_send, retcode={}".format(self.result.retcode), "e")
                 )
             else:
+                # If the trade request was successful, print the result and update the first trade flag and running value
                 result_dict = self.result._asdict()
                 self.queue.put((f"Position {self.result.order} done", "t"))
                 for field in result_dict.keys():
@@ -283,6 +339,7 @@ class Trade(SectionTime):
                                 )
                             )
 
+            # Update the first trade flag and running value
             self.first_trade_flag = False
             self.running.value = False
 
