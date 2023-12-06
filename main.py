@@ -20,7 +20,7 @@ from dearpygui.dearpygui import (
 )
 
 # Owner
-from src.connection.get_terminal_mt5 import GetTerminal
+from src.interface.menu_bar import MenuBar
 from src.interface.set_font import Fonts
 from src.interface.set_input import SetInput
 from src.interface.terminal_output import TerminalOutput
@@ -80,8 +80,8 @@ def main():
     Creating instances of the Fonts, GetTerminal,
     SetInput, and TerminalOutput classes.
     """
+    menu_bar_instance = MenuBar()
     fonts_instance = Fonts()
-    get_terminal_instance = GetTerminal()
     set_input_instance = SetInput(
         tag=data.set_input_window["tag"],
         parent=main_window,
@@ -99,8 +99,8 @@ def main():
     Setting the font, adding a menu bar,
     and adding the input and output sections to the window
     """
+    menu_bar_instance.add()
     fonts_instance.set_font()
-    get_terminal_instance.add_menu_bar()
     set_input_instance.add()
     terminal_output_instance.add()
 
