@@ -6,6 +6,7 @@ from tkinter import filedialog as fd
 # Third Party
 from dearpygui.dearpygui import (
     get_value,
+    get_item_label,
     set_value,
 )
 
@@ -75,7 +76,10 @@ class GetTerminal:
         # Try to log into the terminal
         authorized = login(login=self.user, server=self.server, password=self.password)
 
-        # If login is successful, change the connection status and print a success message
+        """
+        If login is successful, change the connection
+        status and print a success message
+        """
         if authorized:
             output(message=f"MetaTrader5 login successful {self.user}", f_type="t")
         else:
@@ -83,6 +87,22 @@ class GetTerminal:
             output(f"MT5 {self.user} login failed, error code: {last_error()}", "t")
 
         time.sleep(0.1)
+
+    def _check_empty_field(self, fields: dict):
+        """
+        Check if a field is empty and print a message if it is.
+
+        Args:
+            fields (dict): Dictionary to check if the value is "".
+
+        Return:
+            True: If all items except "path" aren't empty strings.
+        """
+        for key, value in fields.items():
+            if value == "" and key not in ["path"]:
+                output((f"The input {key} is empty"))
+                return False
+        return True
 
     def submit_connect_terminal_mt5(self):
         """
@@ -92,10 +112,30 @@ class GetTerminal:
         and then deletes the form.
         """
         # Retrieve the user input from the form
-        self.user = int(get_value(self.dt.add_terminal_input_user["tag"]))
-        self.password = get_value(self.dt.add_terminal_input_password["tag"])
-        self.server = get_value(self.dt.add_terminal_input_server["tag"])
-        self.path = str(get_value(self.dt.add_terminal_input_path["tag"]))
+        fields = {
+            self.dt.add_terminal_input_user["label"]: get_value(
+                self.dt.add_terminal_input_user["tag"]
+            ),
+            self.dt.add_terminal_input_password["label"]: get_value(
+                self.dt.add_terminal_input_password["tag"]
+            ),
+            self.dt.add_terminal_input_server["label"]: get_value(
+                self.dt.add_terminal_input_server["tag"]
+            ),
+            self.dt.add_terminal_input_path["label"]: get_value(
+                self.dt.add_terminal_input_path["tag"]
+            ),
+        }
+
+        # Check if any field is empty
+        if not self._check_empty_field(fields):
+            return
+
+        # Convert user to int
+        self.user = int(fields["user"])
+        self.password = fields["password"]
+        self.server = fields["server"]
+        self.path = fields["path"]
 
         # Start a new thread to run the connect_terminal_mt5_async method
         Thread(target=self._connect_terminal_mt5).start()
