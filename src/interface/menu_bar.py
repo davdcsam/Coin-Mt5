@@ -26,10 +26,31 @@ from utils.clean_output_terminal import clean_output_dir
 
 
 class MenuBar(GetTerminal):
+    """
+    The MenuBar class extends the GetTerminal class and represents a menu bar in a terminal application.
+
+    Attributes:
+        terminal_data (dict): A dictionary that holds data related to the terminal.
+        add_terminal_input_fields (list): A list of dictionaries that define the input fields in the terminal.
+        add_terminal_button_fields (list): A list of dictionaries that define the button fields in the terminal.
+        error_table (list): A list of tuples that define error codes and their descriptions.
+    """
+
     def __init__(self, file_path: str = f"{getcwd()}/data/terminal_data.json"):
+        """
+        Initializes a new instance of the MenuBar class.
+
+        Args:
+            file_path (str): The path to the JSON file that contains the terminal data.
+        """
+        # Initialize the internal data
         self.dt = InternalData()
+
+        # Load the terminal data from the JSON file
         with open(file_path, "r") as file:
             self.terminal_data = load(file)
+
+        # Define the input fields for adding a terminal
         self.add_terminal_input_fields = [
             {
                 "data": self.dt.add_terminal_input_user,
@@ -52,6 +73,8 @@ class MenuBar(GetTerminal):
                 "default_value": self.terminal_data["ICMarkets"]["path"],
             },
         ]
+
+        # Define the button fields for adding a terminal
         self.add_terminal_button_fields = [
             {
                 "data": self.dt.add_terminal_file_dialog_button,
@@ -66,11 +89,15 @@ class MenuBar(GetTerminal):
                 "callback": self.clear_connect_terminal_mt5,
             },
         ]
+
+        # Call the parent class's constructor
         GetTerminal.__init__(
             self,
             input_fields=self.add_terminal_input_fields,
             button_fields=self.add_terminal_button_fields,
         )
+
+        # Define the error table
         self.error_table = [
             (10004, "REQUOTE", "Requote"),
             (10006, "REJECT", "Request rejected"),
@@ -129,21 +156,25 @@ class MenuBar(GetTerminal):
 
     def add(self):
         """
-        Adds a menubar.
+        Adds a menubar to the terminal application.
+
+        The menubar includes menus for adding a terminal, viewing the error table, and viewing logs.
+        Each menu includes various input fields, buttons, and other components.
         """
         # Create a new menu bar
         menu_bar = add_viewport_menu_bar()
 
-        # Add menu to the menu bar with their callbacks
+        # Add the 'Add Terminal' menu to the menu bar
         add_terminal_menu = add_menu(
             label=self.dt.menu_add_terminal_button["label"],
             tag=self.dt.menu_add_terminal_button["tag"],
             parent=menu_bar,
         )
 
+        # Add a text field to the 'Add Terminal' menu
         add_text("Complete the form to add a terminal", parent=add_terminal_menu)
 
-        # Add input fields to the menu add terminal
+        # Add input fields to the 'Add Terminal' menu
         for field in self.add_terminal_input_fields:
             add_input_text(
                 label=field["data"]["label"],
@@ -154,7 +185,7 @@ class MenuBar(GetTerminal):
                 parent=add_terminal_menu,
             )
 
-        # Add buttons to the menu add terminal
+        # Add buttons to the 'Add Terminal' menu
         for field in self.add_terminal_button_fields:
             add_button(
                 label=field["data"]["label"],
@@ -163,14 +194,17 @@ class MenuBar(GetTerminal):
                 parent=add_terminal_menu,
             )
 
+        # Add the 'Error Table' menu to the menu bar
         error_table_menu = add_menu(
             tag=self.dt.menu_error_table_button["tag"],
             label=self.dt.menu_error_table_button["label"],
             parent=menu_bar,
         )
 
+        # Add a container to the 'Error Table' menu
         container_table = add_child(width=630, height=430, parent=error_table_menu)
 
+        # Add a button to the container that opens the 'Codes of Errors and Warnings' webpage
         add_button(
             label="Open Codes of Errors and Warnings",
             parent=container_table,
@@ -179,7 +213,10 @@ class MenuBar(GetTerminal):
             ),
         )
 
+        # Add a table to the container
         table_trade_retcode = add_table(header_row=True, parent=container_table)
+
+        # Add columns to the table
         code_trade_retcode = add_table_column(
             label="Code", width_fixed=True, parent=table_trade_retcode
         )
@@ -190,6 +227,7 @@ class MenuBar(GetTerminal):
             label="Description", parent=table_trade_retcode
         )
 
+        # Add rows to the table
         for row in self.error_table:
             table_row = add_table_row(parent=table_trade_retcode)
             add_text(str(row[0]), parent=table_row)
@@ -198,12 +236,14 @@ class MenuBar(GetTerminal):
                 row[2], parent=table_row, wrap=get_item_width(description_trade_retcode)
             )
 
+        # Add the 'Logs' menu to the menu bar
         logs_menu = add_menu(
             tag=self.dt.menu_logs_button["tag"],
             label=self.dt.menu_logs_button["label"],
             parent=menu_bar,
         )
 
+        # Add menu items to the 'Logs' menu
         add_menu_item(
             label="Open Current Logs",
             parent=logs_menu,
