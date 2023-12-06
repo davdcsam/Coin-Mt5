@@ -91,7 +91,6 @@ def main():
     terminal_output_instance = TerminalOutput(
         tag=data.terminal_output_window["tag"],
         parent=main_window,
-        width=600,
         pos=(400, 20),
     )
 

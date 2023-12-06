@@ -87,19 +87,20 @@ class GetTerminal:
 
         time.sleep(0.1)
 
-    def _check_empty_field(self, fields: dict):
+    def _check_empty_field(self, fields: list):
         """
         Check if a field is empty and print a message if it is.
 
         Args:
-            fields (dict): Dictionary to check if the value is "".
+            fields (list): List of tuples to check if the value is "".
 
         Return:
             True: If all items except "path" aren't empty strings.
         """
-        for key, value in fields.items():
-            if value == "" and key not in ["path"]:
-                output((f"The input {key} is empty"))
+        for name, instance in fields:
+            value = get_value(instance["tag"])
+            if value == "" and name not in ["path"]:
+                output((f"The input {instance['label']} is empty"), "e")
                 return False
         return True
 
@@ -111,30 +112,22 @@ class GetTerminal:
         and then deletes the form.
         """
         # Retrieve the user input from the form
-        fields = {
-            self.dt.add_terminal_input_user["label"]: get_value(
-                self.dt.add_terminal_input_user["tag"]
-            ),
-            self.dt.add_terminal_input_password["label"]: get_value(
-                self.dt.add_terminal_input_password["tag"]
-            ),
-            self.dt.add_terminal_input_server["label"]: get_value(
-                self.dt.add_terminal_input_server["tag"]
-            ),
-            self.dt.add_terminal_input_path["label"]: get_value(
-                self.dt.add_terminal_input_path["tag"]
-            ),
-        }
+        fields = [
+            ("user", self.dt.add_terminal_input_user),
+            ("password", self.dt.add_terminal_input_password),
+            ("server", self.dt.add_terminal_input_server),
+            ("path", self.dt.add_terminal_input_path),
+        ]
 
         # Check if any field is empty
         if not self._check_empty_field(fields):
             return
 
         # Convert user to int
-        self.user = int(fields["user"])
-        self.password = fields["password"]
-        self.server = fields["server"]
-        self.path = fields["path"]
+        self.user = int(get_value(fields[0][1]["tag"]))
+        self.password = get_value(fields[1][1]["tag"])
+        self.server = get_value(fields[2][1]["tag"])
+        self.path = get_value(fields[3][1]["tag"])
 
         # Start a new thread to run the connect_terminal_mt5_async method
         Thread(target=self._connect_terminal_mt5).start()
