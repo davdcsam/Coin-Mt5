@@ -5,8 +5,6 @@ from dearpygui.dearpygui import add_child_window
 # Owner
 from src.logic.system_data import InternalData
 
-data = InternalData()
-
 
 class BaseComponent:
     """
@@ -27,13 +25,15 @@ class BaseComponent:
             parent (str): Identifier of the parent component.
             **kwargs: Additional arguments for the add_child_window function.
         """
+        self.dt = InternalData()
+
         # Store the tag and parent
         self.tag = tag
         self.parent = parent
         # Create a new window for this component
         self.window = add_child_window(
             tag=self.tag,
-            label=data.__getattr__(self.tag)["label"],
+            label=self.dt.__getattr__(self.tag)["label"],
             parent=self.parent,
             **kwargs
         )
@@ -53,8 +53,8 @@ class BaseComponent:
             # If a callback is provided, add a new component with the callback
             if callback:
                 add_function(
-                    label=data.__getattr__(tag)["label"],
-                    tag=data.__getattr__(tag)["tag"],
+                    label=self.dt.__getattr__(tag)["label"],
+                    tag=self.dt.__getattr__(tag)["tag"],
                     parent=self.window,
                     callback=callback,
                     **kwargs
@@ -62,8 +62,8 @@ class BaseComponent:
             else:
                 # Otherwise, add a new component without the callback
                 add_function(
-                    label=data.__getattr__(tag)["label"],
-                    tag=data.__getattr__(tag)["tag"],
+                    label=self.dt.__getattr__(tag)["label"],
+                    tag=self.dt.__getattr__(tag)["tag"],
                     parent=self.window,
                     **kwargs
                 )

@@ -29,19 +29,18 @@ from src.logic.system_data import InternalData
 
 def start_callback(sender, app_data):
     set_input_instance.load_last_inputs(sender=sender, app_data=app_data)
-    # data.save_to_json_files()
-    # data.save_to_unit_json_file()
+    # dt.save_to_json_files()
+    # dt.save_to_unit_json_file()
 
 
 def exit_callback(sender, app_data):
     set_input_instance.save_last_inputs(sender=sender, app_data=app_data)
-    get_terminal_instance.cancel_connect_terminal_mt5()
-    data.save_to_json_files()
-    data.save_to_unit_json_file()
+    dt.save_to_json_files()
+    dt.save_to_unit_json_file()
 
 
 def main():
-    global data, set_input_instance, get_terminal_instance
+    global dt, set_input_instance
     # Creating a context for DearPyGUI
     create_context()
 
@@ -68,28 +67,28 @@ def main():
     show_viewport()
 
     # Creating an instance of the InternalData class
-    data = InternalData()
+    dt = InternalData()
 
     # Adding a window to the application
     main_window = add_window(
-        label=data.main_window["label"],
-        tag=data.main_window["tag"],
+        label=dt.main_window["label"],
+        tag=dt.main_window["tag"],
     )
 
     """
-    Creating instances of the Fonts, GetTerminal,
+    Creating instances of the MenuBar, Fonts,
     SetInput, and TerminalOutput classes.
     """
     menu_bar_instance = MenuBar()
     fonts_instance = Fonts()
     set_input_instance = SetInput(
-        tag=data.set_input_window["tag"],
+        tag=dt.set_input_window["tag"],
         parent=main_window,
         width=400,
         pos=(10, 20),
     )
     terminal_output_instance = TerminalOutput(
-        tag=data.terminal_output_window["tag"],
+        tag=dt.terminal_output_window["tag"],
         parent=main_window,
         pos=(400, 20),
     )

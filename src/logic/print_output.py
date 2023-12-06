@@ -12,7 +12,7 @@ from dearpygui.dearpygui import add_text, get_item_width
 # Owner
 from src.logic.system_data import InternalData
 
-data = InternalData()
+dt = InternalData()
 # Initializing a DataFrame with columns for datetime, type, and message
 df = DataFrame(columns=["datetime", "type", "message"])
 
@@ -66,8 +66,8 @@ def output(message: str, f_type: str = "s"):
     # Adding a new text widget for each message
     add_text(
         f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {format_type[f_type]} {message}",
-        parent=data.terminal_output_window["tag"],
-        wrap=get_item_width(data.terminal_output_window["tag"]),
+        parent=dt.terminal_output_window["tag"],
+        wrap=get_item_width(dt.terminal_output_window["tag"]),
     )
 
     # Printing the message

@@ -21,6 +21,12 @@ class InternalData:
         def __missing__(self, key):
             return self.setdefault(key, None)
 
+        def __getstate__(self):
+            return self.__dict__
+
+        def __setstate__(self, state):
+            self.__dict__.update(state)
+
     def __new__(
         cls,
         files: str = [

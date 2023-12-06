@@ -11,12 +11,6 @@ from src.logic.print_output import df, csv_file_path
 class TerminalOutput(BaseComponent):
     """
     Class for managing terminal output in a DearPyGUI window.
-
-    Attributes:
-        sections (list): List of sections to be added to the window.
-        filedailog_filetypes (tuple): File types for the file dialog.
-        categories (dict): Categories of input fields.
-        last_input_filename (str): Path to the last inputs file.
     """
 
     # Initializing the terminal output in a DearPyGUI window

@@ -23,10 +23,11 @@ class GetTerminal:
     """
 
     def __init__(self, input_fields, button_fields):
-        self.dt = InternalData()
-        self.input_fields = input_fields
-        self.button_fields = button_fields
+        self.dt = InternalData()  # Instance of the InternalData class
+        self.input_fields = input_fields  # Store the input_fields
+        self.button_fields = button_fields  # Store the button_fields
 
+    # Callback function for opening a file dialog to select a file
     def path_callback(self, sender, app_data):
         """
         Callback function for opening a file dialog to select a file.
@@ -46,6 +47,7 @@ class GetTerminal:
         # Set the value of the path input field to the selected filename
         set_value(self.dt.add_terminal_input_path["tag"], filename)
 
+    # Asynchronously initializes and logs into a MetaTrader 5 terminal
     def _connect_terminal_mt5(self):
         """
         Asynchronously initializes and logs into a MetaTrader 5 terminal.
@@ -87,6 +89,7 @@ class GetTerminal:
 
         time.sleep(0.1)
 
+    # Check if a field is empty and print a message if it is        
     def _check_empty_field(self, fields: list):
         """
         Check if a field is empty and print a message if it is.

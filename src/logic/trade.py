@@ -14,7 +14,11 @@ from dearpygui.dearpygui import show_item, hide_item, enable_item, disable_item
 from src.logic.print_output import output
 from src.logic.system_data import InternalData
 
-data = InternalData()
+"""
+Dont implement dt has a atr into Trade class, 'cuase when
+process _method start take dt has a Dict incallable
+"""
+dt = InternalData()
 
 
 class SectionTime:
@@ -120,12 +124,7 @@ class Trade(SectionTime):
     The Trade class is designed to handle trading processes.
     It uses multiprocessing to run trading methods in a separate process.
     """
-
     def __init__(self) -> None:
-        """
-        Initializes the Trade class with a process set to None
-        and a multiprocessing Value indicating whether the process is running.
-        """
         super().__init__()
         self.process = None
         self.running = Value("b", False)
@@ -216,7 +215,6 @@ class Trade(SectionTime):
         """
         This method is called when the trading process is deinitialized.
         """
-
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
         self.queue.put(
@@ -335,10 +333,10 @@ class Trade(SectionTime):
             pprint("Already there is a process running")
         else:
             # Show the "Undeploy" button and hide the "Deploy" button
-            show_item(data.set_input_button_undeploy["tag"])
-            enable_item(data.set_input_button_undeploy["tag"])
-            hide_item(data.set_input_button_deploy["tag"])
-            disable_item(data.set_input_button_deploy["tag"])
+            show_item(dt.set_input_button_undeploy["tag"])
+            enable_item(dt.set_input_button_undeploy["tag"])
+            hide_item(dt.set_input_button_deploy["tag"])
+            disable_item(dt.set_input_button_deploy["tag"])
 
             # If there are any inputs, set them
             if inputs_dict is not None or not isinstance(inputs_dict, dict):
@@ -366,10 +364,10 @@ class Trade(SectionTime):
             pprint("There isn't a procces running")
         else:
             # Show the "Deploy" button and hide the "Undeploy" button
-            hide_item(data.set_input_button_undeploy["tag"])
-            disable_item(data.set_input_button_undeploy["tag"])
-            show_item(data.set_input_button_deploy["tag"])
-            enable_item(data.set_input_button_deploy["tag"])
+            hide_item(dt.set_input_button_undeploy["tag"])
+            disable_item(dt.set_input_button_undeploy["tag"])
+            show_item(dt.set_input_button_deploy["tag"])
+            enable_item(dt.set_input_button_deploy["tag"])
 
             # Stop the trading process
             self.running.value = False

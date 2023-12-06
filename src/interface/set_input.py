@@ -21,10 +21,6 @@ from src.logic.system_data import InternalData
 from src.logic.trade import Trade
 
 
-data = InternalData()
-fonts_instance = Fonts()
-
-
 class SetInput(BaseComponent, LoadFiles, SaveFiles):
     """
     The SetInput class extends the BaseComponent, LoadFiles, and SaveFiles classes. It represents a user interface component that allows users to set input fields in a DearPyGUI window.
@@ -46,7 +42,8 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
             **kwargs: Additional keyword arguments.
         """
         self.trade_instance = Trade()
-
+        self.fonts_instance = Fonts()
+        self.dt = InternalData()
         # Define the sections to be added to the window
         self.sections = [
             ("title", None),
@@ -73,12 +70,12 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
             # If a section name is provided, add a text field to the window for the section
             if section is not None:
                 add_text(
-                    data.__getattr__(f"set_input_text_{section}")["label"],
-                    tag=data.__getattr__(f"set_input_text_{section}")["tag"],
+                    self.dt.__getattr__(f"set_input_text_{section}")["label"],
+                    tag=self.dt.__getattr__(f"set_input_text_{section}")["tag"],
                     parent=self.window,
                 )
-                fonts_instance.set_font_item(
-                    data.__getattr__(f"set_input_text_{section}")["tag"]
+                self.fonts_instance.set_font_item(
+                    self.dt.__getattr__(f"set_input_text_{section}")["tag"]
                 )
 
             # If a function is provided for the section, call it with the window as the parent
@@ -187,7 +184,7 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
             target=self.trade_instance.start,
             args=(
                 self.get_values(sender, app_data),
-                get_value(data.set_input_select_symbol["tag"]),
+                get_value(self.dt.set_input_select_symbol["tag"]),
             ),
         )
         # Start the new thread

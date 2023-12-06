@@ -12,24 +12,21 @@ from dearpygui.dearpygui import (
 )
 
 # Owner
-
 from src.logic.system_data import InternalData
 from src.logic.print_output import output
 
-data = InternalData()
 
-
+# Exception class for handling invalid file formats
 class InvalidFormatError(Exception):
-    """
-    Exception raised when the file format is invalid.
-    """
-
     pass
 
 
+# Main class for handling file operations and managing application settings
 class RequiredLoadSaveFiles:
     def __init__(self) -> None:
-        self.filedailog_filetypes = (("Set Files", "*.set"), ("All files", "*.*"))
+        self.dt = InternalData()  # Instance of the InternalData class
+        self.filedailog_filetypes = (("Set Files", "*.set"), ("All files", "*.*"))  # File types for the file dialog
+        # Categories and their corresponding settings
         self.categories = {
             "Trade": [
                 "select_type",
@@ -54,6 +51,7 @@ class RequiredLoadSaveFiles:
                 "end_sec",
             ],
         }
+        # Path to the last input file
         self.last_input_filename = f"{getcwd()}/data/last_inputs.set"
 
 
@@ -85,7 +83,7 @@ class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
         # Iterate over the inputs
         for key, value in inputs.items():
             # Get the component associated with the key
-            component = data.__getattr__(f"set_input_{key}")
+            component = self.dt.__getattr__(f"set_input_{key}")
             # Get the default type of the component
             default_type = type(get_value(component["tag"]))
 
@@ -101,7 +99,7 @@ class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
                     set_value(component["tag"], value)
                     output(
                         message="Set {} to {}".format(
-                            value, data.__getattr__(f"set_input_{key}")["label"]
+                            value, self.dt.__getattr__(f"set_input_{key}")["label"]
                         )
                     )
                 except ValueError:
@@ -120,7 +118,7 @@ class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
                 set_value(component["tag"], value)
                 output(
                     message="Set {} to {}".format(
-                        value, data.__getattr__(f"set_input_{key}")["label"]
+                        value, self.dt.__getattr__(f"set_input_{key}")["label"]
                     )
                 )
             elif isinstance(value, dict):
@@ -134,7 +132,7 @@ class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
                         value["hour"],
                         value["min"],
                         value["sec"],
-                        data.__getattr__(f"set_input_{key}")["label"],
+                        self.dt.__getattr__(f"set_input_{key}")["label"],
                     )
                 )
 
@@ -272,30 +270,39 @@ class LoadFiles(InvalidFormatError, RequiredLoadSaveFiles):
             print(f"An error occurred while reading the file: {e}")
 
     def load_symbols(self, filename: str = "symbols.txt"):
+        # Construct the file path
         filepath = path.join(getcwd(), "data", filename)
 
+        # Check if the file exists
         if not path.exists(filepath):
             print(f"The file {filepath} does not exist.")
             return ["US30", "BCHUSD"]
 
+        # Try to open the file and read the symbols
         try:
             with open(filepath, "r") as f:
                 symbols = [line.strip() for line in f.readlines()]
         except IOError as e:
+            # Handle any errors that occur while opening the file
             print(f"An error occurred while opening the file: {str(e)}")
             return ["US30", "BCHUSD"]
 
+        # If the file is empty, return the default symbols
         if len(symbols) == 0:
             symbols.append("BCHUSD")
             symbols.append("US30")
 
+        # Return the list of symbols
         return symbols
 
 
 class SaveFiles(InvalidFormatError, RequiredLoadSaveFiles):
+    # The constructor takes a trade_instance as a parameter
     def __init__(self, trade_instance) -> None:
+        # Call the constructors of the parent classes
         InvalidFormatError.__init__(self)
         RequiredLoadSaveFiles.__init__(self)
+        # Store the trade_instance
         self.trade_instance = trade_instance
 
     def get_values(self, sender, app_data):
@@ -316,9 +323,9 @@ class SaveFiles(InvalidFormatError, RequiredLoadSaveFiles):
             # Iterate over the names in each category
             for name in category:
                 # Check if the name is in the data
-                if f"set_input_{name}" in data.get_all():
+                if f"set_input_{name}" in self.dt.get_all():
                     # If it is, add it to the tags dictionary
-                    tags[name] = data.__getattr__(f"set_input_{name}")["tag"]
+                    tags[name] = self.dt.__getattr__(f"set_input_{name}")["tag"]
                 else:
                     # If it's not, add a default value to the tags dictionary
                     tags[name] = "0"
