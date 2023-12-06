@@ -16,7 +16,8 @@ from src.logic.system_data import InternalData
 
 """
 Dont implement dt has a atr into Trade class, 'cuase when
-process _method start take dt has a Dict incallable
+process _method start take dt has a Dict incallable,
+also can create a Picking Error.
 """
 dt = InternalData()
 
