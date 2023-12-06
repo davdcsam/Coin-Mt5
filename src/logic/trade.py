@@ -188,12 +188,24 @@ class Trade(SectionTime):
 
         self.symbol_info = mt5.symbol_info(self.symbol)
 
-        # pprint(self.symbol_info._asdict())
-
         if self.symbol_info is None:
             self.queue.put((f"{self.symbol} not found, cannot check orders", "e"))
             self.stop()
             quit()
+
+        info_terminal = mt5.terminal_info()
+
+        if not info_terminal.trade_allowed:
+            self.queue.put(
+                ("Algo Traiding is Disable. Please, Turn On", "e")
+            )
+            return False
+
+        if info_terminal.tradeapi_disabled:
+            self.queue.put(("Sorry, Broker blocked connection to MT5 API", "e"))
+            return False
+
+        return True
 
     def _OnInit(self):
         """
@@ -231,7 +243,8 @@ class Trade(SectionTime):
         Called during the trading process.
         Checks the current time and verifies if a trade can be placed based on the section time.
         """
-        self.required_initializer()
+        if self.required_initializer() is False:
+            return
 
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
@@ -371,19 +384,33 @@ class Trade(SectionTime):
             self.stop()  # Stop the trading process if the initialization fails
             return
 
+        info_symbol = mt5.symbol_info(symbol)
+
+        self.symbol = info_symbol.name
         # Check if the symbol is available
-        if mt5.symbol_info(symbol) is None:
-            output(f"Symbol {symbol} not allowed, Deploy failed", "e")
+        if info_symbol is None:
+            output(f"Symbol {self.symbol} not allowed, Deploy failed", "e")
             return
         else:
-            s_info = mt5.symbol_info(symbol)
-            self.symbol = s_info.name
             # If the symbol is unavailable in MarketWatch, add it
-            if not s_info.visible:
+            if not info_symbol.visible:
                 output(f"{self.symbol}, is not visible, trying to switch ON", "e")
                 if not mt5.symbol_select(self.symbol, True):
                     mt5.shutdown()
-                    quit()
+
+            info_terminal = mt5.terminal_info()
+
+            if not info_terminal.trade_allowed:
+                output(
+                    "Algo Traiding is Disable. Please, Turn On and Redeploy Bot", "e"
+                )
+                mt5.shutdown()
+                return
+
+            if info_terminal.tradeapi_disabled:
+                output("Sorry, Broker is blocked connection to MT5 API", "e")
+                mt5.shutdown()
+                return
 
         # Check if there's already a process running
         if self.process is not None:
