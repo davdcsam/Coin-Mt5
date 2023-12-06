@@ -11,7 +11,7 @@ import pandas as pd
 from dearpygui.dearpygui import show_item, hide_item, enable_item, disable_item
 
 # Owner
-from src.interface.terminal_output import output
+from src.logic.print_output import output
 from src.logic.system_data import InternalData
 
 data = InternalData()

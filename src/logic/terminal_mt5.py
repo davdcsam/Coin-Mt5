@@ -14,7 +14,7 @@ from MetaTrader5 import initialize, login, last_error
 
 # Owner
 from src.logic.system_data import InternalData
-from src.interface.terminal_output import output
+from src.logic.print_output import output
 
 
 class GetTerminal:

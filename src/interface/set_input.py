@@ -1,8 +1,7 @@
 # Standard
 from threading import Thread
 
-
-# Third Party
+# Third
 # import dearpygui.dearpygui as dpg
 from dearpygui.dearpygui import (
     add_combo,
@@ -28,22 +27,27 @@ fonts_instance = Fonts()
 
 class SetInput(BaseComponent, LoadFiles, SaveFiles):
     """
-    Class for setting input fields in a DearPyGUI window.
+    The SetInput class extends the BaseComponent, LoadFiles, and SaveFiles classes. It represents a user interface component that allows users to set input fields in a DearPyGUI window.
 
     Attributes:
-        sections (list): List of sections to be added to the window.
-        trade_instance (class 'src.logic.trade.Trade'): Trade Instance
+        fonts_instance (Fonts): An instance of the Fonts class.
+        df (InternalData): An instance of the InternalData class.
+        trade_instance (Trade): An instance of the Trade class.
+        sections (list): A list of tuples, where each tuple contains a section name and a function that adds the section to the window.
     """
 
     def __init__(self, tag: str, parent: str, **kwargs):
         """
-        Initializes the input fields in a DearPyGUI window.
+        Initializes a new instance of the SetInput class.
 
         Args:
-            tag (str): Unique label for the component.
-            parent (str): Label of the parent component.
+            tag (str): A unique identifier for the component.
+            parent (str): The identifier of the parent component.
+            **kwargs: Additional keyword arguments.
         """
         self.trade_instance = Trade()
+
+        # Define the sections to be added to the window
         self.sections = [
             ("title", None),
             ("title_data_trade", self.data_trade),
@@ -51,7 +55,11 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
             (None, self.load_save),
             ("title_bot_manager", self.bot_manager),
         ]
+
+        # Load the symbols
         self.symbols = self.load_symbols()
+
+        # Call the constructors of the parent classes
         BaseComponent.__init__(self, tag, parent, **kwargs)
         LoadFiles.__init__(self, self.trade_instance)
         SaveFiles.__init__(self, self.trade_instance)
@@ -62,11 +70,7 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
         """
         # Iterate over the sections
         for section, function in self.sections:
-            """
-            If a sections is diferent to None,
-            add a text field to the window for each section.
-            And set the title font
-            """
+            # If a section name is provided, add a text field to the window for the section
             if section is not None:
                 add_text(
                     data.__getattr__(f"set_input_text_{section}")["label"],
@@ -77,10 +81,7 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
                     data.__getattr__(f"set_input_text_{section}")["tag"]
                 )
 
-            """
-            If a function is provided for the section,
-            call it with the window as the parent
-            """
+            # If a function is provided for the section, call it with the window as the parent
             if function is not None:
                 function(parent=self.window)
 
@@ -91,9 +92,12 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
         Args:
             parent: The parent widget.
         """
+        # Define the list of order types
         self.list_order_type = [
             key for key in self.trade_instance.order_types_dict.keys()
         ]
+
+        # Add components for the data trade input fields
         self.add_components(
             ["set_input_select_type"],
             add_combo,
@@ -118,6 +122,7 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
         Args:
             parent: The parent widget.
         """
+        # Add components for the time section input fields
         self.add_components(
             ["set_input_section_time_start", "set_input_section_time_end"],
             add_time_picker,
@@ -131,6 +136,7 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
         Args:
             parent: The parent widget.
         """
+        # Add components for the load and save input fields
         self.add_components(
             ["set_input_button_load"],
             add_button,
@@ -143,6 +149,13 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
         )
 
     def bot_manager(self, parent):
+        """
+        Adds deploy, undeploy and select symbol combo to the window.
+
+        Args:
+            parent: The parent widget.
+        """
+        # Add components for the bot manager input fields
         self.add_components(
             ["set_input_button_deploy"],
             add_button,
