@@ -15,6 +15,7 @@ from dearpygui.dearpygui import (
     add_menu_item,
     add_text,
     add_viewport_menu_bar,
+    get_item_width,
 )
 
 # Owner
@@ -178,16 +179,24 @@ class MenuBar(GetTerminal):
             ),
         )
 
-        table = add_table(header_row=True, parent=container_table)
-        add_table_column(label="Code", width_fixed=True, parent=table)
-        add_table_column(label="TRADE_RETCODE", width_fixed=True, parent=table)
-        add_table_column(label="Description", width_fixed=True, parent=table)
+        table_trade_retcode = add_table(header_row=True, parent=container_table)
+        code_trade_retcode = add_table_column(
+            label="Code", width_fixed=True, parent=table_trade_retcode
+        )
+        name_trade_retcode = add_table_column(
+            label="TRADE_RETCODE", width_fixed=True, parent=table_trade_retcode
+        )
+        description_trade_retcode = add_table_column(
+            label="Description", parent=table_trade_retcode
+        )
 
         for row in self.error_table:
-            table_row = add_table_row(parent=table)
+            table_row = add_table_row(parent=table_trade_retcode)
             add_text(str(row[0]), parent=table_row)
             add_text(row[1], parent=table_row)
-            add_text(row[2], parent=table_row)
+            add_text(
+                row[2], parent=table_row, wrap=get_item_width(description_trade_retcode)
+            )
 
         logs_menu = add_menu(
             tag=self.dt.menu_logs_button["tag"],
