@@ -1,0 +1,11 @@
+,datetime,type,message
+0,2023-12-06 13:09:33,[SYSTEM],"
+          Loading inputs from last_inputs.set"
+1,2023-12-06 13:09:33,[SYSTEM],Set Buy to Select Type
+2,2023-12-06 13:09:33,[SYSTEM],Set 0.5 to Lot Size
+3,2023-12-06 13:09:33,[SYSTEM],Set 200.0 to Stop Loss
+4,2023-12-06 13:09:33,[SYSTEM],Set 200.0 to Take Profit
+5,2023-12-06 13:09:33,[SYSTEM],Set 0 to Magic Number
+6,2023-12-06 13:09:33,[SYSTEM],Set 10 to Deviation Trade
+7,2023-12-06 13:09:33,[SYSTEM],Set 0:30:0 to Start Time
+8,2023-12-06 13:09:33,[SYSTEM],Set 7:0:0 to End Time
