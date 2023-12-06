@@ -18,7 +18,7 @@ from dearpygui.dearpygui import (
 
 # Owner
 from src.logic.system_data import InternalData
-from src.connection.get_terminal_mt5 import GetTerminal
+from src.logic.terminal_mt5 import GetTerminal
 
 
 class MenuBar(GetTerminal):
