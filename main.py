@@ -24,6 +24,7 @@ from src.interface.menu_bar import MenuBar
 from src.interface.set_font import Fonts
 from src.interface.set_input import SetInput
 from src.interface.terminal_output import TerminalOutput
+from src.logic.print_output import save_csv_when_stop
 from src.logic.system_data import InternalData
 
 
@@ -37,6 +38,7 @@ def exit_callback(sender, app_data):
     set_input_instance.save_last_inputs(sender=sender, app_data=app_data)
     dt.save_to_json_files()
     dt.save_to_unit_json_file()
+    save_csv_when_stop()
 
 
 def main():

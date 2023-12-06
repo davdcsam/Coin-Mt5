@@ -11,7 +11,7 @@ import pandas as pd
 from dearpygui.dearpygui import show_item, hide_item, enable_item, disable_item
 
 # Owner
-from src.logic.print_output import output
+from src.logic.print_output import output, save_csv_when_stop
 from src.logic.system_data import InternalData
 
 """
@@ -254,7 +254,7 @@ class Trade(SectionTime):
 
         self.queue.put(
             (
-                "Time:{} FST:{} FTF:{}".format(
+                "Time:{}    SectionTimeState:{}    NoPositionFlag:{}".format(
                     time.strftime("%H:%M:%S", time_broker),
                     str(self.section_time_state),
                     str(self.section_time_no_position_flag),
@@ -459,3 +459,4 @@ class Trade(SectionTime):
             self.process = None
             # Shut down the MetaTrader 5 terminal
             mt5.shutdown()
+            save_csv_when_stop()

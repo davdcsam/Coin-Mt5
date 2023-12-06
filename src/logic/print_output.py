@@ -60,9 +60,6 @@ def output(message: str, f_type: str = "s"):
     else:
         df.loc[insert_loc + 1] = new_row
 
-    # Saving the DataFrame to a CSV file
-    df.to_csv(csv_file_path, mode="w")
-
     # Adding a new text widget for each message
     add_text(
         f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {format_type[f_type]} {message}",
@@ -72,3 +69,7 @@ def output(message: str, f_type: str = "s"):
 
     # Printing the message
     print(message)
+
+def save_csv_when_stop():
+    # Saving the DataFrame to a CSV file
+    df.to_csv(csv_file_path, mode="w")
