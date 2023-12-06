@@ -108,13 +108,13 @@ class MenuBar(GetTerminal):
             (
                 10034,
                 "LIMIT_VOLUME",
-                "The volume of orders and positions for the symbol \nhas reached the limit",
+                "The volume of orders and positions for the symbol has reached the limit",
             ),
             (10035, "INVALID_ORDER", "Incorrect or prohibited order type"),
             (
                 10036,
                 "POSITION_CLOSED",
-                "Position with the specified POSITION_IDENTIFIER \nhas already been closed",
+                "Position with the specified POSITION_IDENTIFIER has already been closed",
             ),
             (
                 10038,

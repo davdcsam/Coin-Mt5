@@ -6,7 +6,6 @@ from tkinter import filedialog as fd
 # Third Party
 from dearpygui.dearpygui import (
     get_value,
-    get_item_label,
     set_value,
 )
 
