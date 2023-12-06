@@ -1,30 +1,30 @@
 {
     "set_input_text_title": {
         "label": "Set Input",
-        "tag": "59e50089-e880-47fc-af5e-252e66daa059"
+        "tag": "d10dccba-fabf-4162-bbe7-884359568e64"
     },
     "set_input_text_title_data_trade": {
         "label": "Data Trade",
-        "tag": "6cf333ef-3b25-4702-8ab9-90a0b6a7b6e7"
+        "tag": "1680fcd8-a2f9-4fa2-8997-0195b3deb876"
     },
     "set_input_text_title_create_levels": {
         "label": "Create Levels",
-        "tag": "49a0185a-69d4-4c26-82a7-b2aebfd80391"
+        "tag": "40ca2623-9da1-4ddb-996a-5de2ab955a2c"
     },
     "set_input_text_title_section_time": {
         "label": "Section Time",
-        "tag": "7be285f1-9bb9-4556-ad6d-3397f5b8989d"
+        "tag": "e1405a45-e484-40df-bbf7-4e1b2ffeb8ad"
     },
     "set_input_text_title_bot_manager": {
         "label": "Bot Manager",
-        "tag": ""
+        "tag": "18f42671-2ab9-42ba-a0c2-802efa137c8a"
     },
     "terminal_output_text_container": {
         "label": "Welcome to BreakLevel\n",
-        "tag": "a2ad0d9a-c914-4848-8fd7-a3d7fed96d6d"
+        "tag": "ad9e2da2-91eb-4dc0-8d08-73a4bf66c724"
     },
     "terminal_status": {
         "label": "Offline",
-        "tag": "1acdcff5-e1f9-4d66-af6e-e109c2f366ca"
+        "tag": "3793df55-2d57-47a9-907a-e13b16496d6e"
     }
 }

@@ -1,58 +1,58 @@
 {
     "add_terminal_input_user": {
         "label": "User",
-        "tag": "3a9ef801-d035-4dd7-8c25-5690c64d6d57"
+        "tag": "721a5009-831f-46d9-b28d-af70ecafd1b8"
     },
     "add_terminal_input_password": {
         "label": "Password",
-        "tag": "2b7055d9-463a-43f4-b15c-b4f57ea96c2f"
+        "tag": "7e942d8e-d8ee-426a-9c3a-4b666e12c92d"
     },
     "add_terminal_input_server": {
         "label": "Server",
-        "tag": "14cba45a-7f44-46a7-aa12-04e6c4c787bf"
+        "tag": "c7bac5bc-3303-4cb1-bf2b-007cf94b8cfa"
     },
     "add_terminal_input_path": {
         "label": "Path",
-        "tag": "f5ca1c7f-4d4a-4d27-9fe3-4f383449acd3"
+        "tag": "7e668ea1-814a-4cb6-914b-49dc50b76e9d"
     },
     "set_input_select_type": {
         "label": "Select Type",
-        "tag": "57ecddc4-6cb6-4f9c-a8cb-169f31cda385"
+        "tag": "068b786b-6760-4fae-af75-b23f49d3eb34"
     },
     "set_input_lot_size": {
         "label": "Lot Size",
-        "tag": "67c714dc-0deb-4afc-aa7b-7438ac52861d"
+        "tag": "67823ef9-f6af-40d4-b89d-5b4ec3753ca6"
     },
     "set_input_stop_loss": {
         "label": "Stop Loss",
-        "tag": "161b78d5-ac89-48a2-b0a0-c60f47ffc8e0"
+        "tag": "24799412-f658-4c14-bea2-181cb82c1076"
     },
     "set_input_take_profit": {
         "label": "Take Profit",
-        "tag": "6350b142-f62b-4837-afb7-0a17a3b64d5e"
+        "tag": "fb642abe-f6f4-48c1-8bd9-c90ba69d5ba5"
     },
     "set_input_magic_number": {
         "label": "Magic Number",
-        "tag": "428ecb7b-63f6-436a-8969-d24f90e1eb77"
+        "tag": "aceb590b-a5a1-4771-a17b-dabec66e153d"
     },
     "set_input_deviation_trade": {
         "label": "Deviation Trade",
-        "tag": "51f0cdf4-b312-4fb7-bda3-344572761f67"
+        "tag": "13f2d18a-736d-477e-b273-5e6bd3a02557"
     },
     "set_input_section_time_start": {
         "label": "Start Time",
-        "tag": "7cf30957-35c0-4202-984b-81858d606d10"
+        "tag": "6e4ba430-57a7-4969-96c2-b41cfaf6ed62"
     },
     "set_input_section_time_end": {
         "label": "End Time",
-        "tag": "bbae0c5c-45e7-4434-81e0-7c584e111e68"
+        "tag": "85b69000-c30c-4c0a-99b6-5dc86e415e6e"
     },
     "set_input_select_symbol": {
         "label": "Symbol",
-        "tag": "9061a1b9-2cc8-4946-8431-ea2f7319cf1e"
+        "tag": "1faff0fa-3b45-4d10-9a26-043e21835f0f"
     },
     "terminal_output_console": {
         "label": "Make a note",
-        "tag": "3a598bc7-21ec-4e0d-bea9-104a6e96cf99"
+        "tag": "84b67b5d-8391-42df-94fc-7f73facbdafd"
     }
 }

@@ -1,46 +1,46 @@
 {
     "menu_add_terminal_button": {
         "label": "Add Terminal",
-        "tag": "476018a9-f8b6-453f-b426-9bda645f2cf7"
+        "tag": "2e5fe504-54b6-4338-a740-91fe84bd1f16"
     },
     "add_terminal_file_dialog_button": {
         "label": "Select Path",
-        "tag": "0d768954-205a-48da-9e91-9fccffba01f2"
+        "tag": "f3bb6178-e510-4ef6-9a18-d64c845baa4e"
     },
     "add_terminal_button_submit": {
         "label": "Summit",
-        "tag": "0e390591-f0da-4140-aa53-3db6b3a9c505"
+        "tag": "c80fd1c0-996b-48b3-bff8-d905f9ee9323"
     },
     "add_terminal_button_clear": {
         "label": "Clear",
-        "tag": "dbf96253-f020-49af-9371-bf85f9b78d6a"
+        "tag": "292a1c15-82f4-4b00-8b71-aa58e0b48dbd"
     },
     "add_terminal_button_cancel": {
         "label": "Cancel",
-        "tag": "992b610a-6f0c-4c80-9f3f-6feede77dec0"
+        "tag": "caa28530-07ec-429f-8454-038675e5d7e2"
     },
     "menu_error_table_button": {
         "label": "Error Table",
-        "tag": "abc1b316-a65c-4e2b-88ab-d23d99bd387b"
+        "tag": "c2d3bf67-8d13-4a8b-a377-1dacacc896a1"
     },
     "menu_logs_button": {
         "label": "Logs",
-        "tag": ""
-    },    
+        "tag": "1793a1da-360c-4f6f-83cb-713d9bece410"
+    },
     "set_input_button_load": {
         "label": "Load",
-        "tag": "1d540a64-c00d-468c-a064-557d82e155f2"
+        "tag": "4748cc21-aa54-42d3-8f6e-7a3715df9ecc"
     },
     "set_input_button_save": {
         "label": "Save",
-        "tag": "398d2173-938e-448d-a133-fcfce643d8fe"
+        "tag": "d8fa39ed-8d83-496b-ab8b-79a79a853997"
     },
     "set_input_button_deploy": {
         "label": "Deploy Bot",
-        "tag": "7a8a12f6-d026-4900-b46a-2232909d9a40"
+        "tag": "6651b081-0bb3-438d-95e3-27a28786d2a3"
     },
     "set_input_button_undeploy": {
         "label": "Undeploy Bot",
-        "tag": "7a8a12f6-d026-4900-b46a-2232909d9a40"
+        "tag": "ad7acb96-3e95-4588-abc0-5d79a7945d97"
     }
 }
