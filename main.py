@@ -30,8 +30,6 @@ from src.logic.system_data import InternalData
 
 def start_callback(sender, app_data):
     set_input_instance.load_last_inputs(sender=sender, app_data=app_data)
-    # dt.save_to_json_files()
-    # dt.save_to_unit_json_file()
 
 
 def exit_callback(sender, app_data):
