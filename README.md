@@ -121,11 +121,11 @@ xcopy /E /I data dist\data
 ```
 
 ``` Bash
-xcopy /E /E /I files dist\files
+xcopy /E /I files dist\files
 ```
 
 ``` Bash
-xcopy /E /E /I build distbuild distbuild
+xcopy /E /I build dist\build
 ```
 
 These commands will copy the `assets/`, `data/`, `files/`, and `build/` folders into the `dist/` folder.
