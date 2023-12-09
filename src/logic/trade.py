@@ -1,7 +1,5 @@
 # Standard
 from threading import Thread
-
-# from multiprocessing import Value, Process, Queue
 import time
 from pprint import pprint
 
@@ -18,7 +16,7 @@ from src.logic.system_data import InternalData
 
 """
 Dont implement dt has a atr into Trade class, 'cuase when
-process _method start take dt has a Dict incallable,
+thread _method start take dt has a Dict incallable,
 also can create a Picking Error.
 """
 dt = InternalData()
@@ -158,13 +156,13 @@ class SectionTime:
 
 class Trade(SectionTime):
     """
-    The Trade class is a subclass of SectionTime, designed to manage trading processes in a separate process using multiprocessing.
-    It handles the initialization, execution, and deinitialization of trades, and provides real-time updates on the trading process.
+    The Trade class is a subclass of SectionTime,designed to manage trading threads in a separate thread.
+    It handles the initialization, execution, and deinitialization of trades, and provides real-time updates on the trading thread.
     """
 
     def __init__(self) -> None:
         super().__init__()
-        self.process = None
+        self.thread = None
         self.running = False
         self.symbol = "EURUSD"
         self.order_types_dict = {"Buy": mt5.ORDER_TYPE_BUY, "Sell": mt5.ORDER_TYPE_SELL}
@@ -172,8 +170,9 @@ class Trade(SectionTime):
 
     def required_initializer(self) -> None:
         """
-        Establishes connection to the MetaTrader 5 terminal and enables the display of the EURUSD in MarketWatch.
-        If any of these operations fail, it stops the process and quits.
+        Establishes connection to the MetaTrader 5 terminal and enables the
+        display of the self.symbol in MarketWatch.
+        If any of these operations fail, it stops the thread and quits.
         """
         # Establish connection to the MetaTrader 5 terminal
         if not mt5.initialize(timeout=1000):
@@ -209,7 +208,7 @@ class Trade(SectionTime):
 
     def _OnInit(self):
         """
-        Called when the trading process is initialized.
+        Called when the trading thread is initialized.
         Sets up the trading parameters and verifies the terminal information.
         """
         self.deviation_trade = int(self.inputs["deviation_trade"])
@@ -236,7 +235,7 @@ class Trade(SectionTime):
 
     def _OnTick(self):
         """
-        Called during the trading process.
+        Called during the trading thread.
         Checks the current time and verifies if a trade can be placed based on the section time.
         """
         if self.required_initializer() is False:
@@ -261,7 +260,7 @@ class Trade(SectionTime):
 
     def _OnDeinit(self):
         """
-        This method is called when the trading process is deinitialized.
+        This method is called when the trading thread is deinitialized.
         """
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
@@ -309,7 +308,7 @@ class Trade(SectionTime):
             # Print the trade request for debugging purposes
             pprint(self.trade_request)
 
-            # If the trade request is not valid, print an error message and stop the process
+            # If the trade request is not valid, print an error message and stop the thread
             if check_result.retcode != mt5.TRADE_RETCODE_DONE:
                 print("Error at order_check, retcode={}".format(check_result.retcode))
                 self.running.value = False
@@ -347,9 +346,9 @@ class Trade(SectionTime):
 
     def _method(self):
         """
-        This method runs the trading process. It calls OnInit,
+        This method runs the trading thread. It calls OnInit,
         then enters a loop where it calls OnTrade every second
-        as long as the process is running.
+        as long as the thread is running.
         """
         self.required_initializer()
 
@@ -363,14 +362,14 @@ class Trade(SectionTime):
 
     def start(self, inputs_dict=None, symbol: str = "US30"):
         """
-        This method starts the trading process
+        This method starts the trading thread
         if it is not already running. It sets the running value
-        to True and starts a new process targeting the method function.
+        to True and starts a new thread targeting the method function.
         """
         # Try to initialize the MetaTrader 5 terminal
         if not mt5.initialize(timeout=1000):
             output("Account not logged", "w")
-            self.stop()  # Stop the trading process if the initialization fails
+            self.stop()  # Stop the trading thread if the initialization fails
             return
 
         info_symbol = mt5.symbol_info(symbol)
@@ -401,9 +400,9 @@ class Trade(SectionTime):
                 mt5.shutdown()
                 return
 
-        # Check if there's already a process running
-        if self.process is not None:
-            pprint("Already there is a process running")
+        # Check if there's already a thread running
+        if self.thread is not None:
+            pprint("Already there is a thread running")
         else:
             # Show the "Undeploy" button and hide the "Deploy" button
             show_item(dt.set_input_button_undeploy["tag"])
@@ -423,11 +422,11 @@ class Trade(SectionTime):
 
     def stop(self):
         """
-        This method stops the trading process if it is running.
-        It sets the running value to False, joins the process,
-        and sets the process to None.
+        This method stops the trading thread if it is running.
+        It sets the running value to False, joins the thread,
+        and sets the thread to None.
         """
-        # Check if there's a process running
+        # Check if there's a thread running
         if self.thread is None:
             pprint("There isn't a thread running")
         else:
@@ -437,7 +436,7 @@ class Trade(SectionTime):
             show_item(dt.set_input_button_deploy["tag"])
             enable_item(dt.set_input_button_deploy["tag"])
 
-            # Stop the trading process
+            # Stop the trading thread
             self.running = False
             self.thread.join()
             self.thread = None
