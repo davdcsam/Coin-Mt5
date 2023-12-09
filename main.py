@@ -1,6 +1,6 @@
 # Standard
 import sys
-from os import getcwd, path, remove
+import os
 
 # Third
 from dearpygui.dearpygui import (
@@ -28,6 +28,8 @@ from src.interface.terminal_output import TerminalOutput
 from src.logic.print_output import save_csv_when_stop
 from src.logic.system_data import InternalData
 
+lock_file = f"{os.getcwd()}/data/lock.lock"
+
 
 def start_callback(sender, app_data):
     set_input_instance.load_last_inputs(sender=sender, app_data=app_data)
@@ -38,6 +40,7 @@ def exit_callback(sender, app_data):
     dt.save_to_json_files()
     dt.save_to_unit_json_file()
     save_csv_when_stop()
+    remove_file_lock()
 
 
 def main():
@@ -48,8 +51,8 @@ def main():
     # Configuring the application to manage callbacks manually
     configure_app(manual_callback_management=True)
 
-    icon_small = f"{getcwd()}/assets/coin.ico"
-    icon_large = f"{getcwd()}/assets/coin.png"
+    icon_small = f"{os.getcwd()}/assets/coin.ico"
+    icon_large = f"{os.getcwd()}/assets/coin.png"
     # Creating a viewport for the application
     create_viewport(
         title="Coin",
@@ -120,18 +123,39 @@ def main():
     destroy_context()
 
 
-lock_file = f"{getcwd()}/data/lock.lock"
+def remove_file_lock(path: str = lock_file):
+    try:
+        if os.path.exists(lock_file):
+            os.remove(lock_file)
+    except FileNotFoundError:
+        print("The file does not exist.")
+    except PermissionError:
+        print("You do not have permission to delete this file.")
+    except IsADirectoryError:
+        print("You are trying to remove a directory, not a file.")
+    except OSError as e:
+        print(f"Error: {e.strerror}")
+
+
+def run_main():
+    try:
+        main()
+    except Exception as e:
+        print(f"Error: {e.strerror} {lock_file}")
+    finally:
+        remove_file_lock()
+
 
 if __name__ == "__main__":
-    if path.exists(lock_file):
-        print("Ya se está ejecutando una instancia de la aplicación.")
-        sys.exit()
+    if sys.gettrace is not None:
+        print("The code is running in debug mode.")
+        run_main()
     else:
-        # Crea el archivo de bloqueo
-        open(lock_file, "a").close()
-    try:
-        # Ejecuta la aplicación
-        main()
-    finally:
-        # Elimina el archivo de bloqueo cuando la aplicación se cierre
-        remove(lock_file)
+        print("The code is running normally.")
+        if os.path.exists(lock_file):
+            print("Already there's a app instance runnig")
+            sys.exit()
+        else:
+            # Crea el archivo de bloqueo
+            open(lock_file, "a").close()
+        run_main()
