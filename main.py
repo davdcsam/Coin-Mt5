@@ -1,5 +1,6 @@
 # Standard
-from os import getcwd
+import sys
+from os import getcwd, path, remove
 
 # Third
 from dearpygui.dearpygui import (
@@ -119,5 +120,18 @@ def main():
     destroy_context()
 
 
+lock_file = f"{getcwd}/data/lock.lock"
+
 if __name__ == "__main__":
-    main()
+    if path.exists(lock_file):
+        print("Ya se está ejecutando una instancia de la aplicación.")
+        sys.exit()
+    else:
+        # Crea el archivo de bloqueo
+        open(lock_file, "a").close()
+    try:
+        # Ejecuta la aplicación
+        main()
+    finally:
+        # Elimina el archivo de bloqueo cuando la aplicación se cierre
+        remove(lock_file)
