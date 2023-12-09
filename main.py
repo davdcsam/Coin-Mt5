@@ -1,6 +1,6 @@
 # Standard
 import sys
-from os import getcwd, path, remove
+import os
 
 # Third
 from dearpygui.dearpygui import (
@@ -120,18 +120,33 @@ def main():
     destroy_context()
 
 
-lock_file = f"{getcwd()}/data/lock.lock"
+lock_file = f"{os.getcwd()}/data/lock.lock"
+
+
+def remove_file_lock(path: str = lock_file):
+    try:
+        os.remove(lock_file)
+    except FileNotFoundError:
+        print("The file does not exist.")
+    except PermissionError:
+        print("You do not have permission to delete this file.")
+    except IsADirectoryError:
+        print("You are trying to remove a directory, not a file.")
+    except OSError as e:
+        print(f"Error: {e.strerror}")
+
 
 if __name__ == "__main__":
-    if path.exists(lock_file):
-        print("Ya se está ejecutando una instancia de la aplicación.")
+    if os.path.exists(lock_file):
+        print("Already there's a app instance runnig")
         sys.exit()
     else:
         # Crea el archivo de bloqueo
         open(lock_file, "a").close()
-    try:
-        # Ejecuta la aplicación
-        main()
-    finally:
-        # Elimina el archivo de bloqueo cuando la aplicación se cierre
-        remove(lock_file)
+        try:
+            main()
+        except Exception as e:
+            print(f"Error: {e.strerror} {lock_file}")
+            remove_file_lock()
+        else:
+            remove_file_lock()
