@@ -68,7 +68,13 @@ Creating an executable file
 
 This project uses PyInstaller to convert the Python script into an executable file. To create the executable file, follow these steps:
 
-+ First, activate Pipenv virtual environment:
++ First, switch to main_build branch
+
+``` Bash
+git checkout main_build
+```
+
++ Activate Pipenv virtual environment:
 
 ``` Bash
 pipenv shell
