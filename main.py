@@ -120,7 +120,7 @@ def main():
     destroy_context()
 
 
-lock_file = f"{getcwd}/data/lock.lock"
+lock_file = f"{getcwd()}/data/lock.lock"
 
 if __name__ == "__main__":
     if path.exists(lock_file):
