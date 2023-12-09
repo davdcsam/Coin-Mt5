@@ -1,5 +1,7 @@
 # Standard
-from multiprocessing import Value, Process, Queue
+from threading import Thread
+
+# from multiprocessing import Value, Process, Queue
 import time
 from pprint import pprint
 
@@ -163,8 +165,7 @@ class Trade(SectionTime):
     def __init__(self) -> None:
         super().__init__()
         self.process = None
-        self.running = Value("b", False)
-        self.queue = Queue()
+        self.running = False
         self.symbol = "EURUSD"
         self.order_types_dict = {"Buy": mt5.ORDER_TYPE_BUY, "Sell": mt5.ORDER_TYPE_SELL}
         self.first_trade_flag = True
@@ -176,34 +177,32 @@ class Trade(SectionTime):
         """
         # Establish connection to the MetaTrader 5 terminal
         if not mt5.initialize(timeout=1000):
-            self.queue.put((f"Initialize failed, error code: {mt5.last_error()}", "e"))
+            output(f"Initialize failed, error code: {mt5.last_error()}", "e")
             self.stop()
             quit()
 
         # Attempt to enable the display of the self.symbol in MarketWatch
         selected = mt5.symbol_select(self.symbol, True)
         if not selected:
-            self.queue.put((f"Failed to select {self.symbol}"))
+            output(f"Failed to select {self.symbol}")
             self.stop()
             quit()
 
         self.symbol_info = mt5.symbol_info(self.symbol)
 
         if self.symbol_info is None:
-            self.queue.put((f"{self.symbol} not found, cannot check orders", "e"))
+            output(f"{self.symbol} not found, cannot check orders", "e")
             self.stop()
             quit()
 
         info_terminal = mt5.terminal_info()
 
         if not info_terminal.trade_allowed:
-            self.queue.put(
-                ("Algo Traiding is Disable. Please, Turn On", "e")
-            )
+            output("Algo Traiding is Disable. Please, Turn On", "e")
             return False
 
         if info_terminal.tradeapi_disabled:
-            self.queue.put(("Sorry, Broker blocked connection to MT5 API", "e"))
+            output("Sorry, Broker blocked connection to MT5 API", "e")
             return False
 
         return True
@@ -222,22 +221,18 @@ class Trade(SectionTime):
 
         self.section_time_oninit(self.inputs)
 
-        self.queue.put(
-            (
-                f"Section Time \n    {self.local_start_hour}:{self.local_start_min}:{self.local_start_sec} to {self.local_end_hour}:{self.local_end_min}:{self.local_end_sec}",
-                "s",
-            )
+        output(
+            f"Section Time \n    {self.local_start_hour}:{self.local_start_min}:{self.local_start_sec} to {self.local_end_hour}:{self.local_end_min}:{self.local_end_sec}",
+            "s",
         )
 
         self.terminal_info = mt5.terminal_info()
 
-        self.queue.put((f"Deploy in {self.terminal_info.name} Terminal", "t"))
+        output(f"Deploy in {self.terminal_info.name} Terminal", "t")
 
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
-        self.queue.put(
-            ("OnInit {}".format(time.strftime("%H:%M:%S", time_broker)), "t")
-        )
+        output("OnInit {}".format(time.strftime("%H:%M:%S", time_broker)), "t")
 
     def _OnTick(self):
         """
@@ -253,15 +248,13 @@ class Trade(SectionTime):
 
         self.section_time_verify_no_position_flag(self.symbol)
 
-        self.queue.put(
-            (
-                "Time:{}    SectionTimeState:{}    NoPositionFlag:{}".format(
-                    time.strftime("%H:%M:%S", time_broker),
-                    str(self.section_time_state),
-                    str(self.section_time_no_position_flag),
-                ),
-                "t",
-            )
+        output(
+            "Time:{}    SectionTimeState:{}    NoPositionFlag:{}".format(
+                time.strftime("%H:%M:%S", time_broker),
+                str(self.section_time_state),
+                str(self.section_time_no_position_flag),
+            ),
+            "t",
         )
 
         self._operation_module()
@@ -272,9 +265,7 @@ class Trade(SectionTime):
         """
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
-        self.queue.put(
-            ("OnDeinit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
-        )
+        output("OnDeinit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
 
     def _operation_module(self):
         """
@@ -330,32 +321,29 @@ class Trade(SectionTime):
 
             # If the trade request was not successful, print an error message
             if self.result.retcode != mt5.TRADE_RETCODE_DONE:
-                self.queue.put(
-                    ("Error en order_send, retcode={}".format(self.result.retcode), "e")
+                output(
+                    "Error en order_send, retcode={}".format(self.result.retcode), "e"
                 )
             else:
                 # If the trade request was successful, print the result and update the first trade flag and running value
                 result_dict = self.result._asdict()
-                self.queue.put((f"Position {self.result.order} done", "t"))
+                output(f"Position {self.result.order} done", "t")
                 for field in result_dict.keys():
                     print("   {}={}".format(field, result_dict[field]))
                     # If this is a trading request structure, display it element by element as well
                     if field == "request":
                         trade_request_dict = result_dict[field]._asdict()
                         for trade_req_filed in trade_request_dict:
-                            self.queue.put(
-                                (
-                                    "         Result: {}={}".format(
-                                        trade_req_filed,
-                                        trade_request_dict[trade_req_filed],
-                                    ),
-                                    "t",
-                                )
+                            output(
+                                "         Result: {}={}".format(
+                                    trade_req_filed, trade_request_dict[trade_req_filed]
+                                ),
+                                "t",
                             )
 
             # Update the first trade flag and running value
             self.first_trade_flag = False
-            self.running.value = False
+            self.running = False
 
     def _method(self):
         """
@@ -367,7 +355,7 @@ class Trade(SectionTime):
 
         self._OnInit()
         time.sleep(1)
-        while self.running.value:
+        while self.running:
             self._OnTick()
             time.sleep(1)
         else:
@@ -428,15 +416,10 @@ class Trade(SectionTime):
                 self.inputs = inputs_dict
                 # pprint(self.inputs)
 
-            # Set the running value to True and start the trading process
-            self.running.value = True
-            self.process = Process(target=self._method)
-            self.process.start()
-
-            # Process any messages in the queue
-            while self.queue is not None:
-                message_queue = self.queue.get()
-                output(message_queue[0], message_queue[1])
+            # Set the running value to True and start the trading thread
+            self.running = True
+            self.thread = Thread(target=self._method)
+            self.thread.start()
 
     def stop(self):
         """
@@ -445,8 +428,8 @@ class Trade(SectionTime):
         and sets the process to None.
         """
         # Check if there's a process running
-        if self.process is None:
-            pprint("There isn't a procces running")
+        if self.thread is None:
+            pprint("There isn't a thread running")
         else:
             # Show the "Deploy" button and hide the "Undeploy" button
             hide_item(dt.set_input_button_undeploy["tag"])
@@ -455,9 +438,9 @@ class Trade(SectionTime):
             enable_item(dt.set_input_button_deploy["tag"])
 
             # Stop the trading process
-            self.running.value = False
-            self.process.join()
-            self.process = None
+            self.running = False
+            self.thread.join()
+            self.thread = None
             # Shut down the MetaTrader 5 terminal
             mt5.shutdown()
             save_csv_when_stop()
