@@ -311,7 +311,7 @@ class Trade(SectionTime):
             # If the trade request is not valid, print an error message and stop the thread
             if check_result.retcode != mt5.TRADE_RETCODE_DONE:
                 print("Error at order_check, retcode={}".format(check_result.retcode))
-                self.running.value = False
+                self.running = False
             else:
                 print("Order can be send it, ", check_result)
 

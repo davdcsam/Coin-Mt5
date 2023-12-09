@@ -14,26 +14,32 @@ Requirements
 Installation
 -----------
 
-1. Make sure you have Python 3.11.4 installed on your system. You can check your Python version with the following command:
++ Make sure you have Python 3.11.4 installed on your system. You can check your Python version with the following command:
 
 ``` Bash
 python --version
 ```
 
-1. Install Pipenv, which is a packaging tool for Python. You can install it with the following command:
++ Install Pipenv, which is a packaging tool for Python. You can install it with the following command:
 
 ``` Bash
 pip install pipenv
 ```
 
-1. Clone the Coin repository:
++ Clone the Coin repository:
 
 ``` Bash
 git clone https://github.com/davdcsam/coin.git
 cd coin
 ```
 
-1. Install the project dependencies with Pipenv:
++ Activate Pipenv virtual environment:
+
+``` Bash
+pipenv shell
+```
+
++ Install the project dependencies with Pipenv:
 
 ``` Bash
 pipenv install
@@ -42,13 +48,13 @@ pipenv install
 Quick usage
 ----------
 
-1. Activate Pipenv virtual environment:
++ Activate Pipenv virtual environment:
 
 ``` Bash
 pipenv shell
 ```
 
-1. Run the main Coin script:
++ Run the main Coin script:
 
 ``` Bash
 python main.py
@@ -62,13 +68,25 @@ Creating an executable file
 
 This project uses PyInstaller to convert the Python script into an executable file. To create the executable file, follow these steps:
 
-1. Make sure you have PyInstaller installed. If you don't have it, you can install it with pip:
++ First, activate Pipenv virtual environment:
 
 ``` Bash
-pip install pyinstaller
+pipenv shell
 ```
 
-1. Run the following command in the root of the project:
++ Make sure you have PyInstaller installed. 
+
+``` Bash
+pyinstaller --version
+```
+
++ If you don't have it, you can install it with pip:
+
+``` Bash
+pipenv install pyinstaller
+```
+
++ Run the following command in the root of the project:
 
 ``` Bash
 pyinstaller --onefile --windowed --name=Coin --icon=assets/coin.ico main.py
@@ -95,7 +113,7 @@ cp -r assets/ data/ files/ build/ dist/
 For Windows:
 
 ``` Bash
-xcopy /E /I assets dist/`assets
+xcopy /E /I assets dist\assets
 ```
 
 ``` Bash
