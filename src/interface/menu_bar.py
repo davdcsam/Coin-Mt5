@@ -164,11 +164,18 @@ class MenuBar(GetTerminal):
         # Create a new menu bar
         menu_bar = add_viewport_menu_bar()
 
+        self.add_terminal_item(parent=menu_bar)
+
+        self.error_table_item(parent=menu_bar)
+
+        self.logs_menu_item(parent=menu_bar)
+
+    def add_terminal_item(self, parent):
         # Add the 'Add Terminal' menu to the menu bar
         add_terminal_menu = add_menu(
             label=self.dt.menu_add_terminal_button["label"],
             tag=self.dt.menu_add_terminal_button["tag"],
-            parent=menu_bar,
+            parent=parent
         )
 
         # Add a text field to the 'Add Terminal' menu
@@ -194,11 +201,12 @@ class MenuBar(GetTerminal):
                 parent=add_terminal_menu,
             )
 
+    def error_table_item(self, parent):
         # Add the 'Error Table' menu to the menu bar
         error_table_menu = add_menu(
             tag=self.dt.menu_error_table_button["tag"],
             label=self.dt.menu_error_table_button["label"],
-            parent=menu_bar,
+            parent=parent,
         )
 
         # Add a container to the 'Error Table' menu
@@ -236,11 +244,12 @@ class MenuBar(GetTerminal):
                 row[2], parent=table_row, wrap=get_item_width(description_trade_retcode)
             )
 
+    def logs_menu_item(self, parent):
         # Add the 'Logs' menu to the menu bar
         logs_menu = add_menu(
             tag=self.dt.menu_logs_button["tag"],
             label=self.dt.menu_logs_button["label"],
-            parent=menu_bar,
+            parent=parent,
         )
 
         # Add menu items to the 'Logs' menu

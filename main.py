@@ -146,7 +146,7 @@ if __name__ == "__main__":
         try:
             main()
         except Exception as e:
-            print(f"Error: {e.strerror} {lock_file}")
+            print(f"Error: {e} {lock_file}")
             remove_file_lock()
         else:
             remove_file_lock()
