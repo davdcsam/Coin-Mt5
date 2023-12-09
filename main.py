@@ -48,8 +48,8 @@ def main():
     # Configuring the application to manage callbacks manually
     configure_app(manual_callback_management=True)
 
-    icon_small = f"{getcwd()}/assets/coin.ico"
-    icon_large = f"{getcwd()}/assets/coin.png"
+    icon_small = f"{os.getcwd()}/assets/coin.ico"
+    icon_large = f"{os.getcwd()}/assets/coin.png"
     # Creating a viewport for the application
     create_viewport(
         title="Coin",
