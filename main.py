@@ -138,7 +138,7 @@ def remove_file_lock(path: str = lock_file):
 
 if __name__ == "__main__":
     if os.path.exists(lock_file):
-        print("Already there's a app instance runnig")
+        print("Already there's a app instance running")
         sys.exit()
     else:
         # Crea el archivo de bloqueo
