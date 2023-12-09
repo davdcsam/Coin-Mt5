@@ -1,0 +1,20 @@
+,datetime,type,message
+0,2023-12-06 12:27:22,[SYSTEM],"
+          Loading inputs from last_inputs.set"
+1,2023-12-06 12:27:22,[SYSTEM],Set Buy to Select Type
+2,2023-12-06 12:27:22,[SYSTEM],Set 0.5 to Lot Size
+3,2023-12-06 12:27:22,[SYSTEM],Set 200.0 to Stop Loss
+4,2023-12-06 12:27:22,[SYSTEM],Set 200.0 to Take Profit
+5,2023-12-06 12:27:22,[SYSTEM],Set 0 to Magic Number
+6,2023-12-06 12:27:22,[SYSTEM],Set 10 to Deviation Trade
+7,2023-12-06 12:27:22,[SYSTEM],Set 0:30:0 to Start Time
+8,2023-12-06 12:27:22,[SYSTEM],Set 7:0:0 to End Time
+9,2023-12-06 12:27:27,[TRADE],MetaTrader5 login successful 51294144
+10,2023-12-06 12:27:33,[SYSTEM],"Section Time 
+    0:30:0 to 7:0:0"
+11,2023-12-06 12:27:33,[TRADE],Deploy in MetaTrader 5 IC Markets (SC) Terminal
+12,2023-12-06 12:27:33,[TRADE],OnInit 20:27:26
+13,2023-12-06 12:27:34,[TRADE],Time:20:27:27 FST:False FTF:False
+14,2023-12-06 12:27:35,[TRADE],Time:20:27:28 FST:False FTF:False
+15,2023-12-06 12:27:36,[TRADE],Time:20:27:29 FST:False FTF:False
+16,2023-12-06 12:27:37,[SYSTEM],OnDeinit 20:27:30
