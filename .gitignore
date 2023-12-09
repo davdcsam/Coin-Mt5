@@ -1,4 +1,7 @@
 # Generals
+build/
+dist/
+*.spec
 mql/
 *.ex5
 *.mq5
