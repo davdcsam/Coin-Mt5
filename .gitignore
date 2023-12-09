@@ -6,9 +6,9 @@ mql/
 *.ex5
 *.mq5
 *.mqh
-# *.set
+*.set
 *.json
-# *.csv
+*.csv
 *.cpython-311.pyc
 *.ttf
 *.txt
