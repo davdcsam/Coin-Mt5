@@ -1,4 +1,5 @@
 # Standart
+from cProfile import label
 from json import load
 from os import getcwd, startfile, path
 import webbrowser
@@ -20,12 +21,13 @@ from dearpygui.dearpygui import (
 
 # Owner
 from src.interface.terminal_output import csv_file_path
+from src.logic.load_save_terminal import LoadTerminal
 from src.logic.system_data import InternalData
 from src.logic.terminal_mt5 import GetTerminal
 from utils.clean_output_terminal import clean_output_dir
 
 
-class MenuBar(GetTerminal):
+class MenuBar(GetTerminal, LoadTerminal):
     """
     The MenuBar class extends the GetTerminal class and represents a menu bar in a terminal application.
 
@@ -88,6 +90,13 @@ class MenuBar(GetTerminal):
                 "data": self.dt.add_terminal_button_clear,
                 "callback": self.clear_connect_terminal_mt5,
             },
+            {
+                "data": {
+                    "tag": "Test1",
+                    "label": "Manage",
+                },
+                "callback": self.load_file,
+            },
         ]
 
         # Call the parent class's constructor
@@ -95,6 +104,89 @@ class MenuBar(GetTerminal):
             self,
             input_fields=self.add_terminal_input_fields,
             button_fields=self.add_terminal_button_fields,
+        )
+        LoadTerminal.__init__(
+            self,
+            input_fields=self.add_terminal_input_fields,
+        )
+
+    def add(self):
+        """
+        Adds a menubar to the terminal application.
+
+        The menubar includes menus for adding a terminal, viewing the error table, and viewing logs.
+        Each menu includes various input fields, buttons, and other components.
+        """
+        # Create a new menu bar
+        menu_bar = add_viewport_menu_bar()
+
+        self.add_terminal_item(parent=menu_bar)
+
+        self.error_table_item(parent=menu_bar)
+
+        self.logs_menu_item(parent=menu_bar)
+
+    def add_terminal_item(self, parent):
+        # Add the 'Add Terminal' menu to the menu bar
+        add_terminal_menu = add_menu(
+            label=self.dt.menu_add_terminal_button["label"],
+            tag=self.dt.menu_add_terminal_button["tag"],
+            parent=parent,
+        )
+
+        # Add a text field to the 'Add Terminal' menu
+        add_text("Complete the form to add a terminal", parent=add_terminal_menu)
+
+        # Add input fields to the 'Add Terminal' menu
+        for field in self.add_terminal_input_fields:
+            add_input_text(
+                label=field["data"]["label"],
+                tag=field["data"]["tag"],
+                no_spaces=True,
+                password=field["password"],
+                default_value=field["default_value"],
+                parent=add_terminal_menu,
+            )
+
+        # Add buttons to the 'Add Terminal' menu
+        for field in self.add_terminal_button_fields:
+            add_button(
+                label=field["data"]["label"],
+                tag=field["data"]["tag"],
+                callback=field["callback"],
+                parent=add_terminal_menu,
+            )
+
+    def error_table_item(self, parent):
+        # Add the 'Error Table' menu to the menu bar
+        error_table_menu = add_menu(
+            tag=self.dt.menu_error_table_button["tag"],
+            label=self.dt.menu_error_table_button["label"],
+            parent=parent,
+        )
+
+        # Add a container to the 'Error Table' menu
+        container_table = add_child(width=630, height=430, parent=error_table_menu)
+
+        # Add a button to the container that opens the 'Codes of Errors and Warnings' webpage
+        add_button(
+            label="Open Codes of Errors and Warnings",
+            parent=container_table,
+            callback=lambda: webbrowser.open(
+                "https://www.mql5.com/en/docs/constants/errorswarnings"
+            ),
+        )
+
+        # Add a table to the container
+        table_trade_retcode = add_table(header_row=True, parent=container_table)
+
+        # Add columns to the table
+        add_table_column(label="Code", width_fixed=True, parent=table_trade_retcode)
+        add_table_column(
+            label="TRADE_RETCODE", width_fixed=True, parent=table_trade_retcode
+        )
+        description_trade_retcode = add_table_column(
+            label="Description", parent=table_trade_retcode
         )
 
         # Define the error table
@@ -153,87 +245,6 @@ class MenuBar(GetTerminal):
                 "A close volume exceeds the current position volume",
             ),
         ]
-
-    def add(self):
-        """
-        Adds a menubar to the terminal application.
-
-        The menubar includes menus for adding a terminal, viewing the error table, and viewing logs.
-        Each menu includes various input fields, buttons, and other components.
-        """
-        # Create a new menu bar
-        menu_bar = add_viewport_menu_bar()
-
-        self.add_terminal_item(parent=menu_bar)
-
-        self.error_table_item(parent=menu_bar)
-
-        self.logs_menu_item(parent=menu_bar)
-
-    def add_terminal_item(self, parent):
-        # Add the 'Add Terminal' menu to the menu bar
-        add_terminal_menu = add_menu(
-            label=self.dt.menu_add_terminal_button["label"],
-            tag=self.dt.menu_add_terminal_button["tag"],
-            parent=parent
-        )
-
-        # Add a text field to the 'Add Terminal' menu
-        add_text("Complete the form to add a terminal", parent=add_terminal_menu)
-
-        # Add input fields to the 'Add Terminal' menu
-        for field in self.add_terminal_input_fields:
-            add_input_text(
-                label=field["data"]["label"],
-                tag=field["data"]["tag"],
-                no_spaces=True,
-                password=field["password"],
-                default_value=field["default_value"],
-                parent=add_terminal_menu,
-            )
-
-        # Add buttons to the 'Add Terminal' menu
-        for field in self.add_terminal_button_fields:
-            add_button(
-                label=field["data"]["label"],
-                tag=field["data"]["tag"],
-                callback=field["callback"],
-                parent=add_terminal_menu,
-            )
-
-    def error_table_item(self, parent):
-        # Add the 'Error Table' menu to the menu bar
-        error_table_menu = add_menu(
-            tag=self.dt.menu_error_table_button["tag"],
-            label=self.dt.menu_error_table_button["label"],
-            parent=parent,
-        )
-
-        # Add a container to the 'Error Table' menu
-        container_table = add_child(width=630, height=430, parent=error_table_menu)
-
-        # Add a button to the container that opens the 'Codes of Errors and Warnings' webpage
-        add_button(
-            label="Open Codes of Errors and Warnings",
-            parent=container_table,
-            callback=lambda: webbrowser.open(
-                "https://www.mql5.com/en/docs/constants/errorswarnings"
-            ),
-        )
-
-        # Add a table to the container
-        table_trade_retcode = add_table(header_row=True, parent=container_table)
-
-        # Add columns to the table
-        code_trade_retcode = add_table_column(
-            label="Code", width_fixed=True, parent=table_trade_retcode
-        )
-        name_trade_retcode = add_table_column(
-            label="TRADE_RETCODE", width_fixed=True, parent=table_trade_retcode
-        )
-        description_trade_retcode = add_table_column(
-            label="Description", parent=table_trade_retcode
-        )
 
         # Add rows to the table
         for row in self.error_table:

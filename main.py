@@ -137,16 +137,17 @@ def remove_file_lock(path: str = lock_file):
 
 
 if __name__ == "__main__":
-    if os.path.exists(lock_file):
-        print("Already there's a app instance running")
-        sys.exit()
-    else:
-        # Crea el archivo de bloqueo
-        open(lock_file, "a").close()
-        try:
-            main()
-        except Exception as e:
-            print(f"Error: {e} {lock_file}")
-            remove_file_lock()
-        else:
-            remove_file_lock()
+    main()
+    # if os.path.exists(lock_file):
+    #     print("Already there's a app instance running")
+    #     sys.exit()
+    # else:
+    #     # Crea el archivo de bloqueo
+    #     open(lock_file, "a").close()
+    #     try:
+    #         main()
+    #     except Exception as e:
+    #         print(f"Error: {e} {lock_file}")
+    #         remove_file_lock()
+    #     else:
+    #         remove_file_lock()
