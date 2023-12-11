@@ -1,6 +1,8 @@
 # Generals
 build/
 dist/
+*.rar
+*.zip
 *.spec
 mql/
 *.ex5
