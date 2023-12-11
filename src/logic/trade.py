@@ -190,21 +190,117 @@ class Trade(SectionTime):
         self.symbol_info = mt5.symbol_info(self.symbol)
 
         if self.symbol_info is None:
-            output(f"{self.symbol} not found, cannot check orders", "e")
+            output(
+                f"{self.symbol} not found, cannot check orders. {mt5.last_error()}", "e"
+            )
             self.stop()
             quit()
 
         info_terminal = mt5.terminal_info()
 
         if not info_terminal.trade_allowed:
-            output("Algo Traiding is Disable. Please, Turn On", "e")
+            output(
+                f"Algo Traiding is Disable. Please, Turn On. {mt5.last_error()}", "e"
+            )
             return False
 
         if info_terminal.tradeapi_disabled:
-            output("Sorry, Broker blocked connection to MT5 API", "e")
+            output(
+                f"Sorry, Broker blocked connection to MT5 API. {mt5.last_error()}", "e"
+            )
             return False
 
         return True
+
+    def _build_request(self):
+        # Prepare a trade request with the necessary parameters
+        trade_request = {
+            "action": mt5.TRADE_ACTION_DEAL,
+            "symbol": self.symbol,
+            "volume": self.lot_size,
+            "type": self.order_type,
+            "deviation": self.deviation_trade,
+            "magic": self.magic_number,
+            "comment": "",
+            "type_time": self.symbol_info.order_gtc_mode,
+            "type_filling": mt5.ORDER_FILLING_IOC,
+        }
+        # If the order type is Buy, calculate the price, stop loss, and take profit
+        if self.order_type == 0:  # Buy
+            price = self.symbol_info.ask
+            sl = price - self.stop_loss
+            tp = price + self.take_profit
+        # If the order type is Sell, calculate the price, stop loss, and take profit
+        elif self.order_type == 1:  # Sell
+            price = self.symbol_info.bid
+            sl = price + self.stop_loss
+            tp = price - self.take_profit
+        # Update the trade request with the calculated price, stop loss, and take profit
+        trade_request.update({"price": price, "sl": sl, "tp": tp})
+        return trade_request
+
+    def _checker_request(self, request: dict, send_output_on_retcode_done: bool = True):
+        # Check if the trade request is valid
+        check_result = mt5.order_check(self._build_request())
+
+        # Print the trade request for debugging purposes
+        output(self._build_request(), "t")
+
+        # If the trade request is not valid, print an error message and stop the thread
+        if check_result.retcode != mt5.TRADE_RETCODE_DONE:
+            output(
+                f"Error at order_check, retcode={check_result.retcode}. {mt5.last_error()}",
+                "e",
+            )
+            self.running = False
+        else:
+            if send_output_on_retcode_done:
+                output(f"Order can be send it, {check_result}. {mt5.last_error()}", "t")
+            else:
+                pprint(f"Order can be send it, {check_result}. {mt5.last_error()}")
+
+    def _operation_module(self):
+        """
+        Checks if a trade can be placed based on the section time and if no position is currently open.
+        If conditions are met, it prepares a trade request.
+        """
+        # Check if the section time state is True, no position is currently open, and it's the first trade
+        if (
+            self.section_time_state is True
+            and self.section_time_no_position_flag is True
+            and self.first_trade_flag is True
+        ):
+            self._checker_request(self._build_request(), False)
+            # Send the trade request
+            self.result = mt5.order_send(self._build_request())
+
+            pprint(self.result)
+            # If the trade request was not successful, print an error message
+            if self.result.retcode != mt5.TRADE_RETCODE_DONE:
+                output(
+                    f"Error at order_send, retcode={self.result.retcode}. {mt5.last_error()}",
+                    "e",
+                )
+            else:
+                # If the trade request was successful, print the result and update the first trade flag and running value
+                result_dict = self.result._asdict()
+                output(f"Position {self.result.order} done", "t")
+                for field in result_dict.keys():
+                    print("   {}={}".format(field, result_dict[field]))
+                    # If this is a trading request structure, display it element by element as well
+                    if field == "request":
+                        trade_request_dict = result_dict[field]._asdict()
+                        for trade_req_filed in trade_request_dict:
+                            output(
+                                "         Result: {}={}".format(
+                                    trade_req_filed, trade_request_dict[trade_req_filed]
+                                ),
+                                "t",
+                            )
+
+            # # Update the first trade flag and running value
+            self.first_trade_flag = False
+            self.running = False
 
     def _OnInit(self):
         """
@@ -232,6 +328,8 @@ class Trade(SectionTime):
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
         output("OnInit {}".format(time.strftime("%H:%M:%S", time_broker)), "t")
+
+        self._checker_request(self._build_request(), True)
 
     def _OnTick(self):
         """
@@ -265,84 +363,6 @@ class Trade(SectionTime):
         time_broker = time.gmtime(mt5.symbol_info_tick(self.symbol).time)
 
         output("OnDeinit {}".format(time.strftime("%H:%M:%S", time_broker)), "s")
-
-    def _operation_module(self):
-        """
-        Checks if a trade can be placed based on the section time and if no position is currently open.
-        If conditions are met, it prepares a trade request.
-        """
-        # Check if the section time state is True, no position is currently open, and it's the first trade
-        if (
-            self.section_time_state is True
-            and self.section_time_no_position_flag is True
-            and self.first_trade_flag is True
-        ):
-            # Prepare a trade request with the necessary parameters
-            self.trade_request = {
-                "action": mt5.TRADE_ACTION_DEAL,
-                "symbol": self.symbol,
-                "volume": self.lot_size,
-                "type": self.order_type,
-                "deviation": self.deviation_trade,
-                "magic": self.magic_number,
-                "comment": "",
-                "type_time": self.symbol_info.order_gtc_mode,
-                "type_filling": mt5.ORDER_FILLING_IOC,
-            }
-            # If the order type is Buy, calculate the price, stop loss, and take profit
-            if self.order_type == 0:  # Buy
-                price = self.symbol_info.ask
-                sl = price - self.stop_loss
-                tp = price + self.take_profit
-            # If the order type is Sell, calculate the price, stop loss, and take profit
-            elif self.order_type == 1:  # Sell
-                price = self.symbol_info.bid
-                sl = price + self.stop_loss
-                tp = price - self.take_profit
-            # Update the trade request with the calculated price, stop loss, and take profit
-            self.trade_request.update({"price": price, "sl": sl, "tp": tp})
-
-            # Check if the trade request is valid
-            check_result = mt5.order_check(self.trade_request)
-
-            # Print the trade request for debugging purposes
-            pprint(self.trade_request)
-
-            # If the trade request is not valid, print an error message and stop the thread
-            if check_result.retcode != mt5.TRADE_RETCODE_DONE:
-                print("Error at order_check, retcode={}".format(check_result.retcode))
-                self.running = False
-            else:
-                print("Order can be send it, ", check_result)
-
-            # Send the trade request
-            self.result = mt5.order_send(self.trade_request)
-
-            # If the trade request was not successful, print an error message
-            if self.result.retcode != mt5.TRADE_RETCODE_DONE:
-                output(
-                    "Error en order_send, retcode={}".format(self.result.retcode), "e"
-                )
-            else:
-                # If the trade request was successful, print the result and update the first trade flag and running value
-                result_dict = self.result._asdict()
-                output(f"Position {self.result.order} done", "t")
-                for field in result_dict.keys():
-                    print("   {}={}".format(field, result_dict[field]))
-                    # If this is a trading request structure, display it element by element as well
-                    if field == "request":
-                        trade_request_dict = result_dict[field]._asdict()
-                        for trade_req_filed in trade_request_dict:
-                            output(
-                                "         Result: {}={}".format(
-                                    trade_req_filed, trade_request_dict[trade_req_filed]
-                                ),
-                                "t",
-                            )
-
-            # Update the first trade flag and running value
-            self.first_trade_flag = False
-            self.running = False
 
     def _method(self):
         """
