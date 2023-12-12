@@ -70,6 +70,22 @@ def output(message: str, f_type: str = "s"):
     # Printing the message
     print(message)
 
+
 def save_csv_when_stop():
     # Saving the DataFrame to a CSV file
     df.to_csv(csv_file_path, mode="w")
+
+
+def output_dict_request(request: dict):
+    for field in request.keys():
+        print("   {}={}".format(field, request[field]))
+        # If this is a trading request structure, display it element by element as well
+        if field == "request":
+            trade_request_dict = request[field]._asdict()
+            for trade_req_filed in trade_request_dict:
+                output(
+                    "Request: {}={}".format(
+                        trade_req_filed, trade_request_dict[trade_req_filed]
+                    ),
+                    "t",
+                )

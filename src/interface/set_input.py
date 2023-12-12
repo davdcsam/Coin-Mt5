@@ -105,6 +105,7 @@ class SetInput(BaseComponent, LoadFiles, SaveFiles):
             ["set_input_lot_size", "set_input_stop_loss", "set_input_take_profit"],
             add_input_float,
             width=200,
+            format="%.2f",
         )
         self.add_components(
             ["set_input_magic_number", "set_input_deviation_trade"],
