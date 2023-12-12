@@ -35,8 +35,8 @@ def start_callback(sender, app_data):
 
 def exit_callback(sender, app_data):
     set_input_instance.save_last_inputs(sender=sender, app_data=app_data)
-    # dt.save_to_json_files()
-    # dt.save_to_unit_json_file()
+    dt.save_to_json_files()
+    dt.save_to_unit_json_file()
     save_csv_when_stop()
 
 
@@ -137,18 +137,18 @@ def remove_file_lock(path: str = lock_file):
 
 
 if __name__ == "__main__":
-    main()
-    # if os.path.exists(lock_file):
-    #     print("Already there's a app instance running")
-    #     sys.exit()
-    # else:
-    #     # Crea el archivo de bloqueo
-    #     open(lock_file, "a").close()
-    #     try:
-    #         main()
-    #     except Exception as e:
-    #         print(f"Error: {e} {lock_file}")
-    #         print(f"Error: {e.strerror} {lock_file}")
-    #         remove_file_lock()
-    #     else:
-    #         remove_file_lock()
+    # main()
+    if os.path.exists(lock_file):
+        print("Already there's a app instance running")
+        sys.exit()
+    else:
+        # Crea el archivo de bloqueo
+        open(lock_file, "a").close()
+        try:
+            main()
+        except Exception as e:
+            print(f"Error: {e} {lock_file}")
+            print(f"Error: {e.strerror} {lock_file}")
+            remove_file_lock()
+        else:
+            remove_file_lock()
