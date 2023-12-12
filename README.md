@@ -108,12 +108,12 @@ This command tells PyInstaller to create an executable file from the `main.py` s
 Copying folders to the dist/ folder
 ------------------------------------
 
-After creating the executable file, you can copy the `assets/`, `data/`, `files/`, and `build/` folders to the `dist/` folder with the following commands:
+After creating the executable file, you can copy the `assets/`, `data/`, and `files/` folders to the `dist/` folder with the following commands:
 
 For Unix/Linux:
 
 ``` Bash
-cp -r assets/ data/ files/ build/ dist/
+cp -r assets/ data/ files/ dist/
 ```
 
 For Windows:
@@ -129,12 +129,6 @@ xcopy /E /I data dist\data
 ``` Bash
 xcopy /E /I files dist\files
 ```
-
-``` Bash
-xcopy /E /I build dist\build
-```
-
-These commands will copy the `assets/`, `data/`, `files/`, and `build/` folders into the `dist/` folder.
 
 Documentation
 -------------

@@ -118,15 +118,6 @@ class SectionTime:
         Verifies if there are no positions for the given symbol within the section.
         Updates the section_time_no_position_flag accordingly.
         """
-        # Checking if the section_time_no_position_flag is already set
-        if self.section_time_no_position_flag:
-            # pprint(
-            #     "section_time_first_time_flag already is {}".format(
-            #         self.section_time_no_position_flag
-            #     )
-            # )
-            return
-
         # Getting the positions for the given symbol
         positions_symbol = mt5.positions_get(symbol=symbol)
 
@@ -148,7 +139,6 @@ class SectionTime:
                 self.df_positions_symbol["magic"] == self.magic_number
             ]
             # Check if this child dataframe is empty to set the flag to True.
-            print(df_positions_symbol_magic_zero)
             if len(df_positions_symbol_magic_zero) == 0:
                 self.section_time_no_position_flag = True
             else:
@@ -214,7 +204,9 @@ class Trade(SectionTime):
         return True
 
     def _build_request(self):
-        # Prepare a trade request with the necessary parameters
+        """
+        Prepare a trade request with the necessary parameters
+        """
         trade_request = {
             "action": mt5.TRADE_ACTION_DEAL,
             "symbol": self.symbol,
@@ -241,11 +233,10 @@ class Trade(SectionTime):
         return trade_request
 
     def _checker_request(self, request: dict, send_output_on_retcode_done: bool = True):
-        # Check if the trade request is valid
+        """
+        Check if the trade request is valid
+        """
         check_result = mt5.order_check(self._build_request())
-
-        # Print the trade request for debugging purposes
-        # pprint(self._build_request())
 
         # If the trade request is not valid, print an error message and stop the thread
         if check_result.retcode == mt5.TRADE_RETCODE_DONE or check_result.retcode == 0:
@@ -270,7 +261,6 @@ class Trade(SectionTime):
         Checks if a trade can be placed based on the section time and if no position is currently open.
         If conditions are met, it prepares a trade request.
         """
-        print(self.section_time_no_position_flag)
         # Check if the section time state is True, no position is currently open, and it's the first trade
         if (
             self.section_time_state is True
@@ -430,7 +420,6 @@ class Trade(SectionTime):
             # If there are any inputs, set them
             if inputs_dict is not None or not isinstance(inputs_dict, dict):
                 self.inputs = inputs_dict
-                # pprint(self.inputs)
 
             # Set the running value to True and start the trading thread
             self.running = True
