@@ -21,13 +21,12 @@ from dearpygui.dearpygui import (
 
 # Owner
 from src.interface.terminal_output import csv_file_path
-from src.logic.load_save_terminal import LoadTerminal
 from src.logic.system_data import InternalData
 from src.logic.terminal_mt5 import GetTerminal
 from utils.clean_output_terminal import clean_output_dir
 
 
-class MenuBar(GetTerminal, LoadTerminal):
+class MenuBar(GetTerminal):
     """
     The MenuBar class extends the GetTerminal class and represents a menu bar in a terminal application.
 
@@ -89,14 +88,7 @@ class MenuBar(GetTerminal, LoadTerminal):
             {
                 "data": self.dt.add_terminal_button_clear,
                 "callback": self.clear_connect_terminal_mt5,
-            },
-            {
-                "data": {
-                    "tag": "Test1",
-                    "label": "Manage",
-                },
-                "callback": self.load_file,
-            },
+            }
         ]
 
         # Call the parent class's constructor
@@ -127,7 +119,9 @@ class MenuBar(GetTerminal, LoadTerminal):
         self.logs_menu_item(parent=menu_bar)
 
     def add_terminal_item(self, parent):
-        # Add the 'Add Terminal' menu to the menu bar
+        """
+        Add the 'Add Terminal' menu to the menu bar
+        """
         add_terminal_menu = add_menu(
             label=self.dt.menu_add_terminal_button["label"],
             tag=self.dt.menu_add_terminal_button["tag"],
@@ -158,7 +152,9 @@ class MenuBar(GetTerminal, LoadTerminal):
             )
 
     def error_table_item(self, parent):
-        # Add the 'Error Table' menu to the menu bar
+        """
+        Add the 'Error Table' menu to the menu bar
+        """
         error_table_menu = add_menu(
             tag=self.dt.menu_error_table_button["tag"],
             label=self.dt.menu_error_table_button["label"],
@@ -256,7 +252,9 @@ class MenuBar(GetTerminal, LoadTerminal):
             )
 
     def logs_menu_item(self, parent):
-        # Add the 'Logs' menu to the menu bar
+        """
+        Add the 'Logs' menu to the menu bar
+        """
         logs_menu = add_menu(
             tag=self.dt.menu_logs_button["tag"],
             label=self.dt.menu_logs_button["label"],
