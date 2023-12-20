@@ -156,7 +156,10 @@ class Trade(SectionTime):
         self.thread = None
         self.running = False
         self.symbol = "EURUSD"
-        self.order_types_dict = {"Buy": mt5.ORDER_TYPE_BUY, "Sell": mt5.ORDER_TYPE_SELL}
+        self.order_types_dict: dict[str, int] = {
+            "Buy": mt5.ORDER_TYPE_BUY,
+            "Sell": mt5.ORDER_TYPE_SELL,
+        }
         self.first_trade_flag = True
 
     def required_initializer(self) -> None:
