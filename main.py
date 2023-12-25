@@ -120,5 +120,35 @@ def main():
     destroy_context()
 
 
+lock_file = f"{os.getcwd()}/data/lock.lock"
+
+
+def remove_file_lock(path: str = lock_file):
+    try:
+        os.remove(lock_file)
+    except FileNotFoundError:
+        print("The file does not exist.")
+    except PermissionError:
+        print("You do not have permission to delete this file.")
+    except IsADirectoryError:
+        print("You are trying to remove a directory, not a file.")
+    except OSError as e:
+        print(f"Error: {e.strerror}")
+
+
 if __name__ == "__main__":
-    main()
+    # main()
+    if os.path.exists(lock_file):
+        print("Already there's a app instance running")
+        sys.exit()
+    else:
+        # Crea el archivo de bloqueo
+        open(lock_file, "a").close()
+        try:
+            main()
+        except Exception as e:
+            print(f"Error: {e} {lock_file}")
+            print(f"Error: {e.strerror} {lock_file}")
+            remove_file_lock()
+        else:
+            remove_file_lock()
