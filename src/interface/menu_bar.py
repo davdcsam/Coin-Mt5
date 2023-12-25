@@ -1,5 +1,4 @@
 # Standart
-from cProfile import label
 from json import load
 from os import getcwd, startfile, path
 import webbrowser
@@ -96,10 +95,6 @@ class MenuBar(GetTerminal):
             self,
             input_fields=self.add_terminal_input_fields,
             button_fields=self.add_terminal_button_fields,
-        )
-        LoadTerminal.__init__(
-            self,
-            input_fields=self.add_terminal_input_fields,
         )
 
     def add(self):
