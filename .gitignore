@@ -1,6 +1,6 @@
 # Generals
 build/
-dist/
+# dist/
 *.rar
 *.zip
 *.spec
