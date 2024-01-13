@@ -15,6 +15,9 @@ bool flag = true;
 //+------------------------------------------------------------------+
 int OnInit()
   {
+   update_send_order_data();
+   checker();
+
    return(INIT_SUCCEEDED);
   }
 //+------------------------------------------------------------------+
@@ -27,15 +30,14 @@ void OnDeinit(const int reason) {Comment("");}
 //+------------------------------------------------------------------+
 void OnTick()
   {
-   send_order_ontick();
-   
-/*
-   if(flag == true)
-     {
-        send();
-        flag = false;
-     }
-*/
+   update_send_order_data();
+   /*
+      if(flag == true)
+        {
+         send();
+         flag = false;
+        }
+   */
    Comment(
       send_order_string
    );
