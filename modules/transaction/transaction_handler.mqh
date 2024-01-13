@@ -51,10 +51,20 @@ void update_transaction_handler()
    symbol_price_ask = round(symbol_price_ask / symbol_tick_size) * symbol_tick_size;
 
    symbol_price_bid = round(symbol_price_bid / symbol_tick_size) * symbol_tick_size;
+   
+   Print(EnumToString(correct_filling_type));
 
    if(input_show_transaction_handler_comment == ON)
      {
-      transaction_handler_comment = StringFormat("\n      Type %s\n      Lot Size %s\n      Stop Loss %d\n      Take Profit %d\n      Devation %d\n", EnumToString(input_order_type), DoubleToString(input_lot_size, _Digits), input_stop_loss, input_take_profit, input_deviation_trade);
+      transaction_handler_comment = StringFormat(
+                                       "\n Type %s\n Lot Size %s\n Stop Loss %d\n Take Profit %d\n Devation %d\n Correct Filling %s\n",
+                                       EnumToString(input_order_type),
+                                       DoubleToString(input_lot_size, _Digits),
+                                       input_stop_loss,
+                                       input_take_profit,
+                                       input_deviation_trade,
+                                       EnumToString(correct_filling_type)
+                                    );
      }
   }
 //+------------------------------------------------------------------+
