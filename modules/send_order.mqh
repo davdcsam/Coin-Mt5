@@ -6,15 +6,14 @@
 #property copyright "Copyright 2024, DavdCsam"
 #property link      "https://github.com/davdcsam"
 
-#include <Trade/Trade.mqh>
-CTrade trade;
-
 #include "enum.mqh"
 #include "timer.mqh"
 
-MqlTradeRequest request_trade = {};
+MqlTradeRequest trade_request;
 
-MqlTradeResult result_trade = {};
+MqlTradeResult trade_result;
+
+MqlTradeCheckResult check_result;
 
 input group "Trade"
 
@@ -22,13 +21,11 @@ input type_order_trade select_type = BUY;//Select Type
 
 input double lot_size = 1;//Lot Size
 
-input double stop_loss = 10;//Stop Loss
+input uint stop_loss = 20000;//Stop Loss
 
-input double take_profit = 10;//Take Profit
+input uint take_profit = 20000;//Take Profit
 
-input uint magic_number = 666;//Magic Number
-
-input ulong deviation_trade = 10; //Deviation in Point
+input uint deviation_trade = 1000; //Deviation in Point
 
 input turn send_order_show_string = ON;//Show String
 
@@ -42,56 +39,89 @@ double tick_size;
 
 string send_order_string;
 
+ENUM_ORDER_TYPE_FILLING correct_type_filling;
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void build_request_trade()
+void checker()
   {
-   request_trade.action = TRADE_ACTION_DEAL;
-   request_trade.symbol = _Symbol;
-   request_trade.volume = lot_size;
-   request_trade.deviation = deviation_trade;
-   request_trade.magic = magic_number;
-   request_trade.type_filling = (ENUM_ORDER_TYPE_FILLING)SymbolInfoInteger(_Symbol, SYMBOL_FILLING_MODE);
+   int list_order_type_filling[] = {ORDER_FILLING_FOK, ORDER_FILLING_IOC, ORDER_FILLING_RETURN, ORDER_FILLING_BOC};
+
+   for(int i=0; i<ArraySize(list_order_type_filling); i++)
+     {
+      build_request(list_order_type_filling[i]);
+
+      if(check_position(trade_request, check_result, correct_type_filling))
+        {
+         PrintFormat("Filling mode in %s is %s", _Symbol, EnumToString(correct_type_filling));
+         break;
+        }
+     }
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool check_position(MqlTradeRequest& request, MqlTradeCheckResult& result, ENUM_ORDER_TYPE_FILLING& filling_mode_to_set)
+  {
+   Print(DoubleToString(request.price), DoubleToString(request.sl), DoubleToString(request.tp));
+
+   if(!OrderCheck(request, result))
+     {
+      PrintFormat("OrderCheck failed, return code %d: %s", result.retcode, result.comment);
+      return(false);
+     }
+
+   switch(result.retcode)
+     {
+      case TRADE_RETCODE_DONE:
+         filling_mode_to_set = request.type_filling;
+         return(true);
+         break;
+      case 0:
+         filling_mode_to_set = request.type_filling;
+         return(true);
+         break;
+      default:
+         return(false);
+         break;
+     }
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void build_request(int type_filling)
+  {
+   trade_request.action = TRADE_ACTION_DEAL;
+   trade_request.symbol = _Symbol;
+   trade_request.volume = lot_size;
+   trade_request.deviation = deviation_trade;
+   trade_request.magic = 0;
+   trade_request.type_filling = (ENUM_ORDER_TYPE_FILLING)type_filling;
 
    if(select_type == BUY)
      {
-      request_trade.type = ORDER_TYPE_BUY;
-      request_trade.price = price_ask;
-      request_trade.tp = request_trade.price + take_profit;
-      request_trade.sl = request_trade.price - stop_loss;
+      trade_request.type = ORDER_TYPE_BUY;
+      trade_request.price = price_ask;
+      trade_request.tp = NormalizeDouble(trade_request.price + take_profit * _Point, _Digits);
+      trade_request.sl = NormalizeDouble(trade_request.price - stop_loss * _Point, _Digits);
      }
    else
       if(select_type == SELL)
         {
-         request_trade.type = ORDER_TYPE_SELL;
-         request_trade.price = price_bid;
-         request_trade.tp = request_trade.price - take_profit;
-         request_trade.sl = request_trade.price + stop_loss;
+         trade_request.type = ORDER_TYPE_SELL;
+         trade_request.price = price_bid;
+         trade_request.tp = NormalizeDouble(trade_request.price - take_profit * _Point, _Digits);
+         trade_request.sl = NormalizeDouble(trade_request.price + stop_loss * _Point, _Digits);
         }
   }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void send()
-  {
-   build_request_trade();
-
-   if(!OrderSend(request_trade, result_trade))
-     {
-      Alert(EnumToString(select_type), " order was not placed. ", IntegerToString(result_trade.retcode), " ", result_trade.comment);
-     }
-   else
-     {
-      Alert(EnumToString(select_type), " order was placed. ", request_trade.symbol, request_trade.order, request_trade.volume, request_trade.tp, request_trade.sl);
-     }
-  }
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void send_order_ontick()
+void update_send_order_data()
   {
    price_ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
 
@@ -105,16 +135,26 @@ void send_order_ontick()
 
    if(send_order_show_string == ON)
      {
-      send_order_string =
-         "\n" +
-         "      Type                         "  + EnumToString(select_type) +
-         "\n" +
-         "      Lot Size                      "  + DoubleToString(lot_size, _Digits) +
-         "\n"
-         "      Stop Loss                   "    + DoubleToString(stop_loss, 0) +
-         "\n"
-         "      Take Profit                  "   + DoubleToString(take_profit, 0) +
-         "\n";
+      send_order_string = StringFormat("\n      Type %s\n      Lot Size %s\n      Stop Loss %d\n      Take Profit %d\n", EnumToString(select_type), DoubleToString(lot_size, _Digits), stop_loss, take_profit);
      }
   }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+/*
+void send()
+  {
+   build_request();
+
+   if(!OrderSend(trade_request, trade_result))
+     {
+      Alert(EnumToString(select_type), " order was not placed. ", IntegerToString(trade_result.retcode), " ", trade_result.comment);
+     }
+   else
+     {
+      Alert(EnumToString(select_type), " order was placed. ", trade_request.symbol, trade_request.order, trade_request.volume, trade_request.tp, trade_request.sl);
+     }
+  }
+*/
 //+------------------------------------------------------------------+
