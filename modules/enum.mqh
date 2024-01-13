@@ -14,7 +14,7 @@ enum turn
 
 enum type_order_trade
   {
-   BUY=ORDER_TYPE_BUY, //BuyP
+   BUY=ORDER_TYPE_BUY, //Buy
    SELL=ORDER_TYPE_SELL //Sell
   };
 //+------------------------------------------------------------------+
