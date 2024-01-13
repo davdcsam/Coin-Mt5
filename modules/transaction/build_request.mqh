@@ -9,14 +9,14 @@
 //+------------------------------------------------------------------+
 void build_request(
    MqlTradeRequest& trade_request,
-   float lot_size,
-   type_order_trade order_type,
-   uint take_profit,
-   uint stop_loss,
-   int deviation_trade,
-   int type_filling,
-   double price_ask,
-   double price_bid
+   float& lot_size,
+   type_order_trade& order_type,
+   uint& take_profit,
+   uint& stop_loss,
+   int& deviation_trade,
+   int& type_filling,
+   double& price_ask,
+   double& price_bid
 )
   {
    trade_request.action = TRADE_ACTION_DEAL;

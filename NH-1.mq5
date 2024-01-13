@@ -6,7 +6,8 @@
 #property copyright "Copyright 2024, DavdCsam"
 #property link      "https://github.com/davdcsam"
 
-#include "modules//send_order.mqh"
+#include "modules//transaction//transaction_handler.mqh"
+#include "modules//transaction//checker.mqh"
 
 bool flag = true;
 
@@ -15,8 +16,7 @@ bool flag = true;
 //+------------------------------------------------------------------+
 int OnInit()
   {
-   update_send_order_data();
-   checker();
+   update_transaction_handler();
 
    return(INIT_SUCCEEDED);
   }
@@ -30,7 +30,7 @@ void OnDeinit(const int reason) {Comment("");}
 //+------------------------------------------------------------------+
 void OnTick()
   {
-   update_send_order_data();
+   update_transaction_handler();
    /*
       if(flag == true)
         {
@@ -39,7 +39,7 @@ void OnTick()
         }
    */
    Comment(
-      send_order_string
+      transaction_handler_comment
    );
   }
 //+------------------------------------------------------------------+

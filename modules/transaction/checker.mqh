@@ -11,14 +11,14 @@
 void checker(
    MqlTradeRequest& request,
    MqlTradeCheckResult& result,
-   float lot_size,
-   type_order_trade order_type,
-   uint take_profit,
-   uint stop_loss,
-   int deviation_trade,
+   float& lot_size,
+   type_order_trade& order_type,
+   uint& take_profit,
+   uint& stop_loss,
+   int& deviation_trade,
    ENUM_ORDER_TYPE_FILLING& filling_mode_to_set,
-   double price_ask,
-   double price_bid
+   double& price_ask,
+   double& price_bid
 )
   {
    int list_order_type_filling[] = {ORDER_FILLING_FOK, ORDER_FILLING_IOC, ORDER_FILLING_RETURN, ORDER_FILLING_BOC};
