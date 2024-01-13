@@ -5,11 +5,17 @@
 //+------------------------------------------------------------------+
 #include "..\\enum.mqh"
 
+MqlTradeRequest trade_request;
+
+MqlTradeCheckResult trade_check_result;
+
+MqlTradeResult trade_result;
+
 input group "Trade"
 
 input type_order_trade input_order_type = BUY;//Select Order
 
-input double input_lot_size = 1;//Lot Size
+input float input_lot_size = 1;//Lot Size
 
 input uint input_stop_loss = 20000;//Stop Loss
 
@@ -26,6 +32,8 @@ double symbol_price_ask;
 double symbol_price_bid;
 
 double symbol_tick_size;
+
+ENUM_ORDER_TYPE_FILLING correct_filling_type;
 
 string transaction_handler_comment;
 

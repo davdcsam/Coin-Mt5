@@ -11,14 +11,14 @@
 void checker(
    MqlTradeRequest& request,
    MqlTradeCheckResult& result,
-   float& lot_size,
-   type_order_trade& order_type,
-   uint& take_profit,
-   uint& stop_loss,
-   int& deviation_trade,
+   float lot_size,
+   type_order_trade order_type,
+   uint take_profit,
+   uint stop_loss,
+   int deviation_trade,
    ENUM_ORDER_TYPE_FILLING& filling_mode_to_set,
-   double& price_ask,
-   double& price_bid
+   double price_ask,
+   double price_bid
 )
   {
    int list_order_type_filling[] = {ORDER_FILLING_FOK, ORDER_FILLING_IOC, ORDER_FILLING_RETURN, ORDER_FILLING_BOC};
@@ -32,6 +32,10 @@ void checker(
          PrintFormat("Filling mode in %s is %s", _Symbol, EnumToString(filling_mode_to_set));
          break;
         }
+      else
+        {
+         PrintFormat("%s no macth in %s", _Symbol, EnumToString(filling_mode_to_set));
+        }
      }
   }
 
@@ -40,8 +44,6 @@ void checker(
 //+------------------------------------------------------------------+
 bool check_position(MqlTradeRequest& request, MqlTradeCheckResult& result, ENUM_ORDER_TYPE_FILLING& filling_mode_to_set)
   {
-   Print(DoubleToString(request.price), DoubleToString(request.sl), DoubleToString(request.tp));
-
    if(!OrderCheck(request, result))
      {
       PrintFormat("OrderCheck failed, return code %d: %s", result.retcode, result.comment);
