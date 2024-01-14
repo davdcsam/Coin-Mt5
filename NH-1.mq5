@@ -8,6 +8,8 @@
 
 #include "modules//transaction//transaction_handler.mqh"
 #include "modules//transaction//checker.mqh"
+#include "modules//section_time//section_time_handler.mqh"
+
 
 bool flag = true;
 
@@ -17,6 +19,8 @@ bool flag = true;
 int OnInit()
   {
    update_transaction_handler();
+
+   update_section_time_hanlder();
 
    checker(trade_request, trade_check_result, input_lot_size, input_order_type, input_take_profit, input_stop_loss, input_deviation_trade, correct_filling_type, symbol_price_ask, symbol_price_bid);
 
