@@ -19,7 +19,7 @@ int OnInit()
    update_transaction_handler();
 
    update_section_time_handler();
-   
+
    update_no_position_handler();
 
    checker(trade_request, trade_check_result, input_lot_size, input_order_type, input_take_profit, input_stop_loss, input_deviation_trade, correct_filling_type, symbol_price_ask, symbol_price_bid);
@@ -38,6 +38,12 @@ void OnTick()
   {
    update_transaction_handler();
 
+   update_section_time_handler();
+   
+   update_no_position_handler();
+
+   operation();
+
    show_comment();
   }
 
@@ -47,5 +53,23 @@ void OnTick()
 void show_comment()
   {
    Comment(transaction_handler_comment, section_time_comment, no_position_comment);
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void operation()
+  {
+   bool flag_verify_section_time = verify_section_time();
+   
+   bool flag_verify_no_position = verify_no_position(_Symbol, 0);
+   
+   Print(flag_verify_section_time, "    ", flag_verify_no_position);
+   
+   if(flag_verify_section_time && flag_verify_no_position)
+     {
+      Print("Trade");
+      ExpertRemove();
+     }
   }
 //+------------------------------------------------------------------+
