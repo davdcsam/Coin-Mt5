@@ -54,12 +54,10 @@ bool check_position(MqlTradeRequest& request, MqlTradeCheckResult& result, ENUM_
      {
       case TRADE_RETCODE_DONE:
          filling_mode_to_set = request.type_filling;
-         Print(filling_mode_to_set);
          return(true);
          break;
       case 0:
          filling_mode_to_set = request.type_filling;
-         Print(filling_mode_to_set);
          return(true);
          break;
       default:

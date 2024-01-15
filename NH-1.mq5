@@ -37,6 +37,8 @@ void OnDeinit(const int reason) {Comment("");}
 void OnTick()
   {
    update_transaction_handler();
+   
+   update_section_time_hanlder();
    /*
       if(flag == true)
         {
@@ -52,6 +54,6 @@ void OnTick()
 //+------------------------------------------------------------------+
 void show_comment()
   {
-   Comment(transaction_handler_comment);
+   Comment(transaction_handler_comment, section_time_comment);
   }
 //+------------------------------------------------------------------+
