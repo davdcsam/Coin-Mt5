@@ -21,8 +21,6 @@ int OnInit()
    update_transaction_handler();
 
    update_section_time_hanlder();
-   
-   Print(verify_section_time());
 
    checker(trade_request, trade_check_result, input_lot_size, input_order_type, input_take_profit, input_stop_loss, input_deviation_trade, correct_filling_type, symbol_price_ask, symbol_price_bid);
 
@@ -40,7 +38,7 @@ void OnTick()
   {
    update_transaction_handler();
    
-   update_section_time_hanlder();
+//   update_section_time_hanlder();
    /*
       if(flag == true)
         {

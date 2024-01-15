@@ -51,6 +51,13 @@ void update_section_time_hanlder()
    end_time.hour = input_end_time_hour;
    end_time.min = input_end_time_min;
    end_time.sec = input_end_time_seg;
+   
+   if(StructToTime(start_time) > StructToTime(end_time))
+     {
+      MqlDateTime temp = start_time;
+      start_time = end_time;
+      end_time = temp;
+     }
 
    if(input_show_section_time_handler_comment == ON)
      {
