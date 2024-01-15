@@ -42,6 +42,47 @@ void checker(
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
+bool check_input_data_trade(string symbol, float lot_size, uint take_profit, uint stop_loss, int devation_trade)
+  {
+
+// Verify Lot
+   if(
+      lot_size >= SymbolInfoDouble(symbol, SYMBOL_VOLUME_MIN)
+      && lot_size <= SymbolInfoDouble(symbol, SYMBOL_VOLUME_MAX)
+      && MathMod(lot_size, SymbolInfoDouble(symbol, SYMBOL_VOLUME_STEP) == 0)
+   )
+     {
+      return(true);
+     }
+
+   return(false);
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool check_input_section_time(MqlDateTime& start_time, MqlDateTime& end_time, MqlDateTime& broker_time)
+  {
+   long start = StructToTime(start_time);
+   long end = StructToTime(end_time);
+   long broker=  StructToTime(broker_time);
+
+   if(start == end)
+     {
+      return(false);
+     }
+
+   if(broker >= end)
+     {
+      return(false);
+     }
+
+   return(true);
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
 bool check_position(MqlTradeRequest& request, MqlTradeCheckResult& result, ENUM_ORDER_TYPE_FILLING& filling_mode_to_set)
   {
    if(!OrderCheck(request, result))
