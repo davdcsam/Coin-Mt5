@@ -32,7 +32,7 @@ string section_time_comment;
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void update_section_time_hanlder()
+void update_section_time_handler()
   {
    datetime current_time = TimeCurrent();
 
