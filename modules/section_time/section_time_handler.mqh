@@ -56,13 +56,22 @@ void update_section_time_hanlder()
      {
       string start_time_str= StringFormat("%02d:%02d:%02d", start_time.hour, start_time.min, start_time.sec);
 
-      string end_time_str = StringFormat("%02d:%02d:%02d", start_time.hour, start_time.min, start_time.sec);
+      string end_time_str = StringFormat("%02d:%02d:%02d", end_time.hour, end_time.min, end_time.sec);
 
-      section_time_comment = StringFormat("\nSection Time from %s to %s\n", start_time_str, end_time_str);
+      section_time_comment = StringFormat("\n Section Time from %s to %s\n", start_time_str, end_time_str);
 
-     } else
-         {
-           section_time_comment = "";
-         }
+     }
+   else
+     {
+      section_time_comment = "";
+     }
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool verify_section_time()
+  {
+   return(StructToTime(start_time) <= StructToTime(broker_time) && StructToTime(broker_time) <= StructToTime(end_time));
   }
 //+------------------------------------------------------------------+
