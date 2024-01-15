@@ -82,12 +82,13 @@ bool check_filling_mode(
      {
       build_request(request, lot_size, order_type, take_profit, stop_loss, deviation_trade, list_order_type_filling[i], price_ask, price_bid);
 
-      if(check_position(request, result, filling_mode_to_set))
+      if(fix_filling_mode(request, result, filling_mode_to_set))
         {
          return(true);
         }
       else
         {
+         PrintFormat("OrderCheck failed, return code %d: %s", result.retcode, result.comment);
          PrintFormat("%s no macth in %s", _Symbol, EnumToString(filling_mode_to_set));
         }
      }
@@ -98,11 +99,10 @@ bool check_filling_mode(
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-bool check_position(MqlTradeRequest& request, MqlTradeCheckResult& result, ENUM_ORDER_TYPE_FILLING& filling_mode_to_set)
+bool fix_filling_mode(MqlTradeRequest& request, MqlTradeCheckResult& result, ENUM_ORDER_TYPE_FILLING& filling_mode_to_set)
   {
    if(!OrderCheck(request, result))
      {
-      PrintFormat("OrderCheck failed, return code %d: %s", result.retcode, result.comment);
       return(false);
      }
 
