@@ -8,44 +8,8 @@
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void checker(
-   MqlTradeRequest& request,
-   MqlTradeCheckResult& result,
-   float lot_size,
-   type_order_trade order_type,
-   uint take_profit,
-   uint stop_loss,
-   int deviation_trade,
-   ENUM_ORDER_TYPE_FILLING& filling_mode_to_set,
-   double price_ask,
-   double price_bid
-)
+bool check_input_lot_size(string symbol, float lot_size)
   {
-   int list_order_type_filling[] = {ORDER_FILLING_FOK, ORDER_FILLING_IOC, ORDER_FILLING_RETURN, ORDER_FILLING_BOC};
-
-   for(int i=0; i<ArraySize(list_order_type_filling); i++)
-     {
-      build_request(request, lot_size, order_type, take_profit, stop_loss, deviation_trade, list_order_type_filling[i], price_ask, price_bid);
-
-      if(check_position(request, result, filling_mode_to_set))
-        {
-         PrintFormat("Filling mode in %s is %s", _Symbol, EnumToString(filling_mode_to_set));
-         break;
-        }
-      else
-        {
-         PrintFormat("%s no macth in %s", _Symbol, EnumToString(filling_mode_to_set));
-        }
-     }
-  }
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-bool check_input_data_trade(string symbol, float lot_size, uint take_profit, uint stop_loss, int devation_trade)
-  {
-
-// Verify Lot
    if(
       lot_size >= SymbolInfoDouble(symbol, SYMBOL_VOLUME_MIN)
       && lot_size <= SymbolInfoDouble(symbol, SYMBOL_VOLUME_MAX)
@@ -54,9 +18,24 @@ bool check_input_data_trade(string symbol, float lot_size, uint take_profit, uin
      {
       return(true);
      }
-
    return(false);
   }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool check_input_devation_trade(uint take_profit, uint stop_loss, int devation_trade)
+  {
+   if(
+      take_profit * 0.01 > devation_trade
+      || stop_loss * 0.01 > devation_trade
+   )
+     {
+      return(false);
+     }
+   return(true);
+  }
+
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -78,6 +57,42 @@ bool check_input_section_time(MqlDateTime& start_time, MqlDateTime& end_time, Mq
      }
 
    return(true);
+  }
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool check_filling_mode(
+   MqlTradeRequest& request,
+   MqlTradeCheckResult& result,
+   float lot_size,
+   type_order_trade order_type,
+   uint take_profit,
+   uint stop_loss,
+   int deviation_trade,
+   ENUM_ORDER_TYPE_FILLING& filling_mode_to_set,
+   double price_ask,
+   double price_bid
+)
+  {
+   int list_order_type_filling[] = {ORDER_FILLING_FOK, ORDER_FILLING_IOC, ORDER_FILLING_RETURN, ORDER_FILLING_BOC};
+
+   for(int i=0; i<ArraySize(list_order_type_filling); i++)
+     {
+      build_request(request, lot_size, order_type, take_profit, stop_loss, deviation_trade, list_order_type_filling[i], price_ask, price_bid);
+
+      if(check_position(request, result, filling_mode_to_set))
+        {
+         return(true);
+        }
+      else
+        {
+         PrintFormat("%s no macth in %s", _Symbol, EnumToString(filling_mode_to_set));
+        }
+     }
+
+   return(false);
   }
 
 //+------------------------------------------------------------------+
