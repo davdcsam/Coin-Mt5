@@ -5,11 +5,11 @@
 //+------------------------------------------------------------------+
 #include "..\\enum.mqh"
 
-MqlDateTime start_time;
+MqlDateTime start_datetime;
 
-MqlDateTime end_time;
+MqlDateTime end_datetime;
 
-MqlDateTime broker_time;
+MqlDateTime broker_datetime;
 
 input group "Section Time"
 
@@ -36,34 +36,34 @@ void update_section_time_handler()
   {
    datetime current_time = TimeCurrent();
 
-   TimeToStruct(current_time, broker_time);
+   TimeToStruct(current_time, broker_datetime);
 
-   start_time.year = broker_time.year;
-   start_time.mon = broker_time.mon;
-   start_time.day = broker_time.day;
-   start_time.hour = input_start_time_hour;
-   start_time.min = input_start_time_min;
-   start_time.sec = input_start_time_seg;
+   start_datetime.year = broker_datetime.year;
+   start_datetime.mon = broker_datetime.mon;
+   start_datetime.day = broker_datetime.day;
+   start_datetime.hour = input_start_time_hour;
+   start_datetime.min = input_start_time_min;
+   start_datetime.sec = input_start_time_seg;
 
-   end_time.year = broker_time.year;
-   end_time.mon = broker_time.mon;
-   end_time.day = broker_time.day;
-   end_time.hour = input_end_time_hour;
-   end_time.min = input_end_time_min;
-   end_time.sec = input_end_time_seg;
+   end_datetime.year = broker_datetime.year;
+   end_datetime.mon = broker_datetime.mon;
+   end_datetime.day = broker_datetime.day;
+   end_datetime.hour = input_end_time_hour;
+   end_datetime.min = input_end_time_min;
+   end_datetime.sec = input_end_time_seg;
    
-   if(StructToTime(start_time) > StructToTime(end_time))
+   if(StructToTime(start_datetime) > StructToTime(end_datetime))
      {
-      MqlDateTime temp = start_time;
-      start_time = end_time;
-      end_time = temp;
+      MqlDateTime temp = start_datetime;
+      start_datetime = end_datetime;
+      end_datetime = temp;
      }
 
    if(input_show_section_time_handler_comment == ON)
      {
-      string start_time_str= StringFormat("%02d:%02d:%02d", start_time.hour, start_time.min, start_time.sec);
+      string start_time_str= StringFormat("%02d:%02d:%02d", start_datetime.hour, start_datetime.min, start_datetime.sec);
 
-      string end_time_str = StringFormat("%02d:%02d:%02d", end_time.hour, end_time.min, end_time.sec);
+      string end_time_str = StringFormat("%02d:%02d:%02d", end_datetime.hour, end_datetime.min, end_datetime.sec);
 
       section_time_comment = StringFormat("\n Section Time from %s to %s\n", start_time_str, end_time_str);
 
@@ -79,6 +79,6 @@ void update_section_time_handler()
 //+------------------------------------------------------------------+
 bool verify_section_time()
   {
-   return(StructToTime(start_time) <= StructToTime(broker_time) && StructToTime(broker_time) <= StructToTime(end_time));
+   return(StructToTime(start_datetime) <= StructToTime(broker_datetime) && StructToTime(broker_datetime) <= StructToTime(end_datetime));
   }
 //+------------------------------------------------------------------+
