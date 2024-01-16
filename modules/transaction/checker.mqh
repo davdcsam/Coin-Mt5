@@ -4,6 +4,7 @@
 //|                                      https://github.com/davdcsam |
 //+------------------------------------------------------------------+
 #include "build_request.mqh"
+#include "calc_profit.mqh"
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -76,7 +77,7 @@ bool check_filling_mode(
    double price_bid
 )
   {
-   int list_order_type_filling[] = {ORDER_FILLING_FOK, ORDER_FILLING_IOC, ORDER_FILLING_RETURN, ORDER_FILLING_BOC};
+   ENUM_ORDER_TYPE_FILLING list_order_type_filling[] = {ORDER_FILLING_FOK, ORDER_FILLING_IOC, ORDER_FILLING_RETURN, ORDER_FILLING_BOC};
 
    for(int i=0; i<ArraySize(list_order_type_filling); i++)
      {
@@ -120,5 +121,38 @@ bool fix_filling_mode(MqlTradeRequest& request, MqlTradeCheckResult& result, ENU
          return(false);
          break;
      }
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool check_position(
+   MqlTradeRequest& request,
+   MqlTradeCheckResult& result,
+   float lot_size,
+   type_order_trade order_type,
+   uint take_profit,
+   uint stop_loss,
+   int deviation_trade,
+   ENUM_ORDER_TYPE_FILLING& correct_filling_mode,
+   double price_ask,
+   double price_bid
+)
+  {
+   build_request(request, lot_size, order_type, take_profit, stop_loss, deviation_trade, correct_filling_mode, price_ask, price_bid);
+
+   if(!OrderCheck(request, result))
+     {
+      Alert("Error on Checker %d: %s", result.retcode, result.comment);
+      return(false);
+     }
+   else
+     {
+      Print(result.retcode);
+      calculated_profits(request.volume, request.type, request.symbol, request.sl, request.tp);
+      return(true);
+     }
+
+   return(false);
   }
 //+------------------------------------------------------------------+

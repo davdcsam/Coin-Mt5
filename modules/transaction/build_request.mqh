@@ -14,7 +14,7 @@ void build_request(
    uint& take_profit,
    uint& stop_loss,
    int& deviation_trade,
-   int& type_filling,
+   ENUM_ORDER_TYPE_FILLING& type_filling,
    double& price_ask,
    double& price_bid
 )
@@ -24,7 +24,7 @@ void build_request(
    request.volume = lot_size;
    request.deviation = deviation_trade;
    request.magic = 0;
-   request.type_filling = (ENUM_ORDER_TYPE_FILLING)type_filling;
+   request.type_filling = type_filling;
 
    if(order_type == BUY)
      {
