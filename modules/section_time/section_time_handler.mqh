@@ -81,4 +81,9 @@ bool verify_section_time()
   {
    return(StructToTime(start_datetime) <= StructToTime(broker_datetime) && StructToTime(broker_datetime) <= StructToTime(end_datetime));
   }
+
+bool verify_no_pass_section_time()
+   {
+    return(StructToTime(broker_datetime) < StructToTime(end_datetime));
+   }
 //+------------------------------------------------------------------+

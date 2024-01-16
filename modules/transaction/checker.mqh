@@ -147,7 +147,7 @@ bool fix_filling_mode(MqlTradeRequest& request, MqlTradeCheckResult& result, ENU
 bool check_position(
    MqlTradeRequest& request,
    MqlTradeCheckResult& result,
-   float lot_size,
+   double lot_size,
    type_order_trade order_type,
    uint take_profit,
    uint stop_loss,

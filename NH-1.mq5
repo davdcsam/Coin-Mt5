@@ -8,8 +8,11 @@
 
 #include "modules//transaction//transaction_handler.mqh"
 #include "modules//transaction//checker.mqh"
+#include "modules//transaction//send_order.mqh"
 #include "modules//section_time//section_time_handler.mqh"
 #include "modules//no_position//no_position_handler.mqh"
+
+
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -81,7 +84,7 @@ int OnInit()
    return(INIT_SUCCEEDED);
   }
 
-void OnDeinit(const int reason) {Comment("");}
+void OnDeinit(const int reason) {Comment("\n", send_order_comment, "\n", calc_profit_comment);}
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -113,12 +116,21 @@ void show_comment()
 void operation()
   {
    bool flag_verify_section_time = verify_section_time();
+   
+   Print(verify_no_pass_section_time());
 
    bool flag_verify_no_position = verify_no_position(_Symbol, 0);
 
    if(flag_verify_section_time && flag_verify_no_position)
      {
-      Print("Trade");
+      //send_order(trade_request, , input_lot_size, input_order_type, input_take_profit, input_stop_loss, input_deviation_trade, correct_filling_type, symbol_price_ask, symbol_price_bid))
+   
+      send_order(trade_request, trade_result, _Symbol, input_lot_size, input_order_type, input_take_profit, input_stop_loss, input_deviation_trade, correct_filling_type, symbol_price_ask, symbol_price_bid);
+
+      Alert(send_order_comment);
+
+      Alert(calc_profit_comment);
+
       ExpertRemove();
      }
   }
