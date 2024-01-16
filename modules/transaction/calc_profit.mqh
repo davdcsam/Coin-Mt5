@@ -4,9 +4,11 @@
 //|                                      https://github.com/davdcsam |
 //+------------------------------------------------------------------+
 
-double calculated_profit;
-double calculated_loss;
+string calc_profit_comment;
 
+double calculated_profit;
+
+double calculated_loss;
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -15,13 +17,20 @@ void calculated_profits(double lot_size, ENUM_ORDER_TYPE order_type, string symb
   {
    double open_price= (order_type == ORDER_TYPE_BUY) ? SymbolInfoDouble(symbol, SYMBOL_ASK) : SymbolInfoDouble(symbol, SYMBOL_BID);
 
-   if(!OrderCalcProfit(order_type, symbol, lot_size, open_price, take_profit, calculated_profit))
+   if(!OrderCalcProfit(order_type, symbol, lot_size, open_price, take_profit, calculated_profit) && !OrderCalcProfit(order_type, symbol, lot_size, open_price, stop_loss, calculated_loss))
      {
-      Print("No posible calc profit");
+      Print("No posible calc profits");
+      calc_profit_comment = "";
      }
-   if(!OrderCalcProfit(order_type, symbol, lot_size, open_price, stop_loss, calculated_loss))
+   else
      {
-      Print("No posible calc loss");
+      calc_profit_comment = StringFormat(
+                               "Estimated benefits. Profit %s %.2f. Loss %s %.2f",
+                               SymbolInfoString(_Symbol, SYMBOL_CURRENCY_PROFIT),
+                               calculated_profit,
+                               SymbolInfoString(_Symbol, SYMBOL_CURRENCY_PROFIT),
+                               calculated_loss
+                            );
      }
   }
 //+------------------------------------------------------------------+

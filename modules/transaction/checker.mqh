@@ -6,6 +6,8 @@
 #include "build_request.mqh"
 #include "calc_profit.mqh"
 
+string checker_comment;
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -144,12 +146,24 @@ bool check_position(
    if(!OrderCheck(request, result))
      {
       Alert("Error on Checker %d: %s", result.retcode, result.comment);
+      checker_comment = "";
       return(false);
      }
    else
      {
-      Print(result.retcode);
+      checker_comment = StringFormat(
+                           "Trading Simulation %s Lot:%.2f, TP Line:%s, SL Line:%s, Dev:%d. Retcode: %d, %s",
+                           EnumToString(request.type),
+                           request.volume,
+                           DoubleToString(request.sl, _Digits),
+                           DoubleToString(request.tp, _Digits),
+                           request.deviation,
+                           result.retcode,
+                           result.comment
+                        );
+
       calculated_profits(request.volume, request.type, request.symbol, request.sl, request.tp);
+
       return(true);
      }
 

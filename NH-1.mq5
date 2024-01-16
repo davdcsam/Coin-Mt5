@@ -71,25 +71,10 @@ int OnInit()
    else
      {
       Alert(
-         StringFormat(
-            "Trading Simulation %s Lot:%.2f, TP:%s, SL:%s, Dev:%d. Retcode: %d, %s",
-            EnumToString(trade_request.type),
-            trade_request.volume,
-            DoubleToString(trade_request.sl, _Digits),
-            DoubleToString(trade_request.tp, _Digits),
-            trade_request.deviation,
-            trade_check_result.retcode,
-            trade_check_result.comment
-         )
+         checker_comment
       );
       Alert(
-         StringFormat(
-            "Estimated benefits. Profit %s %.2f. Loss %s %.2f",
-            SymbolInfoString(_Symbol, SYMBOL_CURRENCY_PROFIT),
-            calculated_profit,
-            SymbolInfoString(_Symbol, SYMBOL_CURRENCY_PROFIT),
-            calculated_loss
-         )
+         calc_profit_comment
       );
      }
    show_comment();
@@ -120,7 +105,7 @@ void OnTick()
 //+------------------------------------------------------------------+
 void show_comment()
   {
-   Comment(transaction_handler_comment, section_time_comment, no_position_comment);
+   Comment(transaction_handler_comment, section_time_comment, no_position_comment, "\n", calc_profit_comment,"\n");
   }
 
 //+------------------------------------------------------------------+
