@@ -17,12 +17,11 @@ void calculated_profits(double lot_size, ENUM_ORDER_TYPE order_type, string symb
   {
    double open_price= (order_type == ORDER_TYPE_BUY) ? SymbolInfoDouble(symbol, SYMBOL_ASK) : SymbolInfoDouble(symbol, SYMBOL_BID);
 
-   if(!OrderCalcProfit(order_type, symbol, lot_size, open_price, take_profit, calculated_profit) && !OrderCalcProfit(order_type, symbol, lot_size, open_price, stop_loss, calculated_loss))
-     {
-      Print("No posible calc profits");
-      calc_profit_comment = "";
-     }
-   else
+   bool calculated_profit_return = OrderCalcProfit(order_type, symbol, lot_size, open_price, take_profit, calculated_profit);
+
+   bool calculated_loss_return = OrderCalcProfit(order_type, symbol, lot_size, open_price, stop_loss, calculated_loss);
+
+   if(calculated_profit_return && calculated_loss_return)
      {
       calc_profit_comment = StringFormat(
                                "Estimated benefits. Profit %s %.2f. Loss %s %.2f",
@@ -31,6 +30,12 @@ void calculated_profits(double lot_size, ENUM_ORDER_TYPE order_type, string symb
                                SymbolInfoString(_Symbol, SYMBOL_CURRENCY_PROFIT),
                                calculated_loss
                             );
+
+     }
+   else
+     {
+      Print("No posible calc profits");
+      calc_profit_comment = "";
      }
   }
 //+------------------------------------------------------------------+

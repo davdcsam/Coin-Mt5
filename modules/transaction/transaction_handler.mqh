@@ -17,9 +17,9 @@ input type_order_trade input_order_type = BUY;//Select Order
 
 input float input_lot_size = 1;//Lot Size
 
-input uint input_stop_loss = 20000;//Stop Loss
-
 input uint input_take_profit = 20000;//Take Profit
+
+input uint input_stop_loss = 20000;//Stop Loss
 
 input uint input_deviation_trade  = 1000; //Deviation in Point
 
@@ -57,7 +57,7 @@ void update_transaction_handler()
       transaction_handler_comment = StringFormat(
                                        "\n Type %s\n Lot Size %s\n Stop Loss %d\n Take Profit %d\n Devation %d\n Correct Filling %s\n",
                                        EnumToString(input_order_type),
-                                       DoubleToString(input_lot_size, _Digits),
+                                       trade_request.volume,
                                        input_stop_loss,
                                        input_take_profit,
                                        input_deviation_trade,

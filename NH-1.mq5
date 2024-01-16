@@ -28,11 +28,14 @@ int OnInit()
    if(!check_input_lot_size(_Symbol, input_lot_size))
      {
       Alert("Input Lot Size is incorrect.");
-      Alert(" - The correct format comprises as minimum lot %s, maximum %s and steps in %s.",
+      Alert(
+         StringFormat(
+            " - The correct format comprises as minimum lot %s, maximum %s and steps in %s.",
             DoubleToString(SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN), 2),
             DoubleToString(SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX), 2),
             DoubleToString(SymbolInfoDouble(_Symbol,SYMBOL_VOLUME_STEP), 2)
-           );
+         )
+      );
       return(INIT_PARAMETERS_INCORRECT);
      }
 
@@ -70,12 +73,8 @@ int OnInit()
      }
    else
      {
-      Alert(
-         checker_comment
-      );
-      Alert(
-         calc_profit_comment
-      );
+      Alert(checker_comment);
+      Alert(calc_profit_comment);
      }
    show_comment();
 

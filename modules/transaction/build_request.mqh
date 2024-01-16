@@ -9,7 +9,8 @@
 //+------------------------------------------------------------------+
 void build_request(
    MqlTradeRequest& request,
-   float& lot_size,
+   string symbol,
+   double lot_size,
    type_order_trade& order_type,
    uint& take_profit,
    uint& stop_loss,
@@ -20,7 +21,7 @@ void build_request(
 )
   {
    request.action = TRADE_ACTION_DEAL;
-   request.symbol = _Symbol;
+   request.symbol = symbol;
    request.volume = lot_size;
    request.deviation = deviation_trade;
    request.magic = 0;
@@ -42,4 +43,11 @@ void build_request(
          request.sl = NormalizeDouble(request.price + stop_loss * _Point, _Digits);
         }
   }
+  
+double round_volume(double volume, double volume_step)
+     {
+      return MathRound(volume / volume_step) * volume_step;
+     }
+  
+  
 //+------------------------------------------------------------------+
