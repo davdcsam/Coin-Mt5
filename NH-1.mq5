@@ -64,6 +64,34 @@ int OnInit()
       PrintFormat("Filling mode in %s is %s", _Symbol, EnumToString(correct_filling_type));
      }
 
+   if(!check_position(trade_request, trade_check_result, input_lot_size, input_order_type, input_take_profit, input_stop_loss, input_deviation_trade, correct_filling_type, symbol_price_ask, symbol_price_bid))
+     {
+      return(INIT_PARAMETERS_INCORRECT);
+     }
+   else
+     {
+      Alert(
+         StringFormat(
+            "Trading Simulation %s Lot:%.2f, TP:%s, SL:%s, Dev:%d. Retcode: %d, %s",
+            EnumToString(trade_request.type),
+            trade_request.volume,
+            DoubleToString(trade_request.sl, _Digits),
+            DoubleToString(trade_request.tp, _Digits),
+            trade_request.deviation,
+            trade_check_result.retcode,
+            trade_check_result.comment
+         )
+      );
+      Alert(
+         StringFormat(
+            "Estimated benefits. Profit %s %.2f. Loss %s %.2f",
+            SymbolInfoString(_Symbol, SYMBOL_CURRENCY_PROFIT),
+            calculated_profit,
+            SymbolInfoString(_Symbol, SYMBOL_CURRENCY_PROFIT),
+            calculated_loss
+         )
+      );
+     }
    show_comment();
 
    return(INIT_SUCCEEDED);
