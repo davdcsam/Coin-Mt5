@@ -28,6 +28,20 @@ int OnInit()
 
    update_no_position_handler();
 
+   if(!verify_no_pass_section_time())
+     {
+      Alert(
+         StringFormat(
+            "The broker's current time %s is after the set period %s to %s.",
+            broker_time_str,
+            start_time_str,
+            end_time_str
+         )
+      );
+      return(INIT_PARAMETERS_INCORRECT);
+     }
+
+
    if(!check_input_lot_size(_Symbol, input_lot_size))
      {
       Alert("Input Lot Size is incorrect.");
@@ -116,15 +130,11 @@ void show_comment()
 void operation()
   {
    bool flag_verify_section_time = verify_section_time();
-   
-   Print(verify_no_pass_section_time());
 
    bool flag_verify_no_position = verify_no_position(_Symbol, 0);
 
    if(flag_verify_section_time && flag_verify_no_position)
      {
-      //send_order(trade_request, , input_lot_size, input_order_type, input_take_profit, input_stop_loss, input_deviation_trade, correct_filling_type, symbol_price_ask, symbol_price_bid))
-   
       send_order(trade_request, trade_result, _Symbol, input_lot_size, input_order_type, input_take_profit, input_stop_loss, input_deviation_trade, correct_filling_type, symbol_price_ask, symbol_price_bid);
 
       Alert(send_order_comment);
