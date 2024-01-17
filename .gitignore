@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Generals
 build/
 # dist/
@@ -31,3 +32,6 @@ requirements.txt
 # Tests 
 
 # Utils
+=======
+*.ex5
+>>>>>>> prelease
