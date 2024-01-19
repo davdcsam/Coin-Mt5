@@ -16,7 +16,6 @@ bool check_input_lot_size(string symbol, double lot_size)
    if(
       lot_size >= SymbolInfoDouble(symbol, SYMBOL_VOLUME_MIN)
       && lot_size <= SymbolInfoDouble(symbol, SYMBOL_VOLUME_MAX)
-      && MathMod(round_volume(lot_size, SymbolInfoDouble(symbol, SYMBOL_VOLUME_STEP)) / SymbolInfoDouble(symbol, SYMBOL_VOLUME_STEP), 1) == 0
    )
      {
       return(true);
