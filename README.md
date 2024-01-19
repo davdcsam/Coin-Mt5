@@ -23,7 +23,8 @@
 ## Creating an Executable File
 1. Open MetaEditor from MetaTrader 5 (press F4).
 2. Open your project.
-3. Press F7 to compile. The `.ex5` file will be created in the same directory.
+3. Open the file `NH-1.mq5`. 
+4. Press F7 to compile. The `.ex5` file will be created in the same directory.
 
 ## License
 Add information about your license here.
