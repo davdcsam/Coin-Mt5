@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+*.ex5
+
+# Setting Env
+.vs
+.vscode
