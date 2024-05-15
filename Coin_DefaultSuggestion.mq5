@@ -9,6 +9,7 @@
 // Include necessary modules for handling different aspects of the trading bot
 #include <AutomatedTradingMQL5/transaction/Transaction.mqh>
 #include <AutomatedTradingMQL5/section_time/SectionTime.mqh>
+#include <AutomatedTradingMQL5/filter_nod/FilterOD.mqh>
 #include <AutomatedTradingMQL5/remove/Remove.mqh>
 #include <AutomatedTradingMQL5/profit_protection/ProfitProtection.mqh>
 #include <AutomatedTradingMQL5/detect/DetectPositions.mqh>
@@ -85,8 +86,6 @@ input group "Remove";
 
 input bool input_remove_positions_out_section_time = false; // Remove Positions Out Section Time
 
-input bool input_show_remove_handler_comment = true; // Show Comment
-
 RemoveByOrderType remove();
 
 //+------------------------------------------------------------------+
@@ -101,6 +100,47 @@ string RemoveCommentInput()
   }
 
 // -- -- //
+
+input group "Filter By Day Week"
+
+input bool input_filter_by_day_week = false; // Filter By Day Week
+
+input bool input_filter_by_day_week_sunday = false; // Sunday
+
+input bool input_filter_by_day_week_monday = false; // Monday
+
+input bool input_filter_by_day_week_tuesday = true; // Tuesday
+
+input bool input_filter_by_day_week_wednesday = false; // Wednesday
+
+input bool input_filter_by_day_week_thursday = true; // Thursday
+
+input bool input_filter_by_day_week_friday = true; // Friday
+
+input bool input_filter_by_day_week_saturday = false; // Saturday
+
+FilterByDayWeek filter_by_day_week;
+
+FilterByDayWeek::Frame frame;
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+string FilterByDayWeekCommentInput(void)
+  {
+   return StringFormat(
+             "\nDay to Operative:%s%s%s%s%s%s%s\n",
+             input_filter_by_day_week_sunday ? " Sun" : "",
+             input_filter_by_day_week_monday ? " Mon" : "",
+             input_filter_by_day_week_tuesday ? " Tue" : "",
+             input_filter_by_day_week_wednesday ? " Wed" : "",
+             input_filter_by_day_week_thursday ? " Thu" : "",
+             input_filter_by_day_week_friday ? " Fri" : "",
+             input_filter_by_day_week_saturday ? " Sat" : ""
+          );
+  }
+
+//
 
 // Group of inputs for the profit protection
 input group "Profit Protection";
@@ -221,13 +261,28 @@ int OnInit(void)
 
    ShowComment();
 
+// Set Operative Day by Day Week
+   if(input_filter_by_day_week)
+     {
+      frame.sunday = input_filter_by_day_week_sunday;
+      frame.monday = input_filter_by_day_week_monday;
+      frame.tuesday = input_filter_by_day_week_tuesday;
+      frame.wednesday = input_filter_by_day_week_wednesday;
+      frame.thursday = input_filter_by_day_week_thursday;
+      frame.friday = input_filter_by_day_week_friday;
+      frame.saturday = input_filter_by_day_week_saturday;
+
+      filter_by_day_week.UpdateAtr(frame);
+     }
+
+
 // Initialize Extra Component
    remove.UpdateAtr(input_magic_number, _Symbol);
 
    break_even.UpdateRequiredAtr(input_magic_number, _Symbol);
 
    trailing_stop.UpdateRequiredAtr(input_magic_number, _Symbol);
-   
+
    detect_positions.UpdateAtr(_Symbol, input_magic_number);
 
    return(INIT_SUCCEEDED);
@@ -247,11 +302,17 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick(void)
   {
-// Verify if the current time is within the section time
-   VerifySectionTime();
-
 // Verify if the profit protection measures (break even and trailing stop) are active
    VerifyProfitProtection();
+
+// Update the section time
+   section_time.Update();
+
+   if(input_filter_by_day_week && filter_by_day_week.IsOperativeDay())
+     {
+      // Verify if the current time is within the section time
+      VerifySectionTime();
+     }
 
 // Show the comment on the chart
    ShowComment();
@@ -278,8 +339,6 @@ void VerifyProfitProtection()
 // This function verifies if the current time is within the section time. If it's not, it removes positions and pending orders if necessary. If it is, it verifies extra orders.
 void VerifySectionTime()
   {
-// Update the section time
-   section_time.Update();
 
 // If the current time is not within the section time
    if(!section_time.VerifyInsideSection())
@@ -330,10 +389,10 @@ void ShowComment()
   {
 // Show the comments on the chart
    Comment(
-      TransactionCommentInput(),
-      input_show_transaction_handler_comment ? transaction.CommentToShow() : "",
-      section_time.CommentToShow(),
-      input_show_remove_handler_comment ? RemoveCommentInput() : "",
+      input_show_transaction_handler_comment ? transaction.CommentToShow() + TransactionCommentInput() : "",
+      input_show_section_time_handler_comment ? section_time.CommentToShow() : "",
+      input_remove_positions_out_section_time ? RemoveCommentInput() : "",
+      input_filter_by_day_week ? FilterByDayWeekCommentInput() : "",
       input_show_profit_protection_handler_comment ? ProfitProtectionCommentInput() : ""
    );
   }
