@@ -12,6 +12,7 @@
 #include <AutomatedTradingMQL5/remove/Remove.mqh>
 #include <AutomatedTradingMQL5/profit_protection/ProfitProtection.mqh>
 #include <AutomatedTradingMQL5/detect/DetectPositions.mqh>
+#include "SwitchOrderMod.mqh"
 
 // Group of inputs related to trade
 input group "Trade"
@@ -157,6 +158,7 @@ string ProfitProtectionCommentInput()
 
 // Global variables
 MqlDateTime last_operation;
+SwitchOrderMod switch_order_mod;
 DetectPositions detect_positions;
 
 //+------------------------------------------------------------------+
@@ -223,6 +225,8 @@ int OnInit(void)
 
 // Initialize Extra Component
    remove.UpdateAtr(input_magic_number, _Symbol);
+   
+   switch_order_mod.UpdateAtr(input_order_type);
 
    break_even.UpdateRequiredAtr(input_magic_number, _Symbol);
 
@@ -313,9 +317,11 @@ void VerifyExtraOrders()
 void SendOrders()
   {
    string to_print = (input_order_type == ORDER_PENDING_TYPE_BUY) ?
-                     transaction.EnumOrderTransactionToString(transaction.SendPosition(ENUM_POSITION_TYPE(ORDER_PENDING_TYPE_BUY))) :
-                     transaction.EnumOrderTransactionToString(transaction.SendPosition(ENUM_POSITION_TYPE(ORDER_PENDING_TYPE_SELL)));
-
+                     transaction.EnumOrderTransactionToString(transaction.SendPosition(ENUM_POSITION_TYPE(switch_order_mod.GetPrivateAtr()))) :
+                     transaction.EnumOrderTransactionToString(transaction.SendPosition(ENUM_POSITION_TYPE(switch_order_mod.GetPrivateAtr())));
+   
+   switch_order_mod.Run();
+   
    TimeCurrent(last_operation);
 
    Print(to_print);
