@@ -9,7 +9,7 @@
 // Include necessary modules for handling different aspects of the trading bot
 #include <AutomatedTradingMQL5/transaction/Transaction.mqh>
 #include <AutomatedTradingMQL5/section_time/SectionTime.mqh>
-#include <AutomatedTradingMQL5/filter_nod/FilterOD.mqh>
+#include <AutomatedTradingMQL5/filter_nod/FilterNOD.mqh>
 #include <AutomatedTradingMQL5/remove/Remove.mqh>
 #include <AutomatedTradingMQL5/profit_protection/ProfitProtection.mqh>
 #include <AutomatedTradingMQL5/detect/DetectPositions.mqh>
@@ -50,7 +50,7 @@ string              TransactionCommentInput()
       return "";
 
    return StringFormat(
-             "\n Send Extra Orders: %s\n Type: %s",
+             " Send Extra Orders: %s\n Type: %s\n",
              input_allow_extra_orders ? "Allowed" : "Prohibited",
              input_order_type == ORDER_PENDING_TYPE_BUY ? "Buy" : "Sell"
           );
@@ -90,7 +90,7 @@ RemoveByOrderType remove();
 string RemoveCommentInput()
   {
    return StringFormat(
-             "\n Remove Positions Out: %s\n",
+             " Remove Positions Out: %s\n",
              input_remove_positions_out_section_time ? "Allowed" : "Prohibited"
           );
   }
@@ -101,13 +101,13 @@ input group "Filter By Day Week"
 
 input bool input_filter_by_day_week = false; // Filter By Day Week
 
-input bool input_filter_by_day_week_sunday = false; // Sunday
+input bool input_filter_by_day_week_sunday = true; // Sunday
 
-input bool input_filter_by_day_week_monday = false; // Monday
+input bool input_filter_by_day_week_monday = true; // Monday
 
 input bool input_filter_by_day_week_tuesday = true; // Tuesday
 
-input bool input_filter_by_day_week_wednesday = false; // Wednesday
+input bool input_filter_by_day_week_wednesday = true; // Wednesday
 
 input bool input_filter_by_day_week_thursday = true; // Thursday
 
@@ -115,7 +115,7 @@ input bool input_filter_by_day_week_friday = true; // Friday
 
 input bool input_filter_by_day_week_saturday = false; // Saturday
 
-FilterByDayWeek filtetByDayWeek;
+FilterByDayWeek filterByDayWeek;
 
 FilterByDayWeek::Frame frame;
 
@@ -125,7 +125,7 @@ FilterByDayWeek::Frame frame;
 string FilterByDayWeekCommentInput(void)
   {
    return StringFormat(
-             "\nDay to Operative:%s%s%s%s%s%s%s\n",
+             "\n FilterByDayWeek to Operative:%s%s%s%s%s%s%s\n",
              input_filter_by_day_week_sunday ? " Sun" : "",
              input_filter_by_day_week_monday ? " Mon" : "",
              input_filter_by_day_week_tuesday ? " Tue" : "",
@@ -138,13 +138,11 @@ string FilterByDayWeekCommentInput(void)
 
 // -- -- //
 
-input group "Filter By CSV File "
+input group "Filter By CSV File"
 
 input bool input_filter_by_csv_file = false; // Active
 
 input string input_filter_by_csv_file_name = "days.csv"; // Name
-
-input FilterByCSVFile::ENUM_MODES input_filter_by_csv_file_mode = FilterByCSVFile::MODE_BLACK_LIST; // Mode
 
 FilterByCSVFile filterByCSVFile;
 
@@ -154,9 +152,8 @@ FilterByCSVFile filterByCSVFile;
 string FilterByCSVFileCommentInput(void)
   {
    return StringFormat(
-             "\n Filter By CSV File getting from %s in %s\n",
-             input_filter_by_csv_file_name,
-             EnumToString(input_filter_by_csv_file_mode)
+             "\n Filter By CSV File getting from %s\n",
+             input_filter_by_csv_file_name
           );
   }
 
@@ -289,16 +286,17 @@ int OnInit(void)
       frame.friday = input_filter_by_day_week_friday;
       frame.saturday = input_filter_by_day_week_saturday;
 
-      filtetByDayWeek.UpdateAtr(frame);
+      filterByDayWeek.UpdateAtr(frame);
      }
 
 //  Initialize Operation Day by Week
    if(input_filter_by_csv_file)
      {
-      if(!filterByCSVFile.UpdateAtr(input_filter_by_csv_file_name, input_filter_by_csv_file_mode))
-         return(INIT_FAILED);
+      if(!filterByCSVFile.UpdateAtr(input_filter_by_csv_file_name))
+         return(INIT_PARAMETERS_INCORRECT);
 
-      filterByCSVFile.Read();
+      if(!filterByCSVFile.Read())
+         return(INIT_FAILED);
      }
 
 // Initialize Extra Component
@@ -333,11 +331,8 @@ void OnTick(void)
 // Update the section time
    section_time.Update();
 
-   if(input_filter_by_day_week && filtetByDayWeek.IsOperativeDay())
-     {
-      // Verify if the current time is within the section time
-      VerifySectionTime();
-     }
+// Verify if the current time is within the section time
+   VerifySectionTime();
 
 // Show the comment on the chart
    ShowComment();
@@ -382,6 +377,7 @@ void VerifySectionTime()
 // This function verifies if extra orders are allowed. If they are, it sends orders. If they're not, it updates orders and positions and sends orders if necessary.
 void VerifyExtraOrders()
   {
+
 // If extra orders are allowed, send orders
    if(input_allow_extra_orders)
       SendOrders();
@@ -396,28 +392,40 @@ void VerifyExtraOrders()
 // This function sends orders based on the type of near lines. It gets the near lines, updates the comment lines, and sends orders accordingly.
 void SendOrders()
   {
-   Print("HELLO");
-  
    TimeCurrent(last_operation);
 
    if(input_filter_by_csv_file)
      {
       bool isOperativeDay = filterByCSVFile.IsOperativeDay();
-      Print(
-         "Today %s is %s operative",
-         TimeToString(TimeCurrent()),
-         isOperativeDay ? "a" : "NOT"
-      );
 
+      PrintFormat(
+         "Today %s is %s operative day",
+         TimeToString(TimeCurrent()),
+         isOperativeDay ? "a" : "NOT a"
+      );
       if(!isOperativeDay)
          return;
      }
 
-   string to_print = (input_order_type == ORDER_PENDING_TYPE_BUY) ?
-                     transaction.EnumOrderTransactionToString(transaction.SendPosition(ENUM_POSITION_TYPE(ORDER_PENDING_TYPE_BUY))) :
-                     transaction.EnumOrderTransactionToString(transaction.SendPosition(ENUM_POSITION_TYPE(ORDER_PENDING_TYPE_SELL)));
+   if(input_filter_by_day_week)
+     {
+      bool isOperativeDay = filterByDayWeek.IsOperativeDay();
 
-   Print(to_print);
+      PrintFormat(
+         "Today %s is %s operative day",
+         EnumToString(ENUM_DAY_OF_WEEK(last_operation.day_of_week)),
+         isOperativeDay ? "a" : "NOT a"
+
+      );
+      if(!isOperativeDay)
+         return;
+     }
+
+   Print(
+      (input_order_type == ORDER_PENDING_TYPE_BUY) ?
+      transaction.EnumOrderTransactionToString(transaction.SendPosition(ENUM_POSITION_TYPE(ORDER_PENDING_TYPE_BUY))) :
+      transaction.EnumOrderTransactionToString(transaction.SendPosition(ENUM_POSITION_TYPE(ORDER_PENDING_TYPE_SELL)))
+   );
   }
 
 
