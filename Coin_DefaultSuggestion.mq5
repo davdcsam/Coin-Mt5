@@ -61,6 +61,8 @@ string              TransactionCommentInput()
 // Group of inputs related to section time
 input group "Section Time"
 
+input bool input_remove_positions_out_section_time = false; // Remove Positions Out Section Time
+
 // Inputs for the start and end times
 input uchar input_start_time_hour = 15; // Start Hour
 
@@ -79,12 +81,6 @@ input bool input_show_section_time_handler_comment = true; // Show Comment
 
 // Create a new SectionTime object
 SectionTime section_time(input_start_time_hour, input_start_time_min, input_start_time_seg, input_end_time_hour, input_end_time_min, input_end_time_seg);
-
-// -- -- //
-
-input group "Remove";
-
-input bool input_remove_positions_out_section_time = false; // Remove Positions Out Section Time
 
 RemoveByOrderType remove();
 
@@ -119,7 +115,7 @@ input bool input_filter_by_day_week_friday = true; // Friday
 
 input bool input_filter_by_day_week_saturday = false; // Saturday
 
-FilterByDayWeek filter_by_day_week;
+FilterByDayWeek filtetByDayWeek;
 
 FilterByDayWeek::Frame frame;
 
@@ -140,7 +136,31 @@ string FilterByDayWeekCommentInput(void)
           );
   }
 
-//
+// -- -- //
+
+input group "Filter By CSV File "
+
+input bool input_filter_by_csv_file = false; // Active
+
+input string input_filter_by_csv_file_name = "days.csv"; // Name
+
+input FilterByCSVFile::ENUM_MODES input_filter_by_csv_file_mode = FilterByCSVFile::MODE_BLACK_LIST; // Mode
+
+FilterByCSVFile filterByCSVFile;
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+string FilterByCSVFileCommentInput(void)
+  {
+   return StringFormat(
+             "\n Filter By CSV File getting from %s in %s\n",
+             input_filter_by_csv_file_name,
+             EnumToString(input_filter_by_csv_file_mode)
+          );
+  }
+
+// -- -- //
 
 // Group of inputs for the profit protection
 input group "Profit Protection";
@@ -155,9 +175,6 @@ input uchar input_profit_protection_activation_percent = 30; // Activation Perce
 
 // Deviation percent from the open price for the break even
 input uchar input_profit_protection_deviation_percent= 10; // Deviation Percent
-
-// Boolean to check if comments should be shown
-input bool input_show_profit_protection_handler_comment = true; // Show Comment
 
 // Instance of the BreakEven class
 BreakEven break_even(input_profit_protection_activation_percent, input_profit_protection_deviation_percent);
@@ -261,7 +278,7 @@ int OnInit(void)
 
    ShowComment();
 
-// Set Operative Day by Day Week
+// Initialize Operation Day by Day Week
    if(input_filter_by_day_week)
      {
       frame.sunday = input_filter_by_day_week_sunday;
@@ -272,9 +289,17 @@ int OnInit(void)
       frame.friday = input_filter_by_day_week_friday;
       frame.saturday = input_filter_by_day_week_saturday;
 
-      filter_by_day_week.UpdateAtr(frame);
+      filtetByDayWeek.UpdateAtr(frame);
      }
 
+//  Initialize Operation Day by Week
+   if(input_filter_by_csv_file)
+     {
+      if(!filterByCSVFile.UpdateAtr(input_filter_by_csv_file_name, input_filter_by_csv_file_mode))
+         return(INIT_FAILED);
+
+      filterByCSVFile.Read();
+     }
 
 // Initialize Extra Component
    remove.UpdateAtr(input_magic_number, _Symbol);
@@ -308,7 +333,7 @@ void OnTick(void)
 // Update the section time
    section_time.Update();
 
-   if(input_filter_by_day_week && filter_by_day_week.IsOperativeDay())
+   if(input_filter_by_day_week && filtetByDayWeek.IsOperativeDay())
      {
       // Verify if the current time is within the section time
       VerifySectionTime();
@@ -371,11 +396,26 @@ void VerifyExtraOrders()
 // This function sends orders based on the type of near lines. It gets the near lines, updates the comment lines, and sends orders accordingly.
 void SendOrders()
   {
+   Print("HELLO");
+  
+   TimeCurrent(last_operation);
+
+   if(input_filter_by_csv_file)
+     {
+      bool isOperativeDay = filterByCSVFile.IsOperativeDay();
+      Print(
+         "Today %s is %s operative",
+         TimeToString(TimeCurrent()),
+         isOperativeDay ? "a" : "NOT"
+      );
+
+      if(!isOperativeDay)
+         return;
+     }
+
    string to_print = (input_order_type == ORDER_PENDING_TYPE_BUY) ?
                      transaction.EnumOrderTransactionToString(transaction.SendPosition(ENUM_POSITION_TYPE(ORDER_PENDING_TYPE_BUY))) :
                      transaction.EnumOrderTransactionToString(transaction.SendPosition(ENUM_POSITION_TYPE(ORDER_PENDING_TYPE_SELL)));
-
-   TimeCurrent(last_operation);
 
    Print(to_print);
   }
@@ -393,7 +433,8 @@ void ShowComment()
       input_show_section_time_handler_comment ? section_time.CommentToShow() : "",
       input_remove_positions_out_section_time ? RemoveCommentInput() : "",
       input_filter_by_day_week ? FilterByDayWeekCommentInput() : "",
-      input_show_profit_protection_handler_comment ? ProfitProtectionCommentInput() : ""
+      input_filter_by_csv_file ? FilterByCSVFileCommentInput() : "",
+      input_active_profit_protection ? ProfitProtectionCommentInput() : ""
    );
   }
 //+------------------------------------------------------------------+
