@@ -38,17 +38,11 @@ input uint input_deviation_trade  = 100; // Deviation
 // Input for the magic number
 input ulong input_magic_number = 420; // Magic Number
 
-// Input to show the transaction handler comment
-input bool input_show_transaction_handler_comment = true; // Show Comment
-
 Transaction transaction(_Symbol, MathAbs(input_lot_size), input_take_profit, input_stop_loss, input_deviation_trade, input_magic_number);
 
 // Function to update the comment for the transaction
 string              TransactionCommentInput()
   {
-   if(!input_show_transaction_handler_comment)
-      return "";
-
    return StringFormat(
              " Send Extra Orders: %s\n Type: %s\n",
              input_allow_extra_orders ? "Allowed" : "Prohibited",
@@ -75,9 +69,6 @@ input uchar input_end_time_hour = 17; // End Hour
 input uchar input_end_time_min = 0; // End Min
 
 input uchar input_end_time_seg = 0; // End Seg
-
-// Input to show the section time handler comment
-input bool input_show_section_time_handler_comment = true; // Show Comment
 
 // Create a new SectionTime object
 SectionTime section_time(input_start_time_hour, input_start_time_min, input_start_time_seg, input_end_time_hour, input_end_time_min, input_end_time_seg);
@@ -437,8 +428,9 @@ void ShowComment()
   {
 // Show the comments on the chart
    Comment(
-      input_show_transaction_handler_comment ? transaction.CommentToShow() + TransactionCommentInput() : "",
-      input_show_section_time_handler_comment ? section_time.CommentToShow() : "",
+      transaction.CommentToShow(),
+      TransactionCommentInput(),
+      section_time.CommentToShow(),
       input_remove_positions_out_section_time ? RemoveCommentInput() : "",
       input_filter_by_day_week ? FilterByDayWeekCommentInput() : "",
       input_filter_by_csv_file ? FilterByCSVFileCommentInput() : "",
