@@ -426,6 +426,11 @@ void SendOrders()
 // This function updates the comments for transaction, lines, section time, removal, and profit protection, and then shows them on the chart.
 void ShowComment()
   {
+   if(MQLInfoInteger(MQL_TESTER) && !MQLInfoInteger(MQL_VISUAL_MODE))
+     {
+      return;
+     }
+
 // Show the comments on the chart
    Comment(
       transaction.CommentToShow(),
